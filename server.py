@@ -1,0 +1,408 @@
+#!/usr/bin/env python3
+"""
+ElectroLab Educativa - Servidor Backend Autónomo con SQLite y Autenticación
+Sin dependencias externas. Utiliza únicamente la librería estándar de Python.
+"""
+
+import http.server
+import socketserver
+import os
+import sys
+import json
+import sqlite3
+import hashlib
+import uuid
+import mimetypes
+from urllib.parse import urlparse, parse_qs
+from datetime import datetime
+
+PORT = 8000
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_FILE = os.path.join(BASE_DIR, 'electrolab.db')
+
+def hash_password(password: str) -> str:
+    """Hash SHA-256 seguro con sal fija para el sistema"""
+    salt = "electrolab_2026_salt_key"
+    return hashlib.sha256((salt + password).encode('utf-8')).hexdigest()
+
+def get_db():
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_database():
+    """Crea las tablas y precarga los usuarios iniciales (Admin y Alumno Demo)"""
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            role TEXT DEFAULT 'student',
+            created_at TEXT NOT NULL
+        )
+    ''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS enrollments (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            course_id TEXT NOT NULL,
+            granted_at TEXT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            UNIQUE(user_id, course_id)
+        )
+    ''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS sessions (
+            token TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    ''')
+
+    conn.commit()
+
+    # Verificar si existe el usuario administrador
+    cursor.execute("SELECT id FROM users WHERE email = ?", ('admin@electrolab.com',))
+    if not cursor.fetchone():
+        admin_id = 'usr_admin_' + uuid.uuid4().hex[:8]
+        now = datetime.utcnow().isoformat()
+        cursor.execute('''
+            INSERT INTO users (id, name, email, password_hash, role, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (admin_id, 'Admin ElectroLab', 'admin@electrolab.com', hash_password('admin'), 'admin', now))
+
+        # Habilitar todos los cursos para el admin
+        all_courses = [
+            'curso-electronica-cero',
+            'curso-arduino-microcontroladores',
+            'combo-master-electronica-arduino',
+            'guia-simulaciones-ltspice'
+        ]
+        for cid in all_courses:
+            cursor.execute('''
+                INSERT INTO enrollments (id, user_id, course_id, granted_at)
+                VALUES (?, ?, ?, ?)
+            ''', (uuid.uuid4().hex, admin_id, cid, now))
+        conn.commit()
+        print("[DB] Usuario Administrador creado: admin@electrolab.com (Clave: admin)")
+
+    # Verificar si existe el alumno demo
+    cursor.execute("SELECT id FROM users WHERE email = ?", ('alumno@demo.com',))
+    if not cursor.fetchone():
+        student_id = 'usr_student_' + uuid.uuid4().hex[:8]
+        now = datetime.utcnow().isoformat()
+        cursor.execute('''
+            INSERT INTO users (id, name, email, password_hash, role, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (student_id, 'Martín Gómez', 'alumno@demo.com', hash_password('alumno123'), 'student', now))
+
+        # Habilitar Electrónica Desde Cero al alumno demo
+        cursor.execute('''
+            INSERT INTO enrollments (id, user_id, course_id, granted_at)
+            VALUES (?, ?, ?, ?)
+        ''', (uuid.uuid4().hex, student_id, 'curso-electronica-cero', now))
+        conn.commit()
+        print("[DB] Alumno Demo creado: alumno@demo.com (Clave: alumno123)")
+
+    conn.close()
+
+def get_user_courses(cursor, user_id):
+    cursor.execute("SELECT course_id FROM enrollments WHERE user_id = ?", (user_id,))
+    rows = cursor.fetchall()
+    return [r['course_id'] for r in rows]
+
+def get_user_from_token(token):
+    if not token:
+        return None
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT u.id, u.name, u.email, u.role, u.created_at
+        FROM sessions s
+        JOIN users u ON s.user_id = u.id
+        WHERE s.token = ?
+    ''', (token,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        return None
+    user = dict(row)
+    user['courses'] = get_user_courses(cursor, user['id'])
+    conn.close()
+    return user
+
+class ElectroLabHandler(http.server.SimpleHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, directory=BASE_DIR, **kwargs)
+
+    def _send_json(self, data, status=200):
+        body = json.dumps(data).encode('utf-8')
+        self.send_response(status)
+        self.send_header('Content-Type', 'application/json; charset=utf-8')
+        self.send_header('Content-Length', str(len(body)))
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _read_json(self):
+        content_len = int(self.headers.get('Content-Length', 0))
+        if content_len == 0:
+            return {}
+        body = self.rfile.read(content_len).decode('utf-8')
+        return json.loads(body)
+
+    def _get_auth_token(self):
+        auth_header = self.headers.get('Authorization', '')
+        if auth_header.startswith('Bearer '):
+            return auth_header[7:].strip()
+        return ''
+
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
+        self.end_headers()
+
+    def do_GET(self):
+        parsed = urlparse(self.path)
+        path = parsed.path
+
+        # Endpoints API
+        if path == '/api/health':
+            return self._send_json({'status': 'ok', 'mode': 'python-sqlite', 'timestamp': datetime.utcnow().isoformat()})
+
+        if path == '/api/me':
+            token = self._get_auth_token()
+            user = get_user_from_token(token)
+            if not user:
+                return self._send_json({'error': 'No autorizado'}, 401)
+            return self._send_json({'user': user})
+
+        if path == '/api/admin/users':
+            token = self._get_auth_token()
+            user = get_user_from_token(token)
+            if not user or user.get('role') != 'admin':
+                return self._send_json({'error': 'Acceso exclusivo de administrador'}, 403)
+
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC")
+            users = []
+            for row in cursor.fetchall():
+                u = dict(row)
+                u['courses'] = get_user_courses(cursor, u['id'])
+                users.append(u)
+            conn.close()
+            return self._send_json(users)
+
+        # Archivos estáticos por defecto (index.html, login.html, etc.)
+        return super().do_GET()
+
+    def do_POST(self):
+        parsed = urlparse(self.path)
+        path = parsed.path
+
+        if path == '/api/login':
+            try:
+                data = self._read_json()
+                email = data.get('email', '').strip().lower()
+                password = data.get('password', '')
+
+                conn = get_db()
+                cursor = conn.cursor()
+                cursor.execute('''
+                    SELECT id, name, email, password_hash, role, created_at
+                    FROM users WHERE LOWER(email) = ?
+                ''', (email,))
+                row = cursor.fetchone()
+
+                if not row or row['password_hash'] != hash_password(password):
+                    conn.close()
+                    return self._send_json({'error': 'Correo o contraseña incorrectos'}, 401)
+
+                user = dict(row)
+                del user['password_hash']
+                user['courses'] = get_user_courses(cursor, user['id'])
+
+                # Generar token de sesión
+                token = 'tok_' + uuid.uuid4().hex
+                now = datetime.utcnow().isoformat()
+                cursor.execute('INSERT INTO sessions (token, user_id, created_at) VALUES (?, ?, ?)', (token, user['id'], now))
+                conn.commit()
+                conn.close()
+
+                return self._send_json({'token': token, 'user': user})
+            except Exception as e:
+                return self._send_json({'error': str(e)}, 500)
+
+        if path == '/api/register':
+            try:
+                data = self._read_json()
+                name = data.get('name', '').strip()
+                email = data.get('email', '').strip().lower()
+                password = data.get('password', '')
+
+                if not name or not email or not password:
+                    return self._send_json({'error': 'Todos los campos son obligatorios'}, 400)
+
+                conn = get_db()
+                cursor = conn.cursor()
+                cursor.execute("SELECT id FROM users WHERE LOWER(email) = ?", (email,))
+                if cursor.fetchone():
+                    conn.close()
+                    return self._send_json({'error': 'Ya existe una cuenta con este correo'}, 400)
+
+                new_id = 'usr_' + uuid.uuid4().hex[:10]
+                now = datetime.utcnow().isoformat()
+                cursor.execute('''
+                    INSERT INTO users (id, name, email, password_hash, role, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ''', (new_id, name, email, hash_password(password), 'student', now))
+
+                token = 'tok_' + uuid.uuid4().hex
+                cursor.execute('INSERT INTO sessions (token, user_id, created_at) VALUES (?, ?, ?)', (token, new_id, now))
+                conn.commit()
+                conn.close()
+
+                return self._send_json({
+                    'token': token,
+                    'user': {
+                        'id': new_id,
+                        'name': name,
+                        'email': email,
+                        'role': 'student',
+                        'courses': []
+                    }
+                })
+            except Exception as e:
+                return self._send_json({'error': str(e)}, 500)
+
+        if path == '/api/logout':
+            token = self._get_auth_token()
+            if token:
+                conn = get_db()
+                cursor = conn.cursor()
+                cursor.execute("DELETE FROM sessions WHERE token = ?", (token,))
+                conn.commit()
+                conn.close()
+            return self._send_json({'success': True})
+
+        # Rutas de administración
+        if path == '/api/admin/toggle-access':
+            token = self._get_auth_token()
+            user = get_user_from_token(token)
+            if not user or user.get('role') != 'admin':
+                return self._send_json({'error': 'Acceso no autorizado'}, 403)
+
+            data = self._read_json()
+            user_id = data.get('userId')
+            course_id = data.get('courseId')
+            enabled = bool(data.get('enabled'))
+
+            conn = get_db()
+            cursor = conn.cursor()
+            if enabled:
+                cursor.execute('''
+                    INSERT OR IGNORE INTO enrollments (id, user_id, course_id, granted_at)
+                    VALUES (?, ?, ?, ?)
+                ''', (uuid.uuid4().hex, user_id, course_id, datetime.utcnow().isoformat()))
+            else:
+                cursor.execute('DELETE FROM enrollments WHERE user_id = ? AND course_id = ?', (user_id, course_id))
+
+            conn.commit()
+            updated_courses = get_user_courses(cursor, user_id)
+            conn.close()
+            return self._send_json({'success': True, 'courses': updated_courses})
+
+        if path == '/api/admin/create-user':
+            token = self._get_auth_token()
+            user = get_user_from_token(token)
+            if not user or user.get('role') != 'admin':
+                return self._send_json({'error': 'Acceso no autorizado'}, 403)
+
+            data = self._read_json()
+            name = data.get('name', '').strip()
+            email = data.get('email', '').strip().lower()
+            password = data.get('password', '123456')
+            courses = data.get('courses', [])
+            role = data.get('role', 'student')
+
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM users WHERE LOWER(email) = ?", (email,))
+            if cursor.fetchone():
+                conn.close()
+                return self._send_json({'error': 'El correo ya está registrado'}, 400)
+
+            user_id = 'usr_' + uuid.uuid4().hex[:10]
+            now = datetime.utcnow().isoformat()
+            cursor.execute('''
+                INSERT INTO users (id, name, email, password_hash, role, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (user_id, name, email, hash_password(password), role, now))
+
+            for cid in courses:
+                cursor.execute('''
+                    INSERT INTO enrollments (id, user_id, course_id, granted_at)
+                    VALUES (?, ?, ?, ?)
+                ''', (uuid.uuid4().hex, user_id, cid, now))
+
+            conn.commit()
+            conn.close()
+            return self._send_json({'success': True, 'userId': user_id})
+
+        return self._send_json({'error': 'Ruta no encontrada'}, 404)
+
+    def do_DELETE(self):
+        parsed = urlparse(self.path)
+        path = parsed.path
+
+        if path.startswith('/api/admin/user/'):
+            token = self._get_auth_token()
+            user = get_user_from_token(token)
+            if not user or user.get('role') != 'admin':
+                return self._send_json({'error': 'Acceso no autorizado'}, 403)
+
+            target_id = path.split('/')[-1]
+            if target_id == user['id']:
+                return self._send_json({'error': 'No puedes eliminarte a ti mismo'}, 400)
+
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM users WHERE id = ?", (target_id,))
+            conn.commit()
+            conn.close()
+            return self._send_json({'success': True})
+
+        return self._send_json({'error': 'Ruta no encontrada'}, 404)
+
+def run():
+    init_database()
+    socketserver.TCPServer.allow_reuse_address = True
+    with socketserver.TCPServer(("", PORT), ElectroLabHandler) as httpd:
+        print("\n=======================================================")
+        print(f"🚀 Servidor ElectroLab Educativa Activo en:")
+        print(f"   http://localhost:{PORT}")
+        print("-------------------------------------------------------")
+        print("🔐 Credenciales predeterminadas:")
+        print("   👑 Administrador: admin@electrolab.com | Clave: admin")
+        print("   🎓 Alumno Demo:   alumno@demo.com   | Clave: alumno123")
+        print("=======================================================\n")
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            print("\nDeteniendo servidor...")
+            httpd.server_close()
+
+if __name__ == '__main__':
+    run()

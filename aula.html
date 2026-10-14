@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Aula Virtual | ElectroLab Educativa</title>
+  <link rel="icon" href="./logo.jpg">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="bg-[#060913] text-slate-100 font-sans min-h-screen flex flex-col circuit-grid-bg selection:bg-cyan-500 selection:text-slate-950">
+
+  <!-- ================= TOP NAVIGATION ================= -->
+  <header class="sticky top-0 z-40 bg-[#060913]/90 backdrop-blur-xl border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Brand -->
+        <a href="./index.html" class="flex items-center gap-3 group">
+          <div class="w-11 h-11 rounded-xl bg-slate-900 border border-slate-700/80 p-0.5 overflow-hidden shrink-0 group-hover:border-cyan-400 transition-all">
+            <img src="./logo.jpg" alt="Logo" class="w-full h-full object-cover rounded-lg">
+          </div>
+          <div>
+            <span class="block font-heading font-extrabold text-lg text-white leading-none">
+              ElectroLab <span class="text-cyan-400">Aula</span>
+            </span>
+            <span class="text-[10px] text-slate-400 font-mono tracking-wider uppercase">Portal del Estudiante</span>
+          </div>
+        </a>
+
+        <!-- User Profile & Actions -->
+        <div class="flex items-center gap-3">
+          <a href="./index.html" class="hidden sm:inline-flex text-xs font-semibold text-slate-400 hover:text-white px-3 py-2 rounded-xl hover:bg-slate-900 transition-colors">
+            Tienda Pública
+          </a>
+
+          <!-- Admin pill if applicable -->
+          <div id="admin-shortcut" class="hidden">
+            <a href="./admin.html" class="px-3 py-1.5 rounded-xl bg-purple-500/20 border border-purple-500/40 text-purple-300 hover:bg-purple-500/30 text-xs font-bold transition-all flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
+              <span>Panel Admin</span>
+            </a>
+          </div>
+
+          <!-- User Chip -->
+          <div class="flex items-center gap-2.5 bg-slate-900 border border-slate-800 p-1.5 pr-3 rounded-2xl">
+            <div id="user-avatar" class="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 font-bold flex items-center justify-center text-xs">
+              AL
+            </div>
+            <div class="text-left hidden sm:block">
+              <div id="user-name" class="text-xs font-bold text-white leading-tight">Cargando...</div>
+              <div id="user-email" class="text-[10px] text-slate-500 font-mono">alumno@email.com</div>
+            </div>
+            <button onclick="window.ElectroLabAuth.logout()" class="p-1.5 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800 transition-colors ml-1" title="Cerrar sesión">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= DASHBOARD MAIN VIEW ================= -->
+  <main id="dashboard-view" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+    
+    <!-- Welcome Greeting Banner -->
+    <div class="relative bg-gradient-to-r from-blue-950/80 via-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-8 overflow-hidden shadow-2xl glass-panel">
+      <div class="absolute -right-12 -top-12 w-48 h-48 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="max-w-2xl space-y-2">
+        <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full text-[11px] font-bold text-emerald-300">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>ESTUDIANTE REGISTRADO</span>
+        </div>
+        <h1 class="text-2xl sm:text-4xl font-heading font-extrabold text-white">
+          Hola, <span id="welcome-student-name" class="text-cyan-400">Estudiante</span> 👋
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+          Aquí tienes acceso a tus cursos habilitados con sus clases en video HD, esquemáticos en PDF descargables, códigos de Arduino y archivos .ASC de LTspice.
+        </p>
+      </div>
+
+      <!-- Quick Metrics -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 mt-6 border-t border-slate-800/80">
+        <div>
+          <span class="text-[10px] text-slate-400 uppercase font-mono block">Cursos Habilitados</span>
+          <span id="stat-enrolled-count" class="text-xl sm:text-2xl font-black text-white font-heading">0</span>
+        </div>
+        <div>
+          <span class="text-[10px] text-slate-400 uppercase font-mono block">Clases Completadas</span>
+          <span id="stat-completed-lessons" class="text-xl sm:text-2xl font-black text-cyan-400 font-heading">0</span>
+        </div>
+        <div>
+          <span class="text-[10px] text-slate-400 uppercase font-mono block">Soporte Técnico</span>
+          <span class="text-xl sm:text-2xl font-black text-emerald-400 font-heading">Activo</span>
+        </div>
+        <div>
+          <span class="text-[10px] text-slate-400 uppercase font-mono block">Certificación</span>
+          <span class="text-xl sm:text-2xl font-black text-amber-400 font-heading">Disponible</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Mis Cursos Habilitados -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="text-xs font-mono font-bold tracking-wider text-cyan-400 uppercase">TUS PROGRAMAS ACTIVOS</span>
+          <h2 class="text-xl sm:text-2xl font-heading font-bold text-white">Mis Cursos Habilitados</h2>
+        </div>
+      </div>
+
+      <!-- Container: Enrolled Courses -->
+      <div id="enrolled-courses-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- Section: Cursos No Habilitados (Para comprar / solicitar desbloqueo) -->
+    <section class="space-y-4 pt-6 border-t border-slate-800">
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="text-xs font-mono font-bold tracking-wider text-slate-400 uppercase">EXPANDE TUS HABILIDADES</span>
+          <h2 class="text-xl sm:text-2xl font-heading font-bold text-slate-300">Cursos Disponibles para Desbloquear</h2>
+        </div>
+      </div>
+
+      <!-- Container: Locked Courses -->
+      <div id="locked-courses-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= CLASSROOM / LECTURE PLAYER VIEW ================= -->
+  <main id="classroom-view" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    
+    <!-- Top Back Bar -->
+    <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+      <button onclick="exitClassroom()" class="inline-flex items-center gap-2 text-xs font-bold text-cyan-400 hover:text-cyan-300 bg-slate-900 border border-slate-800 hover:border-slate-700 px-3.5 py-2 rounded-xl transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        <span>Volver a Mis Cursos</span>
+      </button>
+
+      <div class="text-right">
+        <span id="classroom-course-tag" class="text-[10px] font-mono font-bold text-cyan-400 uppercase bg-cyan-950 px-2 py-0.5 rounded border border-cyan-800/60">ELECTRÓNICA</span>
+        <h3 id="classroom-course-title" class="text-sm font-bold text-white truncate max-w-xs sm:max-w-md">Nombre del Curso</h3>
+      </div>
+    </div>
+
+    <!-- Classroom Grid: Video on Left, Lessons on Right -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Video Player & Lesson Details (8 Cols) -->
+      <div class="lg:col-span-8 space-y-6">
+        
+        <!-- Video Player Frame -->
+        <div class="relative aspect-video rounded-3xl overflow-hidden bg-black border border-slate-800 shadow-2xl">
+          <iframe id="classroom-iframe" class="w-full h-full" src="" title="Video de la Lección" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <!-- Lesson Meta Header & Completion Button -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 glass-panel space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <span id="current-lesson-module" class="text-xs font-mono text-cyan-400 block mb-1">MÓDULO 1: INTRODUCCIÓN</span>
+              <h2 id="current-lesson-title" class="text-xl sm:text-2xl font-heading font-extrabold text-white">Título de la Lección</h2>
+            </div>
+
+            <!-- Complete Toggle Button -->
+            <button id="btn-toggle-complete" onclick="handleToggleCurrentLesson()" class="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span id="complete-text">Marcar como Completada</span>
+            </button>
+          </div>
+
+          <p id="current-lesson-desc" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            En esta lección analizamos los fundamentos teóricos y las mediciones prácticas en la protoboard. Sigue el diagrama adjunto para replicar el circuito en tu banco de trabajo.
+          </p>
+
+          <!-- Downloadable Files for this Lesson -->
+          <div class="pt-4 border-t border-slate-800 space-y-2">
+            <span class="text-[11px] font-mono uppercase tracking-wider text-slate-400 block font-semibold">
+              📥 Material y Archivos de Esta Lección:
+            </span>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+              <a href="https://github.com/argentumcomunicaciones/Web" target="_blank" class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 flex items-center gap-2 text-slate-300 hover:text-white transition-all">
+                <svg class="w-4 h-4 text-cyan-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                <div class="truncate">
+                  <div class="font-bold text-[11px]">Simulación LTspice</div>
+                  <div class="text-[9px] text-slate-500 font-mono">archivo_circuito.asc</div>
+                </div>
+              </a>
+
+              <a href="https://github.com/argentumcomunicaciones/Web" target="_blank" class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 flex items-center gap-2 text-slate-300 hover:text-white transition-all">
+                <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                <div class="truncate">
+                  <div class="font-bold text-[11px]">Código Arduino</div>
+                  <div class="text-[9px] text-slate-500 font-mono">firmware_sketch.ino</div>
+                </div>
+              </a>
+
+              <a href="https://github.com/argentumcomunicaciones/Web" target="_blank" class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 flex items-center gap-2 text-slate-300 hover:text-white transition-all">
+                <svg class="w-4 h-4 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                <div class="truncate">
+                  <div class="font-bold text-[11px]">Esquemático PDF</div>
+                  <div class="text-[9px] text-slate-500 font-mono">diagrama_alta_res.pdf</div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Direct WhatsApp Teacher Support -->
+          <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+            <span>¿Tienes dudas técnicas con este circuito?</span>
+            <button onclick="askQuestionWhatsApp()" class="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1">
+              <span>Consultar al Profesor por WhatsApp</span>
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.08L2.1 21.9l4.98-1.25A9.95 9.95 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Lessons Sidebar (4 Cols) -->
+      <div class="lg:col-span-4 bg-slate-900/90 border border-slate-800 rounded-3xl p-5 shadow-2xl glass-panel space-y-4">
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="font-heading font-bold text-white text-base">Temario del Curso</h3>
+            <span id="classroom-progress-text" class="text-xs font-mono font-bold text-cyan-400">0%</span>
+          </div>
+          <!-- Progress Bar -->
+          <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
+            <div id="classroom-progress-bar" class="bg-gradient-to-r from-cyan-500 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Lessons Accordion Container -->
+        <div id="classroom-syllabus-container" class="space-y-3 max-h-[600px] overflow-y-auto pr-1">
+          <!-- Modules and lessons injected here -->
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="./auth.js"></script>
+  <script src="./app.js"></script>
+  <script>
+    // State of classroom
+    let currentCourse = null;
+    let currentLesson = null;
+    let user = null;
+
+    // Check Authentication on load
+    document.addEventListener('DOMContentLoaded', () => {
+      user = window.ElectroLabAuth.getCurrentUser();
+      if (!user) {
+        window.location.href = './login.html';
+        return;
+      }
+
+      // Populate user info in header
+      document.getElementById('user-name').textContent = user.name;
+      document.getElementById('user-email').textContent = user.email;
+      document.getElementById('welcome-student-name').textContent = user.name.split(' ')[0];
+      
+      const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      document.getElementById('user-avatar').textContent = initials;
+
+      if (user.role === 'admin') {
+        document.getElementById('admin-shortcut').classList.remove('hidden');
+      }
+
+      renderDashboard();
+    });
+
+    // Courses data reference
+    const COURSES_DATA = [
+      {
+        id: 'curso-electronica-cero',
+        title: 'Electrónica Práctica Desde CERO',
+        tag: 'ELECTRÓNICA ANALÓGICA & DIGITAL',
+        subtitle: 'Leyes fundamentales, componentes discretos, transistores, 555 y LTspice.',
+        duration: '14 Módulos · +35 Horas de video HD',
+        image: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=800&q=80',
+        videoUrl: 'https://www.youtube.com/embed/videoseries?list=PLZRAKzDxXlAI',
+        modules: [
+          {
+            name: 'Módulo 1: Leyes Eléctricas y Multímetro',
+            lessons: [
+              { id: 'elec_1_1', title: 'Tensión, corriente y resistencia: La analogía intuitiva', duration: '24 min' },
+              { id: 'elec_1_2', title: 'Uso del multímetro y mediciones seguras sin quemar componentes', duration: '32 min' },
+              { id: 'elec_1_3', title: 'Ley de Ohm y Leyes de Kirchhoff en la protoboard', duration: '40 min' }
+            ]
+          },
+          {
+            name: 'Módulo 2: Componentes Pasivos y Semiconductores',
+            lessons: [
+              { id: 'elec_2_1', title: 'Capacitores: Tiempo de carga RC y aplicaciones en filtrado', duration: '38 min' },
+              { id: 'elec_2_2', title: 'Diodos rectificadores 1N4007 y diodos Zener', duration: '42 min' }
+            ]
+          },
+          {
+            name: 'Módulo 3: Transistores y el Temporizador 555',
+            lessons: [
+              { id: 'elec_3_1', title: 'Transistores BJT NPN: Interruptor y activación de relés', duration: '45 min' },
+              { id: 'elec_3_2', title: 'El legendario 555 en modo astable y PWM', duration: '50 min' }
+            ]
+          },
+          {
+            name: 'Módulo 4: Simulación en LTspice y Proyecto de Fuente Regulada',
+            lessons: [
+              { id: 'elec_4_1', title: 'Entorno LTspice: Esquema y análisis transitorio .tran', duration: '35 min' },
+              { id: 'elec_4_2', title: 'Construcción paso a paso de la Fuente Regulada con LM317', duration: '55 min' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'curso-arduino-microcontroladores',
+        title: 'Arduino & Microcontroladores: Del Primer Sketch a IoT',
+        tag: 'ARDUINO & ESP32 IOT',
+        subtitle: 'Programación en C++, sensores, pantallas OLED, actuadores y conectividad WiFi.',
+        duration: '16 Módulos · +42 Horas de video HD',
+        image: 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80',
+        videoUrl: 'https://www.youtube.com/embed/videoseries?list=PLdmC3bfdJGAk',
+        modules: [
+          {
+            name: 'Módulo 1: Arquitectura y Primeros Pasos con C++',
+            lessons: [
+              { id: 'ard_1_1', title: '¿Qué es un microcontrolador y cómo funciona por dentro?', duration: '26 min' },
+              { id: 'ard_1_2', title: 'Instalación de Arduino IDE 2.0 y drivers CH340', duration: '20 min' },
+              { id: 'ard_1_3', title: 'Variables, condicionales y control de salidas digitales', duration: '35 min' }
+            ]
+          },
+          {
+            name: 'Módulo 2: Entradas, Anti-Rebote y millis()',
+            lessons: [
+              { id: 'ard_2_1', title: 'Pulsadores con Pull-Up interno y eliminación de rebote', duration: '34 min' },
+              { id: 'ard_2_2', title: 'Programación no bloqueante con millis(): Chau al delay()', duration: '52 min' }
+            ]
+          },
+          {
+            name: 'Módulo 3: Sensores Analógicos y Pantallas',
+            lessons: [
+              { id: 'ard_3_1', title: 'El ADC: Lectura de potenciómetros, LDR y calibración', duration: '40 min' },
+              { id: 'ard_3_2', title: 'Bus I2C: Displays LCD 16x2 y pantallas OLED SSD1306', duration: '48 min' }
+            ]
+          },
+          {
+            name: 'Módulo 4: Salto al ESP32 y Proyectos IoT con WiFi',
+            lessons: [
+              { id: 'ard_4_1', title: 'Placa ESP32: Conexión WiFi y servidor web local', duration: '45 min' },
+              { id: 'ard_4_2', title: 'Dashboard en la nube con MQTT para monitoreo remoto', duration: '60 min' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'guia-simulaciones-ltspice',
+        title: 'Biblioteca Maestra de Simulaciones LTspice (.ASC)',
+        tag: 'DESCARGAS & MODELOS',
+        subtitle: '+60 circuitos analógicos y de potencia listos para simular y analizar.',
+        duration: '+60 Modelos .ASC + Guía PDF',
+        image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
+        videoUrl: 'https://www.youtube.com/embed/videoseries?list=PLZRAKzDxXlAI',
+        modules: [
+          {
+            name: 'Módulo 1: Pack de Modelos Analógicos',
+            lessons: [
+              { id: 'lt_1_1', title: 'Fuentes lineales y dobladores de tensión simulados', duration: '15 min' },
+              { id: 'lt_1_2', title: 'Filtros pasivos y activos con amplificadores operacionales', duration: '20 min' }
+            ]
+          }
+        ]
+      }
+    ];
+
+    function renderDashboard() {
+      const enrolledContainer = document.getElementById('enrolled-courses-container');
+      const lockedContainer = document.getElementById('locked-courses-container');
+
+      const enrolledIds = window.ElectroLabAuth.getEnrolledCourses();
+      
+      let enrolledHtml = '';
+      let lockedHtml = '';
+      let enrolledCount = 0;
+      let totalCompletedLessons = 0;
+
+      COURSES_DATA.forEach(course => {
+        const isEnrolled = enrolledIds.includes(course.id) || enrolledIds.includes('combo-master-electronica-arduino');
+        
+        // Count lessons
+        let allLessonIds = [];
+        course.modules.forEach(m => m.lessons.forEach(l => allLessonIds.push(l.id)));
+        const completed = window.ElectroLabAuth.getLessonProgress(course.id);
+        totalCompletedLessons += completed.length;
+        const percent = allLessonIds.length > 0 ? Math.round((completed.length / allLessonIds.length) * 100) : 0;
+
+        if (isEnrolled) {
+          enrolledCount++;
+          enrolledHtml += `
+            <div class="bg-slate-900/90 border border-slate-800 hover:border-cyan-500/50 rounded-3xl overflow-hidden shadow-xl flex flex-col justify-between transition-all glass-panel group">
+              <div>
+                <div class="relative aspect-video w-full overflow-hidden bg-black">
+                  <img src="${course.image}" alt="${course.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
+                  <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
+                  <div class="absolute top-3 left-3 bg-emerald-500/90 text-slate-950 font-bold text-[10px] px-2.5 py-1 rounded-md uppercase tracking-wider flex items-center gap-1 shadow-md">
+                    <span>✓ ACCESO HABILITADO</span>
+                  </div>
+                </div>
+                <div class="p-6 space-y-3">
+                  <span class="text-[10px] font-mono text-cyan-400 font-bold uppercase block">${course.tag}</span>
+                  <h3 class="font-heading font-extrabold text-white text-lg group-hover:text-cyan-400 transition-colors leading-snug">
+                    ${course.title}
+                  </h3>
+                  <p class="text-xs text-slate-400 leading-relaxed">${course.subtitle}</p>
+
+                  <!-- Progress -->
+                  <div class="pt-2">
+                    <div class="flex justify-between text-xs text-slate-400 mb-1">
+                      <span>Progreso:</span>
+                      <span class="font-mono font-bold text-cyan-400">${percent}%</span>
+                    </div>
+                    <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
+                      <div class="bg-cyan-500 h-full rounded-full" style="width: ${percent}%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-6 pt-0">
+                <button onclick="enterClassroom('${course.id}')" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-heading font-bold py-3 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-xs">
+                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  <span>Entrar al Aula y Ver Clases</span>
+                </button>
+              </div>
+            </div>
+          `;
+        } else {
+          lockedHtml += `
+            <div class="bg-slate-950/60 border border-slate-800/80 rounded-3xl overflow-hidden opacity-75 hover:opacity-100 transition-all flex flex-col justify-between">
+              <div>
+                <div class="relative aspect-video w-full overflow-hidden bg-black">
+                  <img src="${course.image}" alt="${course.title}" class="w-full h-full object-cover grayscale">
+                  <div class="absolute inset-0 bg-black/60 flex items-center justify-center">
+                    <div class="w-12 h-12 rounded-2xl bg-slate-900/90 border border-slate-700 text-slate-400 flex items-center justify-center">
+                      <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    </div>
+                  </div>
+                </div>
+                <div class="p-6 space-y-2">
+                  <span class="text-[10px] font-mono text-slate-500 uppercase font-bold">${course.tag}</span>
+                  <h3 class="font-heading font-bold text-slate-300 text-base">${course.title}</h3>
+                  <p class="text-xs text-slate-500">${course.subtitle}</p>
+                </div>
+              </div>
+              <div class="p-6 pt-0">
+                <a href="./index.html#cursos" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 text-xs border border-slate-700">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                  <span>Ver Oferta y Desbloquear</span>
+                </a>
+              </div>
+            </div>
+          `;
+        }
+      });
+
+      if (enrolledCount === 0) {
+        enrolledHtml = `
+          <div class="col-span-full bg-slate-900/60 border border-slate-800 rounded-3xl p-8 text-center space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 mx-auto flex items-center justify-center">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            </div>
+            <h3 class="font-heading font-bold text-white text-lg">Aún no tienes cursos habilitados en esta cuenta</h3>
+            <p class="text-xs text-slate-400 max-w-md mx-auto">
+              Si compraste por WhatsApp o Transferencia Bancaria, envíanos tu comprobante junto con el correo <strong>${user.email}</strong> para que el administrador te active el acceso inmediatamente.
+            </p>
+            <div class="pt-2">
+              <a href="https://wa.me/5491138805566?text=Hola!%20Acabo%20de%20registrarme%20con%20el%20correo%20${encodeURIComponent(user.email)}.%20Quiero%20solicitar%20el%20alta%20de%20mi%20curso." target="_blank" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition-all shadow-md">
+                <span>Avisar por WhatsApp</span>
+              </a>
+            </div>
+          </div>
+        `;
+      }
+
+      enrolledContainer.innerHTML = enrolledHtml;
+      lockedContainer.innerHTML = lockedHtml;
+
+      document.getElementById('stat-enrolled-count').textContent = enrolledCount;
+      document.getElementById('stat-completed-lessons').textContent = totalCompletedLessons;
+    }
+
+    // Classroom logic
+    function enterClassroom(courseId) {
+      currentCourse = COURSES_DATA.find(c => c.id === courseId);
+      if (!currentCourse) return;
+
+      document.getElementById('dashboard-view').classList.add('hidden');
+      document.getElementById('classroom-view').classList.remove('hidden');
+
+      document.getElementById('classroom-course-title').textContent = currentCourse.title;
+      document.getElementById('classroom-course-tag').textContent = currentCourse.tag;
+      document.getElementById('classroom-iframe').src = currentCourse.videoUrl;
+
+      // Select first lesson by default
+      const firstLesson = currentCourse.modules[0].lessons[0];
+      selectLesson(currentCourse.modules[0].name, firstLesson);
+
+      renderClassroomSyllabus();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function exitClassroom() {
+      document.getElementById('classroom-iframe').src = '';
+      document.getElementById('classroom-view').classList.add('hidden');
+      document.getElementById('dashboard-view').classList.remove('hidden');
+      renderDashboard();
+    }
+
+    function selectLesson(moduleName, lesson) {
+      currentLesson = lesson;
+      document.getElementById('current-lesson-module').textContent = moduleName.toUpperCase();
+      document.getElementById('current-lesson-title').textContent = lesson.title;
+
+      updateLessonCompleteButton();
+      renderClassroomSyllabus();
+    }
+
+    function updateLessonCompleteButton() {
+      if (!currentCourse || !currentLesson) return;
+      const completedList = window.ElectroLabAuth.getLessonProgress(currentCourse.id);
+      const isDone = completedList.includes(currentLesson.id);
+
+      const btn = document.getElementById('btn-toggle-complete');
+      const text = document.getElementById('complete-text');
+
+      if (isDone) {
+        btn.className = 'shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition-all';
+        text.textContent = '✓ Lección Completada';
+      } else {
+        btn.className = 'shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all';
+        text.textContent = 'Marcar como Completada';
+      }
+    }
+
+    function handleToggleCurrentLesson() {
+      if (!currentCourse || !currentLesson) return;
+      window.ElectroLabAuth.toggleLessonCompleted(currentCourse.id, currentLesson.id);
+      updateLessonCompleteButton();
+      renderClassroomSyllabus();
+    }
+
+    function renderClassroomSyllabus() {
+      if (!currentCourse) return;
+      const container = document.getElementById('classroom-syllabus-container');
+      const completedList = window.ElectroLabAuth.getLessonProgress(currentCourse.id);
+
+      let allLessonsCount = 0;
+      currentCourse.modules.forEach(m => allLessonsCount += m.lessons.length);
+      const percent = allLessonsCount > 0 ? Math.round((completedList.length / allLessonsCount) * 100) : 0;
+
+      document.getElementById('classroom-progress-text').textContent = `${percent}%`;
+      document.getElementById('classroom-progress-bar').style.width = `${percent}%`;
+
+      container.innerHTML = currentCourse.modules.map((mod, mIdx) => `
+        <div class="border border-slate-800 rounded-2xl bg-slate-950/60 overflow-hidden">
+          <div class="p-3 bg-slate-900/60 border-b border-slate-800/80 font-bold text-xs text-slate-300">
+            ${mod.name}
+          </div>
+          <div class="p-2 space-y-1">
+            ${mod.lessons.map(les => {
+              const isActive = currentLesson && currentLesson.id === les.id;
+              const isCompleted = completedList.includes(les.id);
+
+              return `
+                <button type="button" onclick="selectLesson('${mod.name}', ${JSON.stringify(les).replace(/"/g, '&quot;')})" class="w-full text-left p-2.5 rounded-xl text-xs flex items-center justify-between transition-all ${
+                  isActive
+                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                }">
+                  <span class="flex items-center gap-2 truncate">
+                    <span class="w-4 h-4 rounded flex items-center justify-center text-[10px] ${
+                      isCompleted ? 'bg-emerald-500 text-slate-950 font-bold' : 'border border-slate-700 text-slate-500'
+                    }">
+                      ${isCompleted ? '✓' : '•'}
+                    </span>
+                    <span class="truncate">${les.title}</span>
+                  </span>
+                  <span class="text-[10px] font-mono text-slate-500 shrink-0 ml-2">${les.duration}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function askQuestionWhatsApp() {
+      if (!currentLesson) return;
+      const msg = `Hola ElectroLab! Soy ${user.name} (${user.email}). Tengo una consulta sobre la lección: "${currentLesson.title}".`;
+      window.open(`https://wa.me/5491138805566?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+  </script>
+</body>
+</html>

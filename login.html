@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso al Aula Virtual | ElectroLab Educativa</title>
+  <link rel="icon" href="./logo.jpg">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="bg-[#060913] text-slate-100 font-sans min-h-screen flex flex-col circuit-grid-bg selection:bg-cyan-500 selection:text-slate-950">
+
+  <!-- Header minimal -->
+  <header class="py-6 border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+      <a href="./index.html" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 p-0.5 overflow-hidden">
+          <img src="./logo.jpg" alt="Logo" class="w-full h-full object-cover rounded-lg">
+        </div>
+        <span class="font-heading font-extrabold text-white text-lg group-hover:text-cyan-400 transition-colors">
+          ElectroLab <span class="text-cyan-400">Educativa</span>
+        </span>
+      </a>
+      <a href="./index.html" class="text-xs font-semibold text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        <span>Volver a la Tienda</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Login Container -->
+  <main class="flex-1 flex items-center justify-center p-4 py-12">
+    <div class="relative w-full max-w-md bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl glass-panel">
+      
+      <!-- Glow ambient effects -->
+      <div class="absolute -top-12 -right-12 w-36 h-36 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-12 -left-12 w-36 h-36 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Icon & Heading -->
+      <div class="text-center mb-6 space-y-1">
+        <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center mx-auto mb-3 shadow-[0_0_20px_rgba(6,182,212,0.25)]">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        </div>
+        <h1 class="text-2xl font-heading font-extrabold text-white">Aula Virtual Privada</h1>
+        <p class="text-xs text-slate-400">Ingresa para ver tus cursos, videos y archivos descargables</p>
+      </div>
+
+      <!-- Tabs Toggle (Ingresar / Registrarse) -->
+      <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 mb-6 text-xs font-semibold">
+        <button id="tab-login" type="button" class="flex-1 py-2 rounded-lg bg-cyan-500 text-slate-950 font-bold transition-all shadow-sm">
+          Iniciar Sesión
+        </button>
+        <button id="tab-register" type="button" class="flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition-all">
+          Crear Cuenta
+        </button>
+      </div>
+
+      <!-- Quick Demo Access Pills -->
+      <div class="mb-6 bg-slate-950/70 border border-slate-800 p-3 rounded-2xl space-y-2">
+        <span class="text-[10px] font-mono uppercase tracking-wider text-slate-400 block font-semibold">
+          ⚡ Accesos Rápidos de Prueba:
+        </span>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <button type="button" onclick="fillCredentials('admin@electrolab.com', 'admin')" class="p-2 rounded-xl bg-purple-950/40 hover:bg-purple-900/40 border border-purple-500/40 text-purple-300 text-left transition-all">
+            <div class="font-bold">👑 Admin</div>
+            <div class="text-[10px] text-slate-400 truncate">admin@electrolab.com</div>
+          </button>
+          <button type="button" onclick="fillCredentials('alumno@demo.com', 'alumno123')" class="p-2 rounded-xl bg-blue-950/40 hover:bg-blue-900/40 border border-blue-500/40 text-cyan-300 text-left transition-all">
+            <div class="font-bold">🎓 Alumno Demo</div>
+            <div class="text-[10px] text-slate-400 truncate">alumno@demo.com</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Error / Success Alert -->
+      <div id="auth-alert" class="hidden mb-4 p-3 rounded-xl text-xs font-medium border"></div>
+
+      <!-- Form: Iniciar Sesión -->
+      <form id="form-login" class="space-y-4">
+        <div>
+          <label class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-1.5">Correo Electrónico</label>
+          <input id="login-email" type="email" required placeholder="tu@email.com" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-sm text-white placeholder-slate-600 transition-colors">
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-1.5">Contraseña</label>
+          <input id="login-password" type="password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-sm text-white placeholder-slate-600 transition-colors">
+        </div>
+
+        <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-heading font-bold py-3.5 rounded-xl transition-all shadow-[0_0_20px_rgba(6,182,212,0.35)] flex items-center justify-center gap-2">
+          <span>Ingresar a Mi Aula</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </form>
+
+      <!-- Form: Registrarse -->
+      <form id="form-register" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-1.5">Nombre Completo</label>
+          <input id="reg-name" type="text" required placeholder="Tu Nombre y Apellido" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-sm text-white placeholder-slate-600 transition-colors">
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-1.5">Correo Electrónico</label>
+          <input id="reg-email" type="email" required placeholder="tu@email.com" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-sm text-white placeholder-slate-600 transition-colors">
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-1.5">Crear Contraseña</label>
+          <input id="reg-password" type="password" required minlength="4" placeholder="Mínimo 4 caracteres" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-sm text-white placeholder-slate-600 transition-colors">
+        </div>
+
+        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-heading font-bold py-3.5 rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.35)] flex items-center justify-center gap-2">
+          <span>Crear Cuenta de Alumno</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </form>
+
+      <div class="mt-6 pt-4 border-t border-slate-800 text-center text-xs text-slate-500">
+        ¿Compraste por WhatsApp o Transferencia? <br>
+        <span class="text-slate-400">El profesor habilitará tus cursos en tu cuenta al confirmar el pago.</span>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="./auth.js"></script>
+  <script>
+    // Tab switching
+    const tabLogin = document.getElementById('tab-login');
+    const tabRegister = document.getElementById('tab-register');
+    const formLogin = document.getElementById('form-login');
+    const formRegister = document.getElementById('form-register');
+    const alertBox = document.getElementById('auth-alert');
+
+    function showAlert(msg, isError = true) {
+      alertBox.textContent = msg;
+      alertBox.className = `mb-4 p-3 rounded-xl text-xs font-medium border ${
+        isError ? 'bg-red-950/60 text-red-300 border-red-500/40' : 'bg-emerald-950/60 text-emerald-300 border-emerald-500/40'
+      }`;
+      alertBox.classList.remove('hidden');
+    }
+
+    tabLogin.addEventListener('click', () => {
+      tabLogin.className = 'flex-1 py-2 rounded-lg bg-cyan-500 text-slate-950 font-bold transition-all shadow-sm';
+      tabRegister.className = 'flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition-all';
+      formLogin.classList.remove('hidden');
+      formRegister.classList.add('hidden');
+      alertBox.classList.add('hidden');
+    });
+
+    tabRegister.addEventListener('click', () => {
+      tabRegister.className = 'flex-1 py-2 rounded-lg bg-cyan-500 text-slate-950 font-bold transition-all shadow-sm';
+      tabLogin.className = 'flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition-all';
+      formRegister.classList.remove('hidden');
+      formLogin.classList.add('hidden');
+      alertBox.classList.add('hidden');
+    });
+
+    function fillCredentials(email, pass) {
+      tabLogin.click();
+      document.getElementById('login-email').value = email;
+      document.getElementById('login-password').value = pass;
+      showAlert('Credenciales autocompletadas. Haz clic en "Ingresar a Mi Aula"', false);
+    }
+
+    // Submit Login
+    formLogin.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const pass = document.getElementById('login-password').value;
+
+      try {
+        const res = await window.ElectroLabAuth.login(email, pass);
+        showAlert(`¡Bienvenido, ${res.user.name}! Redirigiendo...`, false);
+        setTimeout(() => {
+          if (res.user.role === 'admin') {
+            window.location.href = './admin.html';
+          } else {
+            window.location.href = './aula.html';
+          }
+        }, 800);
+      } catch (err) {
+        showAlert(err.message || 'Error al iniciar sesión', true);
+      }
+    });
+
+    // Submit Register
+    formRegister.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value;
+      const email = document.getElementById('reg-email').value;
+      const pass = document.getElementById('reg-password').value;
+
+      try {
+        const res = await window.ElectroLabAuth.register(name, email, pass);
+        showAlert('¡Cuenta creada con éxito! Redirigiendo a tu aula...', false);
+        setTimeout(() => {
+          window.location.href = './aula.html';
+        }, 800);
+      } catch (err) {
+        showAlert(err.message || 'Error al registrar cuenta', true);
+      }
+    });
+  </script>
+</body>
+</html>

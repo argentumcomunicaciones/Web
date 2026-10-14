@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administración | ElectroLab Educativa</title>
+  <link rel="icon" href="./logo.jpg">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="bg-[#060913] text-slate-100 font-sans min-h-screen flex flex-col circuit-grid-bg selection:bg-purple-500 selection:text-white">
+
+  <!-- ================= TOP NAVIGATION ================= -->
+  <header class="sticky top-0 z-40 bg-[#060913]/90 backdrop-blur-xl border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Brand with Admin Badge -->
+        <a href="./index.html" class="flex items-center gap-3 group">
+          <div class="w-11 h-11 rounded-xl bg-purple-950/60 border border-purple-500/50 p-0.5 overflow-hidden shrink-0 group-hover:scale-105 transition-transform shadow-[0_0_15px_rgba(168,85,247,0.3)]">
+            <img src="./logo.jpg" alt="Logo" class="w-full h-full object-cover rounded-lg">
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="block font-heading font-extrabold text-lg text-white leading-none">
+                ElectroLab <span class="text-purple-400">Admin</span>
+              </span>
+              <span class="bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[9px] font-black uppercase px-2 py-0.5 rounded-full">
+                ADMINISTRADOR
+              </span>
+            </div>
+            <span class="text-[10px] text-slate-400 font-mono tracking-wider uppercase mt-0.5 block">Gestión de Cursos y Alumnos</span>
+          </div>
+        </a>
+
+        <!-- Links & User info -->
+        <div class="flex items-center gap-3">
+          <a href="./aula.html" class="hidden sm:inline-flex text-xs font-semibold text-cyan-400 hover:text-cyan-300 px-3 py-2 rounded-xl bg-cyan-950/40 border border-cyan-800/60 hover:bg-cyan-900/40 transition-colors">
+            Ver Aula como Alumno
+          </a>
+          <a href="./index.html" class="text-xs font-semibold text-slate-400 hover:text-white px-3 py-2 rounded-xl hover:bg-slate-900 transition-colors">
+            Ir a la Web Pública
+          </a>
+
+          <!-- Admin Avatar & Logout -->
+          <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 p-1.5 pr-3 rounded-2xl">
+            <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-300 font-bold flex items-center justify-center text-xs">
+              👑
+            </div>
+            <div class="text-left hidden sm:block">
+              <div id="admin-user-name" class="text-xs font-bold text-white leading-tight">Administrador</div>
+              <div id="admin-user-email" class="text-[10px] text-slate-500 font-mono">admin@electrolab.com</div>
+            </div>
+            <button onclick="window.ElectroLabAuth.logout()" class="p-1.5 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800 transition-colors ml-1" title="Cerrar sesión">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= ADMIN MAIN CONTENT ================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    
+    <!-- Top KPI Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl space-y-2 glass-panel">
+        <span class="text-xs font-mono text-slate-400 uppercase font-semibold">Total de Usuarios</span>
+        <div id="kpi-total-users" class="text-3xl font-heading font-black text-white">0</div>
+        <div class="text-[11px] text-emerald-400 flex items-center gap-1">
+          <span>● Cuentas en base de datos</span>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl space-y-2 glass-panel">
+        <span class="text-xs font-mono text-slate-400 uppercase font-semibold">Cursos Habilitados Activos</span>
+        <div id="kpi-active-enrollments" class="text-3xl font-heading font-black text-cyan-400">0</div>
+        <div class="text-[11px] text-cyan-300">
+          <span>Accesos otorgados a estudiantes</span>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl space-y-2 glass-panel">
+        <span class="text-xs font-mono text-slate-400 uppercase font-semibold">Alumnos con Electrónica</span>
+        <div id="kpi-elec-count" class="text-3xl font-heading font-black text-blue-400">0</div>
+        <div class="text-[11px] text-slate-400">
+          <span>Curso Desde Cero</span>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl space-y-2 glass-panel">
+        <span class="text-xs font-mono text-slate-400 uppercase font-semibold">Alumnos con Arduino</span>
+        <div id="kpi-ard-count" class="text-3xl font-heading font-black text-emerald-400">0</div>
+        <div class="text-[11px] text-slate-400">
+          <span>Arduino & Microcontroladores</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- User Management Table Section -->
+    <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl glass-panel space-y-6">
+      
+      <!-- Table Header & Actions -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-mono font-bold tracking-wider text-purple-400 uppercase">CONTROL DE ACCESOS</span>
+          <h2 class="text-xl sm:text-2xl font-heading font-extrabold text-white">Alumnos y Cursos Habilitados</h2>
+          <p class="text-xs text-slate-400">Activa o desactiva con un solo clic el acceso a cada curso por alumno.</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <!-- Search box -->
+          <div class="relative">
+            <input id="search-users" type="text" placeholder="Buscar alumno por nombre o email..." class="w-64 px-3.5 py-2 pl-9 rounded-xl bg-slate-950 border border-slate-800 focus:border-purple-500 focus:outline-none text-xs text-white placeholder-slate-500 transition-colors">
+            <svg class="w-4 h-4 text-slate-500 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+
+          <!-- Create User Button -->
+          <button onclick="openCreateUserModal()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-2 shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>Registrar Nuevo Alumno</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Guidance Banner -->
+      <div class="p-3 bg-purple-950/30 border border-purple-500/20 rounded-2xl text-xs text-purple-200 flex items-center gap-3">
+        <svg class="w-5 h-5 text-purple-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>
+          <strong>¿Cómo habilitar un curso cuando un alumno paga?</strong> Si te enviaron el comprobante por WhatsApp o Mercado Pago, busca al usuario en la lista o créalo con el botón de arriba, y simplemente activa el interruptor del curso correspondiente. El alumno tendrá acceso al instante.
+        </span>
+      </div>
+
+      <!-- Table Container -->
+      <div class="overflow-x-auto rounded-2xl border border-slate-800">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-950 text-slate-400 font-mono uppercase text-[10px] tracking-wider border-b border-slate-800">
+            <tr>
+              <th class="p-4">Alumno</th>
+              <th class="p-4">Rol</th>
+              <th class="p-4 text-center">Electrónica Cero</th>
+              <th class="p-4 text-center">Arduino / Micro</th>
+              <th class="p-4 text-center">Pack Master</th>
+              <th class="p-4 text-center">LTspice .ASC</th>
+              <th class="p-4 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="users-table-body" class="divide-y divide-slate-800/80 bg-slate-900/40">
+            <!-- Populated dynamically by JS -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ================= MODAL: REGISTRAR NUEVO ALUMNO ================= -->
+  <div id="modal-create-user" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="relative bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl glass-panel text-slate-100">
+      
+      <button onclick="closeCreateUserModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <div class="flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-purple-400 uppercase mb-2">
+        <span>ALTA MANUAL DE ALUMNO</span>
+      </div>
+      <h2 class="text-xl sm:text-2xl font-heading font-extrabold text-white mb-2">Registrar Alumno & Habilitar Cursos</h2>
+      <p class="text-xs text-slate-400 mb-6">Completa los datos del estudiante y selecciona los cursos a los que tendrá acceso.</p>
+
+      <form id="form-create-user" class="space-y-4">
+        <div>
+          <label class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-1.5">Nombre y Apellido *</label>
+          <input id="new-user-name" type="text" required placeholder="Ej: Santiago Pérez" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-purple-500 focus:outline-none text-xs text-white placeholder-slate-600 transition-colors">
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-1.5">Correo Electrónico *</label>
+          <input id="new-user-email" type="email" required placeholder="alumno@email.com" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-purple-500 focus:outline-none text-xs text-white placeholder-slate-600 transition-colors">
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-1.5">Contraseña Inicial</label>
+          <input id="new-user-pass" type="text" value="123456" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-purple-500 focus:outline-none text-xs font-mono text-cyan-300 transition-colors">
+          <span class="text-[10px] text-slate-500 mt-1 block">El alumno podrá usar esta clave para ingresar inmediatamente.</span>
+        </div>
+
+        <!-- Checkbox list of courses to grant -->
+        <div class="space-y-2 pt-2 border-t border-slate-800">
+          <label class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-2 font-bold">
+            Cursos a Habilitar de Entrada:
+          </label>
+          
+          <label class="flex items-center gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 hover:border-slate-700 cursor-pointer">
+            <input type="checkbox" name="grant-course" value="curso-electronica-cero" class="w-4 h-4 rounded accent-cyan-500">
+            <span class="text-xs font-semibold text-slate-200">Electrónica Práctica Desde CERO</span>
+          </label>
+
+          <label class="flex items-center gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 hover:border-slate-700 cursor-pointer">
+            <input type="checkbox" name="grant-course" value="curso-arduino-microcontroladores" class="w-4 h-4 rounded accent-cyan-500">
+            <span class="text-xs font-semibold text-slate-200">Arduino & Microcontroladores (Sketch a IoT)</span>
+          </label>
+
+          <label class="flex items-center gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 hover:border-slate-700 cursor-pointer">
+            <input type="checkbox" name="grant-course" value="combo-master-electronica-arduino" class="w-4 h-4 rounded accent-emerald-500">
+            <span class="text-xs font-semibold text-emerald-300">🌟 PACK MASTER (Ambos Cursos + LTspice)</span>
+          </label>
+
+          <label class="flex items-center gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 hover:border-slate-700 cursor-pointer">
+            <input type="checkbox" name="grant-course" value="guia-simulaciones-ltspice" class="w-4 h-4 rounded accent-cyan-500">
+            <span class="text-xs font-semibold text-slate-200">Biblioteca de Simulaciones LTspice (.ASC)</span>
+          </label>
+        </div>
+
+        <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-heading font-bold py-3.5 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs mt-4">
+          <span>Crear Cuenta y Conceder Accesos</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="admin-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-xl shadow-2xl text-xs sm:text-sm font-semibold transition-all duration-300 flex items-center gap-2 opacity-0 pointer-events-none translate-y-4">
+    <!-- Populated by showToast -->
+  </div>
+
+  <script src="./auth.js"></script>
+  <script>
+    let allUsers = [];
+
+    // Protection Check
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = window.ElectroLabAuth.getCurrentUser();
+      if (!user) {
+        window.location.href = './login.html';
+        return;
+      }
+
+      if (user.role !== 'admin') {
+        alert('Acceso restringido: Esta sección es exclusiva para el administrador.');
+        window.location.href = './aula.html';
+        return;
+      }
+
+      document.getElementById('admin-user-name').textContent = user.name;
+      document.getElementById('admin-user-email').textContent = user.email;
+
+      await loadUsers();
+      setupSearch();
+    });
+
+    async function loadUsers() {
+      try {
+        allUsers = await window.ElectroLabAuth.adminGetUsers();
+        renderUsers(allUsers);
+        updateKPIs(allUsers);
+      } catch (err) {
+        showToast('Error al cargar usuarios: ' + err.message, 'error');
+      }
+    }
+
+    function updateKPIs(users) {
+      document.getElementById('kpi-total-users').textContent = users.length;
+      
+      let totalEnrollments = 0;
+      let elecCount = 0;
+      let ardCount = 0;
+
+      users.forEach(u => {
+        const c = u.courses || [];
+        totalEnrollments += c.length;
+        if (c.includes('curso-electronica-cero') || c.includes('combo-master-electronica-arduino')) elecCount++;
+        if (c.includes('curso-arduino-microcontroladores') || c.includes('combo-master-electronica-arduino')) ardCount++;
+      });
+
+      document.getElementById('kpi-active-enrollments').textContent = totalEnrollments;
+      document.getElementById('kpi-elec-count').textContent = elecCount;
+      document.getElementById('kpi-ard-count').textContent = ardCount;
+    }
+
+    function renderUsers(users) {
+      const tbody = document.getElementById('users-table-body');
+      if (!tbody) return;
+
+      if (users.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="p-8 text-center text-slate-500">
+              No se encontraron alumnos con los criterios de búsqueda.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = users.map(user => {
+        const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const courses = user.courses || [];
+        const isAdm = user.role === 'admin';
+
+        const hasElec = courses.includes('curso-electronica-cero') || courses.includes('combo-master-electronica-arduino');
+        const hasArd = courses.includes('curso-arduino-microcontroladores') || courses.includes('combo-master-electronica-arduino');
+        const hasCombo = courses.includes('combo-master-electronica-arduino');
+        const hasLt = courses.includes('guia-simulaciones-ltspice') || courses.includes('combo-master-electronica-arduino');
+
+        return `
+          <tr class="hover:bg-slate-800/40 transition-colors">
+            <!-- User -->
+            <td class="p-4">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl ${isAdm ? 'bg-purple-500/20 text-purple-300' : 'bg-cyan-500/20 text-cyan-400'} font-bold flex items-center justify-center text-xs shrink-0">
+                  ${initials}
+                </div>
+                <div>
+                  <div class="font-bold text-white text-xs">${user.name}</div>
+                  <div class="text-[11px] text-slate-400 font-mono">${user.email}</div>
+                </div>
+              </div>
+            </td>
+
+            <!-- Role -->
+            <td class="p-4">
+              <span class="inline-flex px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                isAdm ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40' : 'bg-slate-800 text-slate-300'
+              }">
+                ${isAdm ? '👑 Admin' : 'Alumno'}
+              </span>
+            </td>
+
+            <!-- Toggle: Electronica Cero -->
+            <td class="p-4 text-center">
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" ${hasElec ? 'checked' : ''} onchange="handleToggle('${user.id}', 'curso-electronica-cero', this.checked)" class="sr-only peer">
+                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
+              </label>
+            </td>
+
+            <!-- Toggle: Arduino -->
+            <td class="p-4 text-center">
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" ${hasArd ? 'checked' : ''} onchange="handleToggle('${user.id}', 'curso-arduino-microcontroladores', this.checked)" class="sr-only peer">
+                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
+              </label>
+            </td>
+
+            <!-- Toggle: Combo Master -->
+            <td class="p-4 text-center">
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" ${hasCombo ? 'checked' : ''} onchange="handleToggle('${user.id}', 'combo-master-electronica-arduino', this.checked)" class="sr-only peer">
+                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+              </label>
+            </td>
+
+            <!-- Toggle: LTspice -->
+            <td class="p-4 text-center">
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" ${hasLt ? 'checked' : ''} onchange="handleToggle('${user.id}', 'guia-simulaciones-ltspice', this.checked)" class="sr-only peer">
+                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
+              </label>
+            </td>
+
+            <!-- Actions -->
+            <td class="p-4 text-right">
+              <div class="flex items-center justify-end gap-1.5">
+                <button onclick="notifyStudentWhatsApp('${encodeURIComponent(user.name)}', '${encodeURIComponent(user.email)}')" class="p-1.5 text-emerald-400 hover:text-emerald-300 hover:bg-slate-800 rounded-lg transition-colors" title="Avisar por WhatsApp">
+                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.08L2.1 21.9l4.98-1.25A9.95 9.95 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
+                </button>
+                ${!isAdm ? `
+                  <button onclick="handleDeleteUser('${user.id}', '${user.name}')" class="p-1.5 text-slate-500 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors" title="Eliminar alumno">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function handleToggle(userId, courseId, isEnabled) {
+      try {
+        await window.ElectroLabAuth.adminToggleCourseAccess(userId, courseId, isEnabled);
+        showToast(`Permiso ${isEnabled ? 'HABILITADO' : 'DESACTIVADO'} con éxito`, 'success');
+        await loadUsers();
+      } catch (err) {
+        showToast('Error al actualizar permisos: ' + err.message, 'error');
+        await loadUsers();
+      }
+    }
+
+    async function handleDeleteUser(userId, name) {
+      if (!confirm(`¿Estás seguro de eliminar al alumno "${name}" y revocar sus accesos?`)) return;
+      try {
+        await window.ElectroLabAuth.adminDeleteUser(userId);
+        showToast(`Alumno "${name}" eliminado`, 'info');
+        await loadUsers();
+      } catch (err) {
+        showToast('Error al eliminar: ' + err.message, 'error');
+      }
+    }
+
+    function setupSearch() {
+      const input = document.getElementById('search-users');
+      input.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const filtered = allUsers.filter(u => 
+          u.name.toLowerCase().includes(query) || u.email.toLowerCase().includes(query)
+        );
+        renderUsers(filtered);
+      });
+    }
+
+    function openCreateUserModal() {
+      document.getElementById('modal-create-user').classList.remove('hidden');
+    }
+
+    function closeCreateUserModal() {
+      document.getElementById('modal-create-user').classList.add('hidden');
+    }
+
+    document.getElementById('form-create-user').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('new-user-name').value;
+      const email = document.getElementById('new-user-email').value;
+      const pass = document.getElementById('new-user-pass').value;
+
+      const checkedBoxes = document.querySelectorAll('input[name="grant-course"]:checked');
+      const courses = Array.from(checkedBoxes).map(cb => cb.value);
+
+      try {
+        await window.ElectroLabAuth.adminCreateUser(name, email, pass, courses);
+        showToast(`¡Alumno "${name}" registrado y cursos habilitados!`, 'success');
+        closeCreateUserModal();
+        document.getElementById('form-create-user').reset();
+        await loadUsers();
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    });
+
+    function notifyStudentWhatsApp(name, email) {
+      const decodedName = decodeURIComponent(name);
+      const decodedEmail = decodeURIComponent(email);
+      const msg = `¡Hola ${decodedName}! Ya tienes habilitado el acceso a tus cursos en ElectroLab Educativa con tu cuenta (${decodedEmail}). Puedes ingresar en: https://electrolabeducativa.com.ar/login.html ¡A disfrutar del aprendizaje!`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('admin-toast');
+      if (!toast) return;
+
+      toast.textContent = message;
+      toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-xl shadow-2xl text-xs sm:text-sm font-semibold transition-all duration-300 flex items-center gap-2 border';
+
+      if (type === 'success') {
+        toast.classList.add('bg-emerald-950', 'text-emerald-300', 'border-emerald-600/50');
+      } else if (type === 'error') {
+        toast.classList.add('bg-red-950', 'text-red-300', 'border-red-600/50');
+      } else {
+        toast.classList.add('bg-purple-950', 'text-purple-300', 'border-purple-600/50');
+      }
+
+      toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
