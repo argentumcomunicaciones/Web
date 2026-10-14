@@ -55,36 +55,19 @@
         </button>
       </div>
 
-      <!-- Quick Demo Access Pills -->
-      <div class="mb-6 bg-slate-950/70 border border-slate-800 p-3 rounded-2xl space-y-2">
-        <span class="text-[10px] font-mono uppercase tracking-wider text-slate-400 block font-semibold">
-          ⚡ Accesos Rápidos de Prueba:
-        </span>
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <button type="button" onclick="fillCredentials('admin@electrolab.com', 'admin')" class="p-2 rounded-xl bg-purple-950/40 hover:bg-purple-900/40 border border-purple-500/40 text-purple-300 text-left transition-all">
-            <div class="font-bold">👑 Admin</div>
-            <div class="text-[10px] text-slate-400 truncate">admin@electrolab.com</div>
-          </button>
-          <button type="button" onclick="fillCredentials('alumno@demo.com', 'alumno123')" class="p-2 rounded-xl bg-blue-950/40 hover:bg-blue-900/40 border border-blue-500/40 text-cyan-300 text-left transition-all">
-            <div class="font-bold">🎓 Alumno Demo</div>
-            <div class="text-[10px] text-slate-400 truncate">alumno@demo.com</div>
-          </button>
-        </div>
-      </div>
-
       <!-- Error / Success Alert -->
       <div id="auth-alert" class="hidden mb-4 p-3 rounded-xl text-xs font-medium border"></div>
 
-      <!-- Form: Iniciar Sesión -->
-      <form id="form-login" class="space-y-4">
+      <!-- Form: Iniciar Sesión (Sin autocompletado para resguardo de seguridad) -->
+      <form id="form-login" class="space-y-4" autocomplete="off">
         <div>
           <label class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-1.5">Correo Electrónico</label>
-          <input id="login-email" type="email" required placeholder="tu@email.com" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-sm text-white placeholder-slate-600 transition-colors">
+          <input id="login-email" type="email" required autocomplete="off" placeholder="tu@email.com" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-sm text-white placeholder-slate-600 transition-colors">
         </div>
 
         <div>
           <label class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-1.5">Contraseña</label>
-          <input id="login-password" type="password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-sm text-white placeholder-slate-600 transition-colors">
+          <input id="login-password" type="password" required autocomplete="new-password" placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-sm text-white placeholder-slate-600 transition-colors">
         </div>
 
         <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-heading font-bold py-3.5 rounded-xl transition-all shadow-[0_0_20px_rgba(6,182,212,0.35)] flex items-center justify-center gap-2">
@@ -156,13 +139,6 @@
       formLogin.classList.add('hidden');
       alertBox.classList.add('hidden');
     });
-
-    function fillCredentials(email, pass) {
-      tabLogin.click();
-      document.getElementById('login-email').value = email;
-      document.getElementById('login-password').value = pass;
-      showAlert('Credenciales autocompletadas. Haz clic en "Ingresar a Mi Aula"', false);
-    }
 
     // Submit Login
     formLogin.addEventListener('submit', async (e) => {

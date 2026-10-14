@@ -68,15 +68,16 @@ def init_database():
 
     conn.commit()
 
-    # Verificar si existe el usuario administrador
+    # Verificar y actualizar clave del usuario administrador
     cursor.execute("SELECT id FROM users WHERE email = ?", ('admin@electrolab.com',))
-    if not cursor.fetchone():
+    row = cursor.fetchone()
+    if not row:
         admin_id = 'usr_admin_' + uuid.uuid4().hex[:8]
         now = datetime.utcnow().isoformat()
         cursor.execute('''
             INSERT INTO users (id, name, email, password_hash, role, created_at)
             VALUES (?, ?, ?, ?, ?, ?)
-        ''', (admin_id, 'Admin ElectroLab', 'admin@electrolab.com', hash_password('admin'), 'admin', now))
+        ''', (admin_id, 'Admin ElectroLab', 'admin@electrolab.com', hash_password('Lobita2026'), 'admin', now))
 
         # Habilitar todos los cursos para el admin
         all_courses = [
@@ -91,7 +92,12 @@ def init_database():
                 VALUES (?, ?, ?, ?)
             ''', (uuid.uuid4().hex, admin_id, cid, now))
         conn.commit()
-        print("[DB] Usuario Administrador creado: admin@electrolab.com (Clave: admin)")
+        print("[DB] Usuario Administrador creado: admin@electrolab.com")
+    else:
+        # Asegurar que la clave de administrador esté actualizada a Lobita2026
+        cursor.execute("UPDATE users SET password_hash = ? WHERE email = ?", (hash_password('Lobita2026'), 'admin@electrolab.com'))
+        conn.commit()
+        print("[DB] Clave de Administrador verificada y actualizada en base de datos.")
 
     # Verificar si existe el alumno demo
     cursor.execute("SELECT id FROM users WHERE email = ?", ('alumno@demo.com',))
@@ -394,8 +400,8 @@ def run():
         print(f"🚀 Servidor ElectroLab Educativa Activo en:")
         print(f"   http://localhost:{PORT}")
         print("-------------------------------------------------------")
-        print("🔐 Credenciales predeterminadas:")
-        print("   👑 Administrador: admin@electrolab.com | Clave: admin")
+        print("🔐 Credenciales del sistema:")
+        print("   👑 Administrador: admin@electrolab.com | Clave: [CONFIGURADA - PRIVADA]")
         print("   🎓 Alumno Demo:   alumno@demo.com   | Clave: alumno123")
         print("=======================================================\n")
         try:

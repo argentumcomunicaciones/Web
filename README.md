@@ -24,10 +24,11 @@ Al iniciar el sistema por primera vez, se configuran dos cuentas automáticas:
 ### 👑 Administrador (Tú como Dueño / Profesor)
 * **URL:** `http://localhost:8000/admin.html` (o ingresando por `login.html`)
 * **Correo:** `admin@electrolab.com`
-* **Contraseña:** `admin`
+* **Contraseña:** `Lobita2026`
+* **Seguridad:** El autocompletado y botones de prueba han sido deshabilitados en el login para mayor resguardo y privacidad.
 * **Permisos:** Acceso total a todos los cursos y control absoluto de los alumnos.
 
-### 🎓 Alumno Demo (Para probar la experiencia del estudiante)
+### 🎓 Alumno Demo (Para pruebas)
 * **URL:** `http://localhost:8000/aula.html` (o ingresando por `login.html`)
 * **Correo:** `alumno@demo.com`
 * **Contraseña:** `alumno123`

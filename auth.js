@@ -39,6 +39,16 @@
   function initLocalDB() {
     if (!localStorage.getItem(STORAGE_KEY_USERS_DB)) {
       localStorage.setItem(STORAGE_KEY_USERS_DB, JSON.stringify(DEFAULT_USERS));
+    } else {
+      // Actualizar automáticamente la clave de admin al nuevo valor
+      try {
+        const users = JSON.parse(localStorage.getItem(STORAGE_KEY_USERS_DB) || '[]');
+        const admin = users.find(u => u.email === 'admin@electrolab.com');
+        if (admin && admin.password !== 'Lobita2026') {
+          admin.password = 'Lobita2026';
+          localStorage.setItem(STORAGE_KEY_USERS_DB, JSON.stringify(users));
+        }
+      } catch (e) {}
     }
   }
   initLocalDB();
