@@ -19,7 +19,7 @@
       id: 'usr_admin',
       name: 'Admin ElectroLab',
       email: 'admin@electrolab.com',
-      password: 'admin',
+      password: 'Lobita2026',
       role: 'admin',
       createdAt: '2026-01-10T10:00:00Z',
       courses: ['curso-electronica-cero', 'curso-arduino-microcontroladores', 'combo-master-electronica-arduino', 'guia-simulaciones-ltspice']
