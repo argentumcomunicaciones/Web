@@ -32,6 +32,7 @@
       origARS: 34500,
       priceUSD: 19,
       origUSD: 35,
+      driveFolder: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
       youtubePreview: 'https://www.youtube.com/embed/videoseries?list=PLZRAKzDxXlAI',
       features: [
         'Leyes de Ohm, Kirchhoff, divisor de tensión y corriente',
@@ -111,6 +112,7 @@
       origARS: 42000,
       priceUSD: 23,
       origUSD: 42,
+      driveFolder: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=drive_link',
       youtubePreview: 'https://www.youtube.com/embed/videoseries?list=PLdmC3bfdJGAk',
       features: [
         'Arquitectura AVR (ATmega328P) y 32-bit ESP32',
@@ -190,6 +192,7 @@
       origARS: 76500,
       priceUSD: 32,
       origUSD: 77,
+      driveFolder: 'https://drive.google.com/drive/folders/18vYXavKUw_ge42v26zVGgFxHzGsSWV5J?usp=drive_link',
       isBundle: true,
       features: [
         'Acceso de por vida a los 2 Cursos Completos (Electrónica + Arduino)',
@@ -215,6 +218,7 @@
       origARS: 14900,
       priceUSD: 8,
       origUSD: 15,
+      driveFolder: 'https://drive.google.com/drive/folders/1Ria3iinViGHPSRa1VlQIypBTQRrf-IAX?usp=drive_link',
       features: [
         'Fuentes de alimentación lineales, conmutadas y dobladores de tensión',
         'Filtros activos paso bajo, paso alto y pasabanda con Op-Amps',

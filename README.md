@@ -55,9 +55,16 @@ Al iniciar el sistema por primera vez, se configuran dos cuentas automáticas:
 * **Cursos Disponibles para Desbloquear:** Los cursos no adquiridos aparecen bloqueados con un candado 🔒 y un botón directo para adquirirlos.
 * **Reproductor de Clases Integrado:**
   - Pantalla de video en alta definición con lista de lecciones agrupadas por módulo.
-  - **Descargas por clase:** Enlaces para descargar los archivos `.asc` de LTspice, sketches `.ino` de Arduino y diagramas esquemáticos en PDF.
+  - **Descargas y Materiales en Google Drive:** Enlaces directos a las carpetas privadas de Google Drive para descargar los archivos `.asc` de LTspice, sketches `.ino` de Arduino y diagramas esquemáticos en PDF correspondientes a cada curso con `target="_blank"`.
   - **Seguimiento de Progreso:** Botón para marcar cada clase como completada con barra de porcentaje en tiempo real.
   - **Soporte Directo con el Profesor:** Botón flotante para consultar dudas de la clase por WhatsApp.
+
+### 📁 Carpetas de Materiales Oficiales (Google Drive)
+* **Curso 1 (Electrónica Desde Cero):** `https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link`
+* **Curso 2 (Arduino & Microcontroladores):** `https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=drive_link`
+* **Curso 3 (Combo Master):** `https://drive.google.com/drive/folders/18vYXavKUw_ge42v26zVGgFxHzGsSWV5J?usp=drive_link`
+* **Curso 4 (Simulaciones LTspice):** `https://drive.google.com/drive/folders/1Ria3iinViGHPSRa1VlQIypBTQRrf-IAX?usp=drive_link`
+*(Los enlaces públicos a repositorios de GitHub han sido eliminados por seguridad y sustituidos por estas carpetas).*
 
 ### 3. Pantalla de Acceso ([`login.html`](file:///C:/Users/dbarr/.gemini/antigravity/scratch/electrolab-web/login.html))
 * Pestañas para **Iniciar Sesión** o **Crear Cuenta**.
