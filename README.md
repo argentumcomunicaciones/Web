@@ -61,10 +61,11 @@ Al iniciar el sistema por primera vez, se configuran dos cuentas automáticas:
 
 ### 3. Pantalla de Acceso ([`login.html`](file:///C:/Users/dbarr/.gemini/antigravity/scratch/electrolab-web/login.html))
 * Pestañas para **Iniciar Sesión** o **Crear Cuenta**.
-* Botones de acceso rápido para probar con 1 clic las cuentas de Admin o Alumno Demo.
+* **Autocompletado desactivado**: Los campos y formularios no se autocompletan para máxima seguridad.
 * Redirección inteligente: los administradores son dirigidos a `admin.html` y los alumnos a `aula.html`.
 
 ### 4. Tienda Pública y Landing Page ([`index.html`](file:///C:/Users/dbarr/.gemini/antigravity/scratch/electrolab-web/index.html))
+* **WhatsApp Oficial:** Vinculado a `+54 9 11 2306-5347` (`5491123065347`) en botones de compra, soporte y consultas.
 * Simulador interactivo con **osciloscopio digital en vivo**, formas de onda (PWM/555, Senoidal, RC), potenciómetro y monitor serie.
 * Catálogo de cursos con conmutador de moneda (**ARS $** y **USD $**).
 * Carrito de compras con cupón `ELECTRO2026`.

@@ -9,7 +9,7 @@
 
   // Configuración base de la tienda
   const CONFIG = {
-    whatsappNumber: '5491138805566', // Reemplazar con el WhatsApp oficial de ElectroLab
+    whatsappNumber: '5491123065347', // WhatsApp oficial de ElectroLab
     defaultCurrency: 'ARS', // 'ARS' o 'USD'
     couponCode: 'ELECTRO2026',
     couponDiscount: 0.10 // 10% off
