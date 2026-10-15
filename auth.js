@@ -397,7 +397,7 @@
     const user = getCurrentUser();
     if (!user) {
       container.innerHTML = `
-        <a href="./login.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-700/80 hover:border-cyan-400/80 text-xs font-semibold text-slate-300 hover:text-white bg-slate-900/60 transition-all">
+        <a href="./login.html" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-700/80 hover:border-cyan-400 text-xs font-semibold text-slate-300 hover:text-white bg-slate-900/60 transition-all">
           <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
           <span>Acceso Alumnos</span>
         </a>
