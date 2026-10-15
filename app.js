@@ -12,7 +12,28 @@
     whatsappNumber: '5491123065347', // WhatsApp oficial de ElectroLab
     defaultCurrency: 'ARS', // 'ARS' o 'USD'
     couponCode: 'ELECTRO2026',
-    couponDiscount: 0.10 // 10% off
+    couponDiscount: 0.10, // 10% off
+    // Datos Oficiales de Pago
+    payment: {
+      icbc: {
+        banco: 'ICBC',
+        titular: 'Daniel Esteban Barrio',
+        cuit: '20-21833818-7',
+        cbu: '0150919301000143972298',
+        alias: 'Electrolabeducativa',
+        cuenta: 'CA $ 0919/01143972/29'
+      },
+      mercadopago: {
+        titular: 'Daniel Esteban Barrio',
+        cuit: '20-21833818-7',
+        cvu: '0000003100188764652906',
+        alias: 'electrolab.educativa'
+      },
+      paypal: {
+        email: 'dbarrio1970@gmail.com',
+        currency: 'USD'
+      }
+    }
   };
 
   // Base de datos de Cursos y Recursos
@@ -745,6 +766,65 @@
     openPaymentModal('paypal');
   }
 
+  // Copiado rápido al portapapeles con feedback interactivo
+  function copyToClipboard(text, label, btnElement) {
+    const handleSuccess = () => {
+      showToast(`¡${label} copiado al portapapeles!`, 'success');
+      if (btnElement) {
+        const originalHtml = btnElement.innerHTML;
+        btnElement.innerHTML = `
+          <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          <span class="text-emerald-400 font-bold">¡Copiado!</span>
+        `;
+        setTimeout(() => {
+          btnElement.innerHTML = originalHtml;
+        }, 2000);
+      }
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(handleSuccess).catch(() => {
+        fallbackCopy(text, label, handleSuccess);
+      });
+    } else {
+      fallbackCopy(text, label, handleSuccess);
+    }
+  }
+
+  function fallbackCopy(text, label, onSuccess) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.opacity = '0';
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      if (onSuccess) onSuccess();
+      else showToast(`¡${label} copiado!`, 'success');
+    } catch (err) {
+      showToast(`Error al copiar: ${text}`, 'error');
+    }
+    document.body.removeChild(textArea);
+  }
+
+  // Envío del comprobante de pago por WhatsApp con los detalles del pedido
+  function sendPaymentReceipt(methodName) {
+    const cartCourses = state.cart.map(id => COURSES.find(c => c.id === id)).filter(Boolean);
+    let subtotal = 0;
+    cartCourses.forEach(c => subtotal += getCoursePrice(c));
+    let discount = state.appliedCoupon ? Math.round(subtotal * CONFIG.couponDiscount) : 0;
+    let total = subtotal - discount;
+    let curr = (methodName === 'PayPal') ? 'USD' : 'ARS';
+
+    let itemsList = cartCourses.map(c => `• ${c.title}`).join('%0A');
+
+    let msg = `Hola ElectroLab Educativa! Acabo de realizar el pago mediante *${methodName}* por un total de *${formatMoney(total, curr)}*:%0A%0ACursos:%0A${itemsList}%0A%0AAdjunto el comprobante de la operación para que puedan habilitar mi acceso al aula virtual. Muchas gracias!`;
+
+    const url = `https://wa.me/${CONFIG.whatsappNumber}?text=${msg}`;
+    window.open(url, '_blank');
+  }
+
   function openPaymentModal(method) {
     const modal = document.getElementById('payment-modal');
     const container = document.getElementById('payment-modal-body');
@@ -763,67 +843,195 @@
       title = 'Pagar con Mercado Pago (Argentina)';
       detailsHtml = `
         <div class="space-y-4 text-sm text-slate-300">
-          <p>Podés abonar con cualquier tarjeta de débito, crédito en cuotas, dinero en cuenta de Mercado Pago o en efectivo (Rapipago / Pago Fácil).</p>
-          <div class="bg-blue-950/60 border border-blue-500/30 p-4 rounded-xl">
-            <span class="text-xs text-blue-300 block font-semibold mb-1">TOTAL A ABONAR:</span>
-            <span class="text-2xl font-bold text-white">${formatMoney(total, 'ARS')}</span>
+          <div class="bg-gradient-to-br from-sky-950/60 to-slate-900 border border-sky-500/30 p-4 sm:p-5 rounded-2xl space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-sky-500/20">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse"></span>
+                <span class="text-xs font-mono font-bold text-sky-400 uppercase tracking-wider">Mercado Pago Oficial</span>
+              </div>
+              <span class="text-[10px] bg-sky-500/20 text-sky-300 font-bold px-2 py-0.5 rounded-full">Acreditación Rápida</span>
+            </div>
+
+            <!-- Total a abonar -->
+            <div class="bg-black/50 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-sans">Total a abonar:</span>
+              <span class="text-xl sm:text-2xl font-bold font-mono text-sky-400">${formatMoney(total, 'ARS')}</span>
+            </div>
+
+            <!-- Datos oficiales MP -->
+            <div class="space-y-2 text-xs font-mono">
+              <div class="flex justify-between py-1 border-b border-slate-800/60">
+                <span class="text-slate-400">Titular:</span>
+                <span class="text-white font-bold">${CONFIG.payment.mercadopago.titular}</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-slate-800/60">
+                <span class="text-slate-400">CUIT/CUIL:</span>
+                <span class="text-white select-all font-bold">${CONFIG.payment.mercadopago.cuit}</span>
+              </div>
+
+              <!-- CVU con botón copiar -->
+              <div class="bg-slate-950/80 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between gap-2 mt-2">
+                <div class="overflow-hidden">
+                  <span class="text-[10px] text-slate-400 block font-sans">CVU Mercado Pago:</span>
+                  <span class="text-cyan-300 font-bold text-xs select-all">${CONFIG.payment.mercadopago.cvu}</span>
+                </div>
+                <button type="button" onclick="window.ElectroLab.copyToClipboard('${CONFIG.payment.mercadopago.cvu}', 'CVU', this)" class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-semibold transition-all">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <span>Copiar CVU</span>
+                </button>
+              </div>
+
+              <!-- Alias con botón copiar -->
+              <div class="bg-slate-950/80 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between gap-2">
+                <div class="overflow-hidden">
+                  <span class="text-[10px] text-slate-400 block font-sans">Alias Mercado Pago:</span>
+                  <span class="text-cyan-300 font-bold text-xs select-all">${CONFIG.payment.mercadopago.alias}</span>
+                </div>
+                <button type="button" onclick="window.ElectroLab.copyToClipboard('${CONFIG.payment.mercadopago.alias}', 'Alias MP', this)" class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-semibold transition-all">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <span>Copiar Alias</span>
+                </button>
+              </div>
+            </div>
           </div>
-          <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-400">
-            Al hacer clic en "Continuar a Mercado Pago", te pondrás en contacto directo para recibir el link de pago seguro o QR oficial de ElectroLab Educativa con acreditación inmediata.
-          </div>
-          <button onclick="window.ElectroLab.checkoutWhatsApp(); window.ElectroLab.closePaymentModal();" class="w-full bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
-            <span>Continuar por WhatsApp para Link Oficial MP</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+
+          <p class="text-xs text-slate-400 text-center">Puedes transferir desde cualquier cuenta bancaria o billetera virtual usando el CVU o Alias. Luego envíanos el comprobante:</p>
+
+          <button type="button" onclick="window.ElectroLab.sendPaymentReceipt('Mercado Pago'); window.ElectroLab.closePaymentModal();" class="w-full bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(14,165,233,0.4)] flex items-center justify-center gap-2 text-xs sm:text-sm">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+            <span>Enviar Comprobante de Pago por WhatsApp</span>
           </button>
         </div>
       `;
     } else if (method === 'transferencia') {
-      title = 'Transferencia Bancaria Directa (Alias / CBU)';
+      title = 'Transferencia Bancaria Directa (ICBC)';
       detailsHtml = `
         <div class="space-y-4 text-sm text-slate-300">
-          <div class="bg-emerald-950/40 border border-emerald-500/30 p-4 rounded-xl">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs text-emerald-400 font-bold uppercase">Datos Bancarios Oficiales</span>
-              <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Sin comisiones</span>
+          <div class="bg-gradient-to-br from-emerald-950/60 to-slate-900 border border-emerald-500/30 p-4 sm:p-5 rounded-2xl space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-emerald-500/20">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">Datos Bancarios ICBC</span>
+              </div>
+              <span class="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-full">Sin Comisiones</span>
             </div>
-            <div class="space-y-1.5 text-xs font-mono">
-              <div><strong class="text-slate-400">Titular:</strong> ElectroLab Educativa / D. Barr</div>
-              <div><strong class="text-slate-400">Alias:</strong> <span class="text-cyan-300 font-bold select-all bg-black/40 px-1 py-0.5 rounded">ELECTROLAB.CURSOS</span></div>
-              <div><strong class="text-slate-400">CVU/CBU:</strong> <span class="text-cyan-300 select-all bg-black/40 px-1 py-0.5 rounded">0000003100045892348712</span></div>
+
+            <!-- Total a transferir -->
+            <div class="bg-black/50 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-sans">Total a transferir:</span>
+              <span class="text-xl sm:text-2xl font-bold font-mono text-emerald-400">${formatMoney(total, 'ARS')}</span>
+            </div>
+
+            <!-- Datos de la cuenta -->
+            <div class="space-y-2 text-xs font-mono">
+              <div class="flex justify-between py-1 border-b border-slate-800/60">
+                <span class="text-slate-400">Banco:</span>
+                <span class="text-white font-bold">${CONFIG.payment.icbc.banco}</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-slate-800/60">
+                <span class="text-slate-400">Titular:</span>
+                <span class="text-white font-bold">${CONFIG.payment.icbc.titular}</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-slate-800/60">
+                <span class="text-slate-400">CUIT/CUIL:</span>
+                <span class="text-white select-all font-bold">${CONFIG.payment.icbc.cuit}</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-slate-800/60">
+                <span class="text-slate-400">Cuenta:</span>
+                <span class="text-white select-all font-bold">${CONFIG.payment.icbc.cuenta}</span>
+              </div>
+
+              <!-- CBU con botón copiar -->
+              <div class="bg-slate-950/80 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between gap-2 mt-2">
+                <div class="overflow-hidden">
+                  <span class="text-[10px] text-slate-400 block font-sans">CBU Bancario:</span>
+                  <span class="text-cyan-300 font-bold text-xs select-all">${CONFIG.payment.icbc.cbu}</span>
+                </div>
+                <button type="button" onclick="window.ElectroLab.copyToClipboard('${CONFIG.payment.icbc.cbu}', 'CBU', this)" class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-semibold transition-all">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <span>Copiar CBU</span>
+                </button>
+              </div>
+
+              <!-- Alias con botón copiar -->
+              <div class="bg-slate-950/80 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between gap-2">
+                <div class="overflow-hidden">
+                  <span class="text-[10px] text-slate-400 block font-sans">Alias:</span>
+                  <span class="text-cyan-300 font-bold text-xs select-all">${CONFIG.payment.icbc.alias}</span>
+                </div>
+                <button type="button" onclick="window.ElectroLab.copyToClipboard('${CONFIG.payment.icbc.alias}', 'Alias', this)" class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-semibold transition-all">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <span>Copiar Alias</span>
+                </button>
+              </div>
             </div>
           </div>
-          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex items-center justify-between">
-            <span class="text-xs text-slate-400">Total a transferir:</span>
-            <span class="text-xl font-bold text-white">${formatMoney(total, 'ARS')}</span>
-          </div>
-          <p class="text-xs text-slate-400">Una vez realizada la transferencia, envíanos el comprobante por WhatsApp o por el formulario para habilitar tu cuenta en minutos.</p>
-          <button onclick="window.ElectroLab.checkoutWhatsApp(); window.ElectroLab.closePaymentModal();" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
-            <span>Enviar Comprobante por WhatsApp</span>
+
+          <p class="text-xs text-slate-400 text-center">Una vez realizada la transferencia bancaria, envíanos el comprobante para darte de alta al instante:</p>
+
+          <button type="button" onclick="window.ElectroLab.sendPaymentReceipt('Transferencia Bancaria ICBC'); window.ElectroLab.closePaymentModal();" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 text-xs sm:text-sm">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+            <span>Enviar Comprobante de Pago por WhatsApp</span>
           </button>
         </div>
       `;
     } else {
-      title = 'Pago Internacional (PayPal / Stripe / Tarjeta USD)';
+      title = 'Pago Internacional con PayPal (USD)';
       detailsHtml = `
         <div class="space-y-4 text-sm text-slate-300">
-          <p>Disponible para estudiantes de toda Latinoamérica, España y el resto del mundo.</p>
-          <div class="bg-blue-950/40 border border-blue-500/30 p-4 rounded-xl flex items-center justify-between">
-            <span class="text-xs text-slate-300">TOTAL:</span>
-            <span class="text-xl font-bold text-white">${formatMoney(total, 'USD')}</span>
+          <div class="bg-gradient-to-br from-amber-950/60 to-slate-900 border border-amber-500/30 p-4 sm:p-5 rounded-2xl space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-amber-500/20">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+                <span class="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider">PayPal Internacional (USD)</span>
+              </div>
+              <span class="text-[10px] bg-amber-500/20 text-amber-300 font-bold px-2 py-0.5 rounded-full">Exterior</span>
+            </div>
+
+            <!-- Total en USD -->
+            <div class="bg-black/50 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-sans">Total a abonar en USD:</span>
+              <span class="text-xl sm:text-2xl font-bold font-mono text-amber-400">${formatMoney(total, 'USD')}</span>
+            </div>
+
+            <!-- Instrucciones de cuenta -->
+            <p class="text-xs text-slate-300 leading-relaxed font-sans">
+              Envía el pago desde tu cuenta de PayPal o tarjeta internacional a la siguiente dirección de correo oficial en dólares estadounidenses (USD):
+            </p>
+
+            <!-- Email de PayPal con botón copiar -->
+            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800 flex items-center justify-between gap-2">
+              <div class="overflow-hidden">
+                <span class="text-[10px] text-slate-400 block font-sans">Cuenta / Email PayPal:</span>
+                <span class="text-amber-300 font-bold text-xs sm:text-sm select-all font-mono">${CONFIG.payment.paypal.email}</span>
+              </div>
+              <button type="button" onclick="window.ElectroLab.copyToClipboard('${CONFIG.payment.paypal.email}', 'Email de PayPal', this)" class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-semibold transition-all">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                <span>Copiar Email</span>
+              </button>
+            </div>
+
+            <!-- Botón para ir a PayPal -->
+            <a href="https://www.paypal.com/myaccount/transfer/homepage" target="_blank" rel="noopener noreferrer" class="w-full bg-slate-900 border border-amber-500/40 hover:bg-slate-800 text-amber-300 hover:text-white py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all">
+              <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.774.774 0 0 1 .763-.646h7.008c3.15 0 5.467 1.054 5.922 3.864.218 1.344-.067 2.766-.826 3.743-.728.937-1.854 1.488-3.23 1.584l-.19.008h-2.92a.774.774 0 0 0-.764.646l-.999 6.337a.641.641 0 0 1-.632.535z"/></svg>
+              <span>Abrir PayPal para enviar el pago</span>
+              <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
           </div>
-          <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-400">
-            Aceptamos PayPal, tarjetas de crédito Visa, Mastercard, American Express internacionales.
-          </div>
-          <button onclick="window.ElectroLab.checkoutWhatsApp(); window.ElectroLab.closePaymentModal();" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
-            <span>Solicitar Link de Pago Internacional por WhatsApp</span>
+
+          <p class="text-xs text-slate-400 text-center">Una vez enviado el pago por PayPal, envíanos el comprobante o ID de transacción:</p>
+
+          <button type="button" onclick="window.ElectroLab.sendPaymentReceipt('PayPal'); window.ElectroLab.closePaymentModal();" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(245,158,11,0.4)] flex items-center justify-center gap-2 text-xs sm:text-sm">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+            <span>Enviar Comprobante de Pago por WhatsApp</span>
           </button>
         </div>
       `;
     }
 
     container.innerHTML = `
-      <div class="relative bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-slate-100">
-        <button onclick="window.ElectroLab.closePaymentModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition-colors">
+      <div class="relative bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-7 max-w-lg w-full shadow-2xl text-slate-100">
+        <button type="button" onclick="window.ElectroLab.closePaymentModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition-colors">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
         <h3 class="text-lg font-heading font-bold text-white mb-4">${title}</h3>
@@ -973,6 +1181,8 @@
     checkoutTransferencia,
     checkoutPayPal,
     closePaymentModal,
+    copyToClipboard,
+    sendPaymentReceipt,
     showToast
   };
 
