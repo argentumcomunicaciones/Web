@@ -13,6 +13,32 @@
   const STORAGE_KEY_ENROLLMENTS = 'electrolab_mock_enrollments_db';
   const STORAGE_KEY_PROGRESS = 'electrolab_lesson_progress';
 
+  const ALL_OFFICIAL_COURSES = ['curso-1', 'curso-2', 'curso-3', 'curso-4'];
+
+  // Normaliza IDs antiguos de cursos a los 4 Cursos Oficiales
+  function normalizeCourseList(courses = []) {
+    const normalized = new Set();
+    courses.forEach(cid => {
+      if (cid === 'curso-1' || cid === 'curso-electronica-cero') {
+        normalized.add('curso-1');
+      } else if (cid === 'curso-2' || cid === 'curso-arduino-microcontroladores') {
+        normalized.add('curso-2');
+      } else if (cid === 'curso-3' || cid === 'combo-master-electronica-arduino') {
+        // El pack master o curso 3
+        if (cid === 'combo-master-electronica-arduino') {
+          ALL_OFFICIAL_COURSES.forEach(c => normalized.add(c));
+        } else {
+          normalized.add('curso-3');
+        }
+      } else if (cid === 'curso-4' || cid === 'guia-simulaciones-ltspice') {
+        normalized.add('curso-4');
+      } else {
+        normalized.add(cid);
+      }
+    });
+    return Array.from(normalized);
+  }
+
   // Usuarios iniciales predeterminados para modo local/offline
   const DEFAULT_USERS = [
     {
@@ -22,7 +48,7 @@
       password: 'Lobita2026',
       role: 'admin',
       createdAt: '2026-01-10T10:00:00Z',
-      courses: ['curso-electronica-cero', 'curso-arduino-microcontroladores', 'combo-master-electronica-arduino', 'guia-simulaciones-ltspice']
+      courses: ['curso-1', 'curso-2', 'curso-3', 'curso-4']
     },
     {
       id: 'usr_alumno1',
@@ -31,7 +57,7 @@
       password: 'alumno123',
       role: 'student',
       createdAt: '2026-02-15T14:30:00Z',
-      courses: ['curso-electronica-cero'] // Solo tiene habilitado Electrónica desde Cero
+      courses: ['curso-1'] // Acceso inicial al Curso 1
     }
   ];
 
@@ -40,12 +66,27 @@
     if (!localStorage.getItem(STORAGE_KEY_USERS_DB)) {
       localStorage.setItem(STORAGE_KEY_USERS_DB, JSON.stringify(DEFAULT_USERS));
     } else {
-      // Actualizar automáticamente la clave de admin al nuevo valor
+      // Actualizar automáticamente la clave de admin y migrar cursos
       try {
         const users = JSON.parse(localStorage.getItem(STORAGE_KEY_USERS_DB) || '[]');
-        const admin = users.find(u => u.email === 'admin@electrolab.com');
-        if (admin && admin.password !== 'Lobita2026') {
-          admin.password = 'Lobita2026';
+        let updated = false;
+        users.forEach(u => {
+          if (u.email === 'admin@electrolab.com') {
+            if (u.password !== 'Lobita2026') {
+              u.password = 'Lobita2026';
+              updated = true;
+            }
+            u.courses = ['curso-1', 'curso-2', 'curso-3', 'curso-4'];
+            updated = true;
+          } else if (u.courses && u.courses.length > 0) {
+            const norm = normalizeCourseList(u.courses);
+            if (JSON.stringify(norm) !== JSON.stringify(u.courses)) {
+              u.courses = norm;
+              updated = true;
+            }
+          }
+        });
+        if (updated) {
           localStorage.setItem(STORAGE_KEY_USERS_DB, JSON.stringify(users));
         }
       } catch (e) {}
@@ -129,7 +170,7 @@
       name: found.name,
       email: found.email,
       role: found.role,
-      courses: found.courses || []
+      courses: normalizeCourseList(found.courses || [])
     };
     localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(sessionUser));
     localStorage.setItem(STORAGE_KEY_TOKEN, 'mock_token_' + Date.now());
@@ -213,9 +254,7 @@
     const user = getCurrentUser();
     if (!user) return false;
     if (user.role === 'admin') return true; // El admin tiene acceso a todos los cursos
-    const list = user.courses || [];
-    // Si tiene el pack master, tiene acceso a todos los cursos
-    if (list.includes('combo-master-electronica-arduino')) return true;
+    const list = normalizeCourseList(user.courses || []);
     return list.includes(courseId);
   }
 
@@ -224,13 +263,9 @@
     const user = getCurrentUser();
     if (!user) return [];
     if (user.role === 'admin') {
-      return ['curso-electronica-cero', 'curso-arduino-microcontroladores', 'combo-master-electronica-arduino', 'guia-simulaciones-ltspice'];
+      return ALL_OFFICIAL_COURSES;
     }
-    const list = user.courses || [];
-    if (list.includes('combo-master-electronica-arduino')) {
-      return ['curso-electronica-cero', 'curso-arduino-microcontroladores', 'combo-master-electronica-arduino', 'guia-simulaciones-ltspice'];
-    }
-    return list;
+    return normalizeCourseList(user.courses || []);
   }
 
   // Progreso de lecciones completadas

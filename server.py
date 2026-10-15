@@ -79,12 +79,12 @@ def init_database():
             VALUES (?, ?, ?, ?, ?, ?)
         ''', (admin_id, 'Admin ElectroLab', 'admin@electrolab.com', hash_password('Lobita2026'), 'admin', now))
 
-        # Habilitar todos los cursos para el admin
+        # Habilitar todos los 4 cursos oficiales para el admin
         all_courses = [
-            'curso-electronica-cero',
-            'curso-arduino-microcontroladores',
-            'combo-master-electronica-arduino',
-            'guia-simulaciones-ltspice'
+            'curso-1',
+            'curso-2',
+            'curso-3',
+            'curso-4'
         ]
         for cid in all_courses:
             cursor.execute('''
@@ -96,12 +96,19 @@ def init_database():
     else:
         # Asegurar que la clave de administrador esté actualizada a Lobita2026
         cursor.execute("UPDATE users SET password_hash = ? WHERE email = ?", (hash_password('Lobita2026'), 'admin@electrolab.com'))
+        # Asegurar que el admin tenga los 4 cursos oficiales
+        for cid in ['curso-1', 'curso-2', 'curso-3', 'curso-4']:
+            cursor.execute('''
+                INSERT OR IGNORE INTO enrollments (id, user_id, course_id, granted_at)
+                VALUES (?, ?, ?, ?)
+            ''', (uuid.uuid4().hex, row['id'], cid, datetime.utcnow().isoformat()))
         conn.commit()
-        print("[DB] Clave de Administrador verificada y actualizada en base de datos.")
+        print("[DB] Clave y cursos de Administrador verificados en base de datos.")
 
     # Verificar si existe el alumno demo
     cursor.execute("SELECT id FROM users WHERE email = ?", ('alumno@demo.com',))
-    if not cursor.fetchone():
+    student_row = cursor.fetchone()
+    if not student_row:
         student_id = 'usr_student_' + uuid.uuid4().hex[:8]
         now = datetime.utcnow().isoformat()
         cursor.execute('''
@@ -109,13 +116,20 @@ def init_database():
             VALUES (?, ?, ?, ?, ?, ?)
         ''', (student_id, 'Martín Gómez', 'alumno@demo.com', hash_password('alumno123'), 'student', now))
 
-        # Habilitar Electrónica Desde Cero al alumno demo
+        # Habilitar Curso 1 al alumno demo
         cursor.execute('''
             INSERT INTO enrollments (id, user_id, course_id, granted_at)
             VALUES (?, ?, ?, ?)
-        ''', (uuid.uuid4().hex, student_id, 'curso-electronica-cero', now))
+        ''', (uuid.uuid4().hex, student_id, 'curso-1', now))
         conn.commit()
         print("[DB] Alumno Demo creado: alumno@demo.com (Clave: alumno123)")
+    else:
+        # Asegurar que el alumno demo tenga curso-1
+        cursor.execute('''
+            INSERT OR IGNORE INTO enrollments (id, user_id, course_id, granted_at)
+            VALUES (?, ?, ?, ?)
+        ''', (uuid.uuid4().hex, student_row['id'], 'curso-1', datetime.utcnow().isoformat()))
+        conn.commit()
 
     conn.close()
 

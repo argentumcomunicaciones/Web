@@ -386,36 +386,35 @@
             CATÁLOGO OFICIAL DE FORMACIÓN
           </span>
           <h2 class="text-3xl sm:text-5xl font-heading font-black text-white">
-            Cursos Disponibles & Recursos
+            Los 4 Cursos Oficiales de ElectroLab
           </h2>
         </div>
         <p class="text-xs sm:text-sm text-slate-400 max-w-md">
-          Elige tu curso individual o aprovecha el <strong>Pack Master</strong> con descuento especial. Acceso inmediato garantizado tras tu compra.
+          Aprende desde los fundamentos eléctricos y semiconductores hasta la amplificación con transistores, amplificadores operacionales y microcontroladores con sensado en tiempo real.
         </p>
       </div>
 
       <!-- Filter Tabs -->
       <div class="flex flex-wrap items-center gap-2 mb-10">
         <button type="button" data-filter="all" class="px-4 py-2 rounded-xl text-xs font-bold bg-cyan-500 text-slate-950 transition-all">
-          Todos los Cursos
+          Todos los Cursos (4)
         </button>
-        <button type="button" data-filter="electronica" class="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800/80 text-slate-300 hover:text-white transition-all">
-          Electrónica Desde Cero
+        <button type="button" data-filter="curso-1" class="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800/80 text-slate-300 hover:text-white transition-all">
+          Curso 1: Fundamentos & Fuentes
         </button>
-        <button type="button" data-filter="arduino" class="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800/80 text-slate-300 hover:text-white transition-all">
-          Arduino & Microcontroladores
+        <button type="button" data-filter="curso-2" class="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800/80 text-slate-300 hover:text-white transition-all">
+          Curso 2: Transistores & Potencia
         </button>
-        <button type="button" data-filter="combo" class="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800/80 text-slate-300 hover:text-white transition-all flex items-center gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-          Packs & Combos (58% OFF)
+        <button type="button" data-filter="curso-3" class="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800/80 text-slate-300 hover:text-white transition-all">
+          Curso 3: Operacionales & Filtros
         </button>
-        <button type="button" data-filter="guias" class="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800/80 text-slate-300 hover:text-white transition-all">
-          Guías y Modelos LTspice
+        <button type="button" data-filter="curso-4" class="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800/80 text-slate-300 hover:text-white transition-all">
+          Curso 4: Microcontroladores & Sensores
         </button>
       </div>
 
       <!-- Courses Grid Container (Populated by app.js) -->
-      <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
         <!-- Courses will be rendered dynamically here -->
       </div>
 
@@ -951,7 +950,7 @@
   <!-- Scripts -->
   <script src="./auth.js"></script>
   <script src="./circuit-sim.js"></script>
-  <script src="./app.js?v=20261014-2300"></script>
+  <script src="./app.js?v=20261015-1430"></script>
   <!-- Vercel Analytics -->
   <script defer src="/_vercel/insights/script.js"></script>
 </body>

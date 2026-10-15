@@ -36,17 +36,17 @@
     }
   };
 
-  // Base de datos de Cursos y Recursos
+  // Base de datos de los 4 Cursos Oficiales y Recursos
   const COURSES = [
     {
-      id: 'curso-electronica-cero',
-      category: 'electronica',
-      title: 'Electrónica Práctica Desde CERO',
-      subtitle: 'De las Leyes Fundamentales al Banco de Pruebas: Simulación, Análisis y Armado Real',
-      tag: '⭐ MÁS ELEGIDO PARA INICIAR',
+      id: 'curso-1',
+      category: 'curso-1',
+      title: 'Curso 1: Fundamentos de Electrónica y Fuentes Lineales',
+      subtitle: 'Magnitudes fundamentales, circuitos mixtos, semiconductores, compuertas con diodos, transformadores, filtrado y proyecto integrador de fuente lineal completa.',
+      tag: '⭐ CURSO 1 · BASE FUNDAMENTAL',
       level: 'Principiante a Intermedio',
-      duration: '14 Módulos · +35 Horas de video HD',
-      projectsCount: '28 Circuitos Prácticos',
+      duration: '15 Clases · +30 Horas de video HD',
+      projectsCount: '15 Clases Prácticas',
       image: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'blue',
       priceARS: 18900,
@@ -56,78 +56,73 @@
       driveFolder: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
       youtubePreview: 'https://www.youtube.com/embed/videoseries?list=PLZRAKzDxXlAI',
       features: [
-        'Leyes de Ohm, Kirchhoff, divisor de tensión y corriente',
-        'Semiconductores: Diodos rectificadores, Zener y LEDs',
-        'Transistores BJT y MOSFET como interruptor y amplificador',
-        'Temporizador 555 a fondo: Modo astable y monoestable',
-        'Simulación profesional de circuitos paso a paso en LTspice',
-        'Diseño de fuentes de alimentación lineales reguladas',
-        'Esquemáticos PDF descargables + Archivos .ASC de LTspice',
-        'Certificado oficial digital de finalización'
+        'Magnitudes fundamentales: tensión, corriente, resistencia y potencia en CC',
+        'Circuitos resistivos serie, paralelo y mixto; divisores de tensión y corriente',
+        'Diodos de silicio y germanio: juntura PN y compuertas lógicas con diodos',
+        'Simulaciones profesionales en LTspice y modelado de componentes no lineales',
+        'Electromagnetismo, inductores y transformación de corriente alterna',
+        'Rectificación de media onda y onda completa con puente de diodos',
+        'Filtrado capacitivo, rizado y regulación con Diodo Zener',
+        'Fuentes simétricas, multiplicadores de voltaje y ensamble de Fuente Lineal'
       ],
       syllabus: [
         {
-          module: 'Módulo 1: Fundamentos Eléctricos Sin Vueltas',
+          module: 'Módulo 1: Conceptos Eléctricos y Circuitos Resistivos',
           lessons: [
-            { title: 'Tensión, corriente, resistencia y potencia: La analogía definitiva', duration: '24 min', isDemo: true },
-            { title: 'Uso correcto del multímetro digital: Mediciones sin quemar nada', duration: '32 min' },
-            { title: 'Ley de Ohm y Leyes de Kirchhoff con ejercicios reales de protoboard', duration: '40 min' },
-            { title: 'Teoremas de Thévenin y Norton aplicados a circuitos prácticos', duration: '35 min' }
+            { title: 'Clase 1: Conceptos Eléctricos Básicos', desc: 'Magnitudes fundamentales: tensión, corriente, resistencia y potencia. Análisis elemental de circuitos en CC.', duration: '45 min', isDemo: true },
+            { title: 'Clase 2: Circuitos Mixtos y Divisores', desc: 'Análisis resistivo serie, paralelo y mixto; divisores de tensión y corriente.', duration: '50 min' }
           ]
         },
         {
-          module: 'Módulo 2: Componentes Pasivos y Comportamiento Dinámico',
+          module: 'Módulo 2: Diodos Semiconductores y Compuertas Lógicas',
           lessons: [
-            { title: 'Resistencias comerciales: Código de colores, tolerancia y disipación', duration: '20 min' },
-            { title: 'Capacitores cerámicos y electrolíticos: Tiempo de carga RC y filtro', duration: '38 min' },
-            { title: 'Inductores y bobinas en corriente continua y pulsada', duration: '28 min' }
+            { title: 'Clase 3: Introducción a los Diodos Semiconductores', desc: 'Juntura PN, diferencias silicio/germanio y estados de polarización.', duration: '40 min' },
+            { title: 'Clase 4: Circuitos con Diodos en Serie y Paralelo', desc: 'Comportamiento en mallas y punto de operación.', duration: '45 min' },
+            { title: 'Clase 5: Compuertas Lógicas con Diodos', desc: 'Implementación de funciones AND y OR con diodos y resistencias.', duration: '40 min' }
           ]
         },
         {
-          module: 'Módulo 3: Semiconductores y Diodos',
+          module: 'Módulo 3: Simulación Circuital e Inductores',
           lessons: [
-            { title: 'La juntura P-N explicada de forma intuitiva', duration: '25 min' },
-            { title: 'Diodos 1N4007 y 1N4148: Rectificación de media onda y onda completa', duration: '42 min' },
-            { title: 'Diodos Zener: Regulación de tensión y limitadores', duration: '30 min' },
-            { title: 'Optoelectrónica: LEDs de potencia, fotodiodos y optoacopladores', duration: '35 min' }
+            { title: 'Clase 6: Simulación Circuital y Diodos de Germanio', desc: 'Simulaciones en LTspice y modelado de componentes no lineales.', duration: '55 min' },
+            { title: 'Clase 7: Electromagnetismo e Inductores', desc: 'Inducción magnética, comportamiento de inductores y relación de transformación.', duration: '45 min' }
           ]
         },
         {
-          module: 'Módulo 4: El Mundo del Transistor (BJT y MOSFET)',
+          module: 'Módulo 4: Rectificación y Almacenamiento Capacitivo',
           lessons: [
-            { title: 'Transistor Bipolar NPN y PNP: Zona de corte y saturación (Switching)', duration: '45 min' },
-            { title: 'Cálculo de la resistencia de base para activar relés y cargas pesadas', duration: '38 min' },
-            { title: 'Transistores MOSFET: Compuerta, canal N y control por tensión', duration: '50 min' }
+            { title: 'Clase 8: Rectificación de Media Onda', desc: 'Conversión AC a CC con un diodo rectificador.', duration: '40 min' },
+            { title: 'Clase 9: Rectificación de Onda Completa', desc: 'Puente de diodos y flujo en ambos semiciclos.', duration: '50 min' },
+            { title: 'Clase 10: Capacitancia y Tipos de Capacitores', desc: 'Almacenamiento electrostático, dieléctricos y agrupamiento.', duration: '45 min' }
           ]
         },
         {
-          module: 'Módulo 5: Simulación Asistida con LTspice',
+          module: 'Módulo 5: Filtrado, Regulación Zener y Fuentes Simétricas',
           lessons: [
-            { title: 'Instalación y configuración del entorno de trabajo en LTspice', duration: '22 min', isDemo: true },
-            { title: 'Análisis transitorio (.tran) y respuesta en frecuencia (.ac)', duration: '48 min' },
-            { title: 'Importación de modelos SPICE de fabricantes reales', duration: '36 min' }
+            { title: 'Clase 11: Filtrado Capacitivo', desc: 'Reducción del rizado mediante descarga progresiva.', duration: '45 min' },
+            { title: 'Clase 12: Regulación con Diodo Zener', desc: 'Estabilización por zona de ruptura.', duration: '50 min' },
+            { title: 'Clase 13: Fuentes de Alimentación Simétricas', desc: 'Salidas positiva, negativa y masa.', duration: '55 min' }
           ]
         },
         {
-          module: 'Módulo 6: Proyecto Integrador: Fuente Regulada con Protección',
+          module: 'Módulo 6: Multiplicadores y Proyecto Integrador',
           lessons: [
-            { title: 'Cálculo del transformador, puente de diodos y capacitor de ripple', duration: '40 min' },
-            { title: 'Reguladores lineales LM78xx y LM317 variable con disipador', duration: '45 min' },
-            { title: 'Puesta en marcha, mediciones con carga real y documentación', duration: '55 min' }
+            { title: 'Clase 14: Multiplicadores de Voltaje', desc: 'Circuitos escalonados diodo-capacitor para elevar tensión continua.', duration: '45 min' },
+            { title: 'Clase 15: Proyecto Integrador: Fuente Lineal Completa', desc: 'Ensamblado y prueba global: transformación, rectificación, filtrado y regulación.', duration: '65 min' }
           ]
         }
       ]
     },
     {
-      id: 'curso-arduino-microcontroladores',
-      category: 'arduino',
-      title: 'Arduino & Microcontroladores: Del Primer Sketch a IoT',
-      subtitle: 'Aprende a Programar Microcontroladores, Sensar el Mundo Real y Conectar Dispositivos a Internet',
-      tag: '🚀 HARDWARE + FIRMWARE',
-      level: 'De Cero a Avanzado',
-      duration: '16 Módulos · +42 Horas de video HD',
-      projectsCount: '32 Proyectos con Código',
-      image: 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80',
+      id: 'curso-2',
+      category: 'curso-2',
+      title: 'Curso 2: Amplificación con Transistores y Electrónica de Potencia',
+      subtitle: 'Estructuras BJT NPN/PNP, polarización en CC, excursión simétrica, pequeña señal, respuesta en frecuencia, JFET/MOSFET y fuentes conmutadas.',
+      tag: '⚡ CURSO 2 · POTENCIA & BJT/FET',
+      level: 'Intermedio a Avanzado',
+      duration: '12 Clases · +28 Horas de video HD',
+      projectsCount: '12 Clases Prácticas',
+      image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'cyan',
       priceARS: 22500,
       origARS: 42000,
@@ -136,77 +131,64 @@
       driveFolder: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=drive_link',
       youtubePreview: 'https://www.youtube.com/embed/videoseries?list=PLdmC3bfdJGAk',
       features: [
-        'Arquitectura AVR (ATmega328P) y 32-bit ESP32',
-        'Programación en C++ para microcontroladores desde cero',
-        'Manejo de entradas/salidas digitales, PWM e interrupciones',
-        'Conversor Analógico-Digital (ADC) y calibración de sensores',
-        'Protocolos de comunicación: UART Serie, I2C y SPI',
-        'Pantallas LCD 16x2, displays OLED I2C y matrices LED',
-        'Control de actuadores: Servomotores, motores paso a paso y relés',
-        'Conectividad WiFi con ESP32, Dashboard Web y MQTT / IoT',
-        'Código fuente .ino totalmente comentado línea por línea'
+        'Transistores BJT NPN y PNP: zonas de corte, saturación y activa',
+        'Redes de polarización en CC para fijar el punto de reposo estático (Q)',
+        'Punto de trabajo dinámico con superposición de señales alternas',
+        'Máxima excursión simétrica: recta de carga para evitar recortes',
+        'Balance de potencia y eficiencia: potencia de fuente y útil en la carga',
+        'Configuraciones colector común (seguidor de emisor) y base común',
+        'Modelado en pequeña señal con parámetros híbridos y cálculo de ganancias',
+        'Respuesta en frecuencia, diagramas de Bode, transistores FET y fuentes conmutadas'
       ],
       syllabus: [
         {
-          module: 'Módulo 1: Introducción a los Microcontroladores y C++',
+          module: 'Módulo 1: Fundamentos y Polarización del Transistor BJT',
           lessons: [
-            { title: '¿Qué es un microcontrolador y cómo difiere de una computadora?', duration: '26 min', isDemo: true },
-            { title: 'Instalación de Arduino IDE 2.0 y controladores CH340 / CP2102', duration: '20 min' },
-            { title: 'Estructura básica: setup(), loop(), tipos de datos y operadores en C++', duration: '45 min' },
-            { title: 'Tu primer sketch: Control de LEDs, secuencias y retardos sin millis()', duration: '35 min' }
+            { title: 'Clase 1: Transistores BJT', desc: 'Estructura NPN y PNP, zonas de corte, saturación y activa; corrientes de terminal.', duration: '50 min', isDemo: true },
+            { title: 'Clase 2: Polarización en Corriente Continua', desc: 'Redes de polarización para fijar el punto de reposo estático.', duration: '55 min' },
+            { title: 'Clase 3: Punto de Trabajo Dinámico', desc: 'Superposición de señales alternas a la polarización CC.', duration: '50 min' }
           ]
         },
         {
-          module: 'Módulo 2: Entradas Digitales, Rebote y Máquinas de Estado',
+          module: 'Módulo 2: Excursión Simétrica y Rendimiento Energético',
           lessons: [
-            { title: 'Pulsadores con resistencias Pull-Up internas y externas', duration: '30 min' },
-            { title: 'Eliminación del rebote mecánico (Debounce) por hardware y por software', duration: '38 min' },
-            { title: 'Programación no bloqueante con millis(): Adiós al delay()', duration: '52 min' },
-            { title: 'Diseño de máquinas de estados finitos (FSM) con switch-case', duration: '48 min' }
+            { title: 'Clase 4: Máxima Excursión Simétrica', desc: 'Recta de carga y punto Q central para evitar recortes.', duration: '55 min' },
+            { title: 'Clase 5: Balance de Potencia y Eficiencia', desc: 'Potencia de fuente, disipada y entregada a la carga.', duration: '50 min' }
           ]
         },
         {
-          module: 'Módulo 3: Señales Analógicas, PWM y Sensores',
+          module: 'Módulo 3: Configuraciones y Modelado en Pequeña Señal',
           lessons: [
-            { title: 'El ADC de 10 bits: Lectura de potenciómetros, LDR y termistores NTC', duration: '40 min' },
-            { title: 'Modulación por Ancho de Pulsos (PWM): Dimmer de luces y velocidad de motores', duration: '36 min' },
-            { title: 'Sensor ultrasónico HC-SR04 y sensor digital de temperatura DHT11/22', duration: '44 min' }
+            { title: 'Clase 6: Configuración Colector Común', desc: 'Seguidor de emisor para adaptación de impedancias.', duration: '45 min' },
+            { title: 'Clase 7: Configuración Base Común', desc: 'Baja impedancia de entrada y alta respuesta en frecuencia.', duration: '45 min' },
+            { title: 'Clase 8: Modelado en Pequeña Señal', desc: 'Parámetros híbridos, cálculo de ganancias e impedancias.', duration: '60 min' }
           ]
         },
         {
-          module: 'Módulo 4: Comunicación y Visualización de Datos',
+          module: 'Módulo 4: Respuesta en Frecuencia y Diagramas de Bode',
           lessons: [
-            { title: 'Protocolo UART: Envío y recepción de comandos por Serial Monitor', duration: '35 min' },
-            { title: 'Bus I2C: Conexión de displays LCD 16x2 y pantallas OLED SSD1306', duration: '50 min' },
-            { title: 'Creación de interfaces gráficas simples y menús con encoder rotativo', duration: '55 min' }
+            { title: 'Clase 9: Respuesta en Frecuencia', desc: 'Capacitores de acople y capacitancias parásitas internas.', duration: '55 min' },
+            { title: 'Clase 10: Ancho de Banda y Diagramas de Bode', desc: 'Frecuencias de corte inferior y superior.', duration: '60 min' }
           ]
         },
         {
-          module: 'Módulo 5: Interrupciones de Hardware y Temporizadores',
+          module: 'Módulo 5: Transistores FET y Fuentes Conmutadas',
           lessons: [
-            { title: 'Interrupciones externas (attachInterrupt): Respuesta en microsegundos', duration: '42 min' },
-            { title: 'Timers internos y generación de frecuencias de precisión', duration: '46 min' }
-          ]
-        },
-        {
-          module: 'Módulo 6: Salto al ESP32 & Internet de las Cosas (IoT)',
-          lessons: [
-            { title: 'Configuración de la placa ESP32 y conexión a redes WiFi 2.4GHz', duration: '38 min' },
-            { title: 'Creación de un servidor web local para monitorear sensores desde el celular', duration: '60 min' },
-            { title: 'Envío de datos a la nube con protocolo MQTT y dashboards en tiempo real', duration: '65 min' }
+            { title: 'Clase 11: Transistores de Efecto de Campo (FET)', desc: 'Dispositivos JFET y MOSFET controlados por tensión.', duration: '60 min' },
+            { title: 'Clase 12: Fuentes Conmutadas', desc: 'Topologías reductoras/elevadoras y conmutación de alta frecuencia.', duration: '65 min' }
           ]
         }
       ]
     },
     {
-      id: 'combo-master-electronica-arduino',
-      category: 'combo',
-      title: '🌟 PACK MASTER: Electrónica Total + Arduino & Microcontroladores Full Stack',
-      subtitle: 'La Formación Definitiva: Todo el Hardware y Todo el Firmware en un Único Programa Intensivo',
-      tag: '🔥 MEJOR VALOR (AHORRA 58%)',
-      level: 'De Cero a Nivel Profesional',
-      duration: '30 Módulos · +77 Horas de video HD',
-      projectsCount: '60+ Proyectos y Circuitos Reales',
+      id: 'curso-3',
+      category: 'curso-3',
+      title: 'Curso 3: Amplificadores Operacionales y Filtros Analógicos',
+      subtitle: 'Etapas diferenciales, Op-Amps lineales y no lineales, Schmitt Triggers, temporizador 555, instrumentación, conversores ADC/DAC y filtros activos de orden superior.',
+      tag: '🎛️ CURSO 3 · OP-AMPS & FILTROS',
+      level: 'Intermedio a Avanzado',
+      duration: '19 Clases · +40 Horas de video HD',
+      projectsCount: '19 Clases Prácticas',
       image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'emerald',
       priceARS: 31900,
@@ -214,38 +196,127 @@
       priceUSD: 32,
       origUSD: 77,
       driveFolder: 'https://drive.google.com/drive/folders/18vYXavKUw_ge42v26zVGgFxHzGsSWV5J?usp=drive_link',
-      isBundle: true,
+      youtubePreview: 'https://www.youtube.com/embed/videoseries?list=PLZRAKzDxXlAI',
       features: [
-        'Acceso de por vida a los 2 Cursos Completos (Electrónica + Arduino)',
-        'Pack Exclusivo de +60 Modelos de Simulación LTspice listos para correr',
-        'Biblioteca de Códigos Arduino / ESP32 optimizados y testeados',
-        'Guía en PDF de Pinouts, Fórmulas Rápidas y Circuitos Típicos',
-        'Canal de Consultas Prioritario directo con el profesor',
-        'Doble Certificado de Finalización Oficial con verificación'
+        'Amplificadores diferenciales: rechazo de modo común y fuentes de corriente',
+        'Op-Amp ideal y real: arquitectura interna y lazo abierto',
+        'Configuraciones inversora, no inversora, buffer, sumador y restador',
+        'Comparadores e histéresis: Schmitt Trigger antirruido',
+        'Temporizador NE555 a fondo: modos astable y monoestable',
+        'Amplificadores de instrumentación de alta precisión para sensores',
+        'Integradores, derivadores, decibeles y conversores ADC/DAC',
+        'Filtros pasivos y activos pasa bajo, pasa alto, pasa banda y orden superior'
+      ],
+      syllabus: [
+        {
+          module: 'Módulo 1: Arquitectura y Configuraciones Básicas',
+          lessons: [
+            { title: 'Clase 1: Amplificadores Diferenciales', desc: 'Etapa de entrada, rechazo de modo común y fuentes de corriente.', duration: '50 min', isDemo: true },
+            { title: 'Clase 2: El Amplificador Operacional Ideal y Real', desc: 'Pines, arquitectura interna y lazo abierto.', duration: '55 min' },
+            { title: 'Clase 3: Configuración Inversora y Tierra Virtual', desc: 'Punto de suma virtual y ajuste de ganancia.', duration: '45 min' },
+            { title: 'Clase 4: Configuración No Inversora y Buffer', desc: 'Alta impedancia de entrada y seguidor de tensión.', duration: '45 min' }
+          ]
+        },
+        {
+          module: 'Módulo 2: Procesamiento Matemático y Acondicionamiento',
+          lessons: [
+            { title: 'Clase 5: Operaciones Sumadoras y Combinadas', desc: 'Mezcla y suma ponderada de señales.', duration: '40 min' },
+            { title: 'Clase 6: Amplificador Restador', desc: 'Sustracción diferencial de voltajes analógicos.', duration: '45 min' },
+            { title: 'Clase 9: Amplificadores de Instrumentación', desc: 'Arreglo de 3 op-amps para alta precisión y sensores.', duration: '55 min' },
+            { title: 'Clase 10: Integradores Analógicos', desc: 'Rampas y conversión cuadrada a triangular.', duration: '50 min' },
+            { title: 'Clase 11: Derivadores Analógicos', desc: 'Tasa de cambio de señal y respuesta a altas frecuencias.', duration: '50 min' }
+          ]
+        },
+        {
+          module: 'Módulo 3: Comparadores, NE555 y Cuantización',
+          lessons: [
+            { title: 'Clase 7: Comparadores e Histéresis', desc: 'Comparación en lazo abierto y Schmitt Trigger antirruido.', duration: '50 min' },
+            { title: 'Clase 8: Temporizador NE555', desc: 'Comparadores internos, modos astable y monoestable.', duration: '55 min' },
+            { title: 'Clase 12: Conversores ADC y DAC', desc: 'Redes R-2R y comparadores de cuantización.', duration: '50 min' }
+          ]
+        },
+        {
+          module: 'Módulo 4: Decibeles y Teoría de Filtros',
+          lessons: [
+            { title: 'Clase 13: Decibeles y Respuesta Logarítmica', desc: 'Escala logarítmica y acondicionamiento.', duration: '45 min' },
+            { title: 'Clase 14: Introducción Teórica a los Filtros', desc: 'Banda de paso, atenuación y frecuencia de corte.', duration: '50 min' }
+          ]
+        },
+        {
+          module: 'Módulo 5: Filtros Pasivos (RC y RL)',
+          lessons: [
+            { title: 'Clase 15: Filtros Pasivos Pasa Bajo', desc: 'Topologías RC y RL.', duration: '45 min' },
+            { title: 'Clase 16: Filtros Pasivos Pasa Alto', desc: 'Atenuación de componentes de baja frecuencia.', duration: '45 min' },
+            { title: 'Clase 17: Filtros Pasivos Pasa Banda', desc: 'Resonancia, selectividad y factor Q.', duration: '55 min' }
+          ]
+        },
+        {
+          module: 'Módulo 6: Filtros Activos Lineales y Orden Superior',
+          lessons: [
+            { title: 'Clase 18: Filtros Activos de Primer Orden', desc: 'Filtros con op-amps sin pérdidas por carga.', duration: '55 min' },
+            { title: 'Clase 19: Filtros Activos de Orden Superior', desc: 'Filtros de segundo orden con pendientes pronunciadas.', duration: '60 min' }
+          ]
+        }
       ]
     },
     {
-      id: 'guia-simulaciones-ltspice',
-      category: 'guias',
-      title: 'Biblioteca Maestra de Simulaciones en LTspice (.ASC)',
-      subtitle: '+60 Circuitos Analógicos y de Potencia Listos para Simular, Medir y Modificar',
-      tag: '📦 DESCARGA INMEDIATA',
+      id: 'curso-4',
+      category: 'curso-4',
+      title: 'Curso 4: Microcontroladores, Sensores y Adquisición de Datos',
+      subtitle: 'Programación estructurada en C/C++, lógica no bloqueante con millis, multiplexación de 7 segmentos, lecturas analógicas ADC, termostatos y telemetría en tiempo real.',
+      tag: '🤖 CURSO 4 · FIRMWARE & SENSORES',
       level: 'Todos los niveles',
-      duration: 'Recurso Descargable (.zip + PDF)',
-      projectsCount: '+60 Modelos .ASC',
-      image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
-      badgeColor: 'slate',
+      duration: '10 Clases · +25 Horas de video HD',
+      projectsCount: '10 Clases Prácticas',
+      image: 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80',
+      badgeColor: 'cyan',
       priceARS: 7900,
       origARS: 14900,
       priceUSD: 8,
       origUSD: 15,
       driveFolder: 'https://drive.google.com/drive/folders/1Ria3iinViGHPSRa1VlQIypBTQRrf-IAX?usp=drive_link',
+      youtubePreview: 'https://www.youtube.com/embed/videoseries?list=PLdmC3bfdJGAk',
       features: [
-        'Fuentes de alimentación lineales, conmutadas y dobladores de tensión',
-        'Filtros activos paso bajo, paso alto y pasabanda con Op-Amps',
-        'Temporizadores 555 en múltiples configuraciones astable/monoestable',
-        'Amplificadores con BJT clase A, B y push-pull',
-        'Guía PDF explicativa de cómo interpretar gráficas FFT y transitorios'
+        'Estructura setup/loop y control eficiente de salidas digitales',
+        'Temporización profesional no bloqueante con millis y secuencias de semáforo',
+        'Comunicación serial y envío de telemetría y variables numéricas a la PC',
+        'Entradas digitales, pull-up interno y detección de pulsos sin rebote mecánico',
+        'Estructuras de control, bucles y gestión de eventos secuenciales',
+        'Multiplexación de pantallas de 7 segmentos de 4 dígitos',
+        'Lectura analógica (ADC), potenciómetros y mapeo de rangos',
+        'Termostatos, relés, sensores y adquisición de datos en tiempo real'
+      ],
+      syllabus: [
+        {
+          module: 'Módulo 1: Salidas Digitales, Temporización y Comunicación',
+          lessons: [
+            { title: 'Clase 1: Introducción a Microcontroladores y Salidas Digitales', desc: 'Estructura setup/loop y control de LEDs.', duration: '40 min', isDemo: true },
+            { title: 'Clase 2: Temporización y Secuenciadores Lógicos', desc: 'Retardos, millis y secuencias de semáforo.', duration: '50 min' },
+            { title: 'Clase 3: Comunicación Serial y Declaración de Variables', desc: 'Envío de telemetría y variables numéricas a la PC.', duration: '45 min' }
+          ]
+        },
+        {
+          module: 'Módulo 2: Entradas Digitales, Anti-Rebote y Control de Flujo',
+          lessons: [
+            { title: 'Clase 4: Lectura de Entradas Digitales y Pulsadores', desc: 'Pull-up interno y detección de pulsos.', duration: '45 min' },
+            { title: 'Clase 5: Estructuras de Control y Contadores', desc: 'Condicionales, bucles y control de eventos no bloqueantes.', duration: '50 min' }
+          ]
+        },
+        {
+          module: 'Módulo 3: Multiplexación de Displays y Lectura Analógica ADC',
+          lessons: [
+            { title: 'Clase 6: Multiplexación de Pantallas de 7 Segmentos', desc: 'Barrido multiplexado para displays de 4 dígitos.', duration: '55 min' },
+            { title: 'Clase 7: Lectura Analógica y Conversión Digital', desc: 'Muestreo ADC interno de potenciómetros y mapeo de rangos.', duration: '50 min' }
+          ]
+        },
+        {
+          module: 'Módulo 4: Control de Procesos, Sensores y Adquisición',
+          lessons: [
+            { title: 'Clase 8: Control de Procesos y Termostatos', desc: 'Umbrales de temperatura, control de relés y motores.', duration: '55 min' },
+            { title: 'Clase 9: Integración de Módulos Sensores y Actuadores', desc: 'Luz, sonido, presencia, inclinación y buzzers.', duration: '50 min' },
+            { title: 'Clase 10: Adquisición de Datos e Interfaz en Tiempo Real', desc: 'Telemetría en serie, graficación continua y enlace a hojas de cálculo.', duration: '60 min' }
+          ]
+        }
       ]
     }
   ];
@@ -637,13 +708,18 @@
               </button>
               <div class="module-body px-4 sm:px-6 pb-4 pt-1 space-y-2 border-t border-slate-900">
                 ${mod.lessons.map(lesson => `
-                  <div class="flex items-center justify-between text-xs py-1.5 text-slate-300 border-b border-slate-900/50 last:border-0">
-                    <span class="flex items-center gap-2">
-                      <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
-                      <span>${lesson.title}</span>
-                      ${lesson.isDemo ? '<span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">Clase Demo Gratis</span>' : ''}
-                    </span>
-                    <span class="text-slate-500 font-mono text-[11px] shrink-0">${lesson.duration}</span>
+                  <div class="flex items-start justify-between text-xs py-2 text-slate-300 border-b border-slate-900/50 last:border-0 gap-3">
+                    <div class="flex items-start gap-2.5">
+                      <svg class="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <span class="font-bold text-white text-xs">${lesson.title}</span>
+                          ${lesson.isDemo ? '<span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">Clase Demo Gratis</span>' : ''}
+                        </div>
+                        ${lesson.desc ? `<p class="text-[11px] text-slate-400 mt-0.5 leading-relaxed">${lesson.desc}</p>` : ''}
+                      </div>
+                    </div>
+                    <span class="text-slate-500 font-mono text-[11px] shrink-0 pt-0.5">${lesson.duration}</span>
                   </div>
                 `).join('')}
               </div>
