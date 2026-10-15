@@ -49,9 +49,9 @@
       projectsCount: '15 Clases Prácticas',
       image: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'blue',
-      priceARS: 18900,
-      origARS: 34500,
-      priceUSD: 19,
+      priceARS: 25000,
+      origARS: 35000,
+      priceUSD: 25,
       origUSD: 35,
       driveFolder: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
       youtubePreview: 'https://www.youtube.com/embed/videoseries?list=PLZRAKzDxXlAI',
@@ -124,10 +124,10 @@
       projectsCount: '12 Clases Prácticas',
       image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'cyan',
-      priceARS: 22500,
-      origARS: 42000,
-      priceUSD: 23,
-      origUSD: 42,
+      priceARS: 25000,
+      origARS: 35000,
+      priceUSD: 25,
+      origUSD: 35,
       driveFolder: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=drive_link',
       youtubePreview: 'https://www.youtube.com/embed/videoseries?list=PLdmC3bfdJGAk',
       features: [
@@ -191,10 +191,10 @@
       projectsCount: '19 Clases Prácticas',
       image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'emerald',
-      priceARS: 31900,
-      origARS: 76500,
-      priceUSD: 32,
-      origUSD: 77,
+      priceARS: 25000,
+      origARS: 35000,
+      priceUSD: 25,
+      origUSD: 35,
       driveFolder: 'https://drive.google.com/drive/folders/18vYXavKUw_ge42v26zVGgFxHzGsSWV5J?usp=drive_link',
       youtubePreview: 'https://www.youtube.com/embed/videoseries?list=PLZRAKzDxXlAI',
       features: [
@@ -270,10 +270,10 @@
       projectsCount: '10 Clases Prácticas',
       image: 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'cyan',
-      priceARS: 7900,
-      origARS: 14900,
-      priceUSD: 8,
-      origUSD: 15,
+      priceARS: 25000,
+      origARS: 35000,
+      priceUSD: 25,
+      origUSD: 35,
       driveFolder: 'https://drive.google.com/drive/folders/1Ria3iinViGHPSRa1VlQIypBTQRrf-IAX?usp=drive_link',
       youtubePreview: 'https://www.youtube.com/embed/videoseries?list=PLdmC3bfdJGAk',
       features: [
@@ -355,6 +355,64 @@
 
   function getCourseOrigPrice(course, currency = state.currency) {
     return currency === 'ARS' ? course.origARS : course.origUSD;
+  }
+
+  // Reglas oficiales de descuentos automáticos por volumen de cursos únicos
+  const VOLUME_DISCOUNT_RULES = {
+    0: { discountPct: 0, totalARS: 0, totalUSD: 0, savingARS: 0, savingUSD: 0, badge: '' },
+    1: { discountPct: 0, totalARS: 25000, totalUSD: 25, savingARS: 0, savingUSD: 0, badge: '' },
+    2: { discountPct: 15, totalARS: 42500, totalUSD: 42, savingARS: 7500, savingUSD: 8, badge: '15% OFF' },
+    3: { discountPct: 25, totalARS: 56250, totalUSD: 56, savingARS: 18750, savingUSD: 19, badge: '25% OFF' },
+    4: { discountPct: 35, totalARS: 65000, totalUSD: 65, savingARS: 35000, savingUSD: 35, badge: '35% OFF (Pack Completo)' }
+  };
+
+  // Cálculo en tiempo real de subtotales, descuentos y total a transferir
+  function calculateCartTotals(currency = state.currency) {
+    const cartCourses = [...new Set(state.cart)].map(id => COURSES.find(c => c.id === id)).filter(Boolean);
+    const count = cartCourses.length;
+
+    if (count === 0) {
+      return {
+        count: 0,
+        subtotal: 0,
+        volumeDiscount: 0,
+        discountPct: 0,
+        badge: '',
+        saving: 0,
+        couponDiscount: 0,
+        total: 0,
+        currency
+      };
+    }
+
+    const subtotal = currency === 'ARS' ? count * 25000 : count * 25;
+    const ruleKey = Math.min(count, 4);
+    const rule = VOLUME_DISCOUNT_RULES[ruleKey] || VOLUME_DISCOUNT_RULES[1];
+
+    const volumeTotal = count <= 4 ? (currency === 'ARS' ? rule.totalARS : rule.totalUSD) : Math.round(subtotal * 0.65);
+    const volumeDiscount = subtotal - volumeTotal;
+    const saving = currency === 'ARS' ? rule.savingARS : rule.savingUSD;
+    const discountPct = rule.discountPct;
+    const badge = rule.badge;
+
+    let couponDiscount = 0;
+    let finalTotal = volumeTotal;
+    if (state.appliedCoupon) {
+      couponDiscount = Math.round(volumeTotal * CONFIG.couponDiscount);
+      finalTotal = volumeTotal - couponDiscount;
+    }
+
+    return {
+      count,
+      subtotal,
+      volumeDiscount,
+      discountPct,
+      badge,
+      saving,
+      couponDiscount,
+      total: finalTotal,
+      currency
+    };
   }
 
   // Inicializar UI
@@ -558,13 +616,22 @@
     const cartCountDrawer = document.getElementById('cart-drawer-count');
     const cartItemsContainer = document.getElementById('cart-items-container');
     const cartSubtotalEl = document.getElementById('cart-subtotal');
+    const cartVolumeDiscountRow = document.getElementById('cart-volume-discount-row');
+    const cartVolumeBadge = document.getElementById('cart-volume-badge');
+    const cartVolumeDiscountEl = document.getElementById('cart-volume-discount');
+    const cartSavingHintRow = document.getElementById('cart-saving-hint-row');
+    const cartSavingAmountEl = document.getElementById('cart-saving-amount');
+    const cartVolumeTip = document.getElementById('cart-volume-tip');
+    const cartVolumeTipText = document.getElementById('cart-volume-tip-text');
     const cartDiscountEl = document.getElementById('cart-discount');
     const cartDiscountRow = document.getElementById('cart-discount-row');
     const cartTotalEl = document.getElementById('cart-total');
     const emptyState = document.getElementById('cart-empty-state');
     const filledState = document.getElementById('cart-filled-state');
 
-    const totalCount = state.cart.length;
+    const totals = calculateCartTotals();
+    const totalCount = totals.count;
+
     if (badge) badge.textContent = totalCount;
     if (cartCountDrawer) cartCountDrawer.textContent = `(${totalCount})`;
 
@@ -577,13 +644,11 @@
     if (emptyState) emptyState.classList.add('hidden');
     if (filledState) filledState.classList.remove('hidden');
 
-    let subtotal = 0;
-    const cartCourses = state.cart.map(id => COURSES.find(c => c.id === id)).filter(Boolean);
+    const cartCourses = [...new Set(state.cart)].map(id => COURSES.find(c => c.id === id)).filter(Boolean);
 
     if (cartItemsContainer) {
       cartItemsContainer.innerHTML = cartCourses.map(course => {
         const price = getCoursePrice(course);
-        subtotal += price;
 
         return `
           <div class="flex items-center gap-3 p-3 bg-slate-900/80 rounded-xl border border-slate-800">
@@ -600,20 +665,58 @@
       }).join('');
     }
 
-    // Calcular descuento por cupón si está aplicado
-    let discount = 0;
-    if (state.appliedCoupon) {
-      discount = Math.round(subtotal * CONFIG.couponDiscount);
+    // Subtotal
+    if (cartSubtotalEl) {
+      cartSubtotalEl.textContent = formatMoney(totals.subtotal);
+    }
+
+    // Descuento por Volumen Automático
+    if (totals.volumeDiscount > 0) {
+      if (cartVolumeDiscountRow) cartVolumeDiscountRow.classList.remove('hidden');
+      if (cartVolumeBadge) cartVolumeBadge.textContent = totals.badge;
+      if (cartVolumeDiscountEl) cartVolumeDiscountEl.textContent = `- ${formatMoney(totals.volumeDiscount)}`;
+      if (cartSavingHintRow) cartSavingHintRow.classList.remove('hidden');
+      if (cartSavingAmountEl) cartSavingAmountEl.textContent = formatMoney(totals.saving);
+    } else {
+      if (cartVolumeDiscountRow) cartVolumeDiscountRow.classList.add('hidden');
+      if (cartSavingHintRow) cartSavingHintRow.classList.add('hidden');
+    }
+
+    // Tip dinámico promocional por cantidad de cursos
+    if (cartVolumeTip && cartVolumeTipText) {
+      if (totalCount === 1) {
+        cartVolumeTip.className = 'text-[11px] px-3 py-2 rounded-xl bg-cyan-950/40 border border-cyan-500/30 text-cyan-300 flex items-center gap-2';
+        cartVolumeTipText.innerHTML = '💡 <strong>¡Suma 1 curso más</strong> para activar un <strong>15% OFF</strong>!';
+        cartVolumeTip.classList.remove('hidden');
+      } else if (totalCount === 2) {
+        cartVolumeTip.className = 'text-[11px] px-3 py-2 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 flex items-center gap-2';
+        cartVolumeTipText.innerHTML = '🔥 <strong>¡Suma 1 curso más</strong> para saltar al <strong>25% OFF</strong>!';
+        cartVolumeTip.classList.remove('hidden');
+      } else if (totalCount === 3) {
+        cartVolumeTip.className = 'text-[11px] px-3 py-2 rounded-xl bg-purple-950/40 border border-purple-500/30 text-purple-300 flex items-center gap-2';
+        cartVolumeTipText.innerHTML = '🚀 <strong>¡Suma el 4to curso</strong> y llevate el <strong>Pack Completo con 35% OFF</strong>!';
+        cartVolumeTip.classList.remove('hidden');
+      } else if (totalCount >= 4) {
+        cartVolumeTip.className = 'text-[11px] px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-950/80 to-cyan-950/80 border border-emerald-500/40 text-emerald-300 flex items-center gap-2';
+        cartVolumeTipText.innerHTML = `🎉 <strong>¡Máximo Descuento Aplicado!</strong> 35% OFF Pack Completo (Ahorras ${formatMoney(totals.saving)}).`;
+        cartVolumeTip.classList.remove('hidden');
+      } else {
+        cartVolumeTip.classList.add('hidden');
+      }
+    }
+
+    // Descuento adicional por Cupón (si aplica)
+    if (totals.couponDiscount > 0) {
       if (cartDiscountRow) cartDiscountRow.classList.remove('hidden');
-      if (cartDiscountEl) cartDiscountEl.textContent = `- ${formatMoney(discount)}`;
+      if (cartDiscountEl) cartDiscountEl.textContent = `- ${formatMoney(totals.couponDiscount)}`;
     } else {
       if (cartDiscountRow) cartDiscountRow.classList.add('hidden');
     }
 
-    const total = subtotal - discount;
-
-    if (cartSubtotalEl) cartSubtotalEl.textContent = formatMoney(subtotal);
-    if (cartTotalEl) cartTotalEl.textContent = formatMoney(total);
+    // Total Final a Transferir
+    if (cartTotalEl) {
+      cartTotalEl.textContent = formatMoney(totals.total);
+    }
   }
 
   // Cupón de descuento
@@ -797,19 +900,19 @@
       return;
     }
 
-    const cartCourses = state.cart.map(id => COURSES.find(c => c.id === id)).filter(Boolean);
-    let subtotal = 0;
-    cartCourses.forEach(c => subtotal += getCoursePrice(c));
-    let discount = state.appliedCoupon ? Math.round(subtotal * CONFIG.couponDiscount) : 0;
-    let total = subtotal - discount;
-
-    let itemsList = cartCourses.map(c => `• ${c.title} (${formatMoney(getCoursePrice(c))})`).join('%0A');
+    const totals = calculateCartTotals();
+    const cartCourses = [...new Set(state.cart)].map(id => COURSES.find(c => c.id === id)).filter(Boolean);
+    let itemsList = cartCourses.map(c => `• ${c.title}`).join('%0A');
 
     let msg = `Hola ElectroLab Educativa! Quiero comprar los siguientes cursos en mi moneda (${state.currency}):%0A%0A${itemsList}%0A%0A`;
-    if (state.appliedCoupon) {
-      msg += `Cupón aplicado: ${state.appliedCoupon} (Descuento: ${formatMoney(discount)})%0A`;
+    msg += `Subtotal (${totals.count} ${totals.count === 1 ? 'curso' : 'cursos'}): ${formatMoney(totals.subtotal, state.currency)}%0A`;
+    if (totals.volumeDiscount > 0) {
+      msg += `Descuento por volumen (${totals.badge}): -${formatMoney(totals.volumeDiscount, state.currency)}%0A`;
     }
-    msg += `*Total a abonar: ${formatMoney(total)}*%0A%0A¿Me confirman los datos para abonar (Transferencia bancaria / Mercado Pago / PayPal) y darme acceso? Gracias!`;
+    if (totals.couponDiscount > 0) {
+      msg += `Cupón ${state.appliedCoupon}: -${formatMoney(totals.couponDiscount, state.currency)}%0A`;
+    }
+    msg += `*Total Final a abonar: ${formatMoney(totals.total, state.currency)}*%0A%0A¿Me confirman los datos para abonar (Transferencia bancaria / Mercado Pago / PayPal) y darme acceso? Gracias!`;
 
     const url = `https://wa.me/${CONFIG.whatsappNumber}?text=${msg}`;
     window.open(url, '_blank');
@@ -886,16 +989,17 @@
 
   // Envío del comprobante de pago por WhatsApp con los detalles del pedido
   function sendPaymentReceipt(methodName) {
-    const cartCourses = state.cart.map(id => COURSES.find(c => c.id === id)).filter(Boolean);
-    let subtotal = 0;
-    cartCourses.forEach(c => subtotal += getCoursePrice(c));
-    let discount = state.appliedCoupon ? Math.round(subtotal * CONFIG.couponDiscount) : 0;
-    let total = subtotal - discount;
-    let curr = (methodName === 'PayPal') ? 'USD' : 'ARS';
+    const curr = (methodName === 'PayPal') ? 'USD' : 'ARS';
+    const totals = calculateCartTotals(curr);
+    const cartCourses = [...new Set(state.cart)].map(id => COURSES.find(c => c.id === id)).filter(Boolean);
 
     let itemsList = cartCourses.map(c => `• ${c.title}`).join('%0A');
 
-    let msg = `Hola ElectroLab Educativa! Acabo de realizar el pago mediante *${methodName}* por un total de *${formatMoney(total, curr)}*:%0A%0ACursos:%0A${itemsList}%0A%0AAdjunto el comprobante de la operación para que puedan habilitar mi acceso al aula virtual. Muchas gracias!`;
+    let msg = `Hola ElectroLab Educativa! Acabo de realizar el pago mediante *${methodName}* por un total de *${formatMoney(totals.total, curr)}*:%0A%0ACursos:%0A${itemsList}%0A%0A`;
+    if (totals.volumeDiscount > 0) {
+      msg += `(Incluye Descuento por Volumen: ${totals.badge})%0A`;
+    }
+    msg += `Adjunto el comprobante de la operación para que puedan habilitar mi acceso al aula virtual. Muchas gracias!`;
 
     const url = `https://wa.me/${CONFIG.whatsappNumber}?text=${msg}`;
     window.open(url, '_blank');
@@ -906,11 +1010,8 @@
     const container = document.getElementById('payment-modal-body');
     if (!modal || !container) return;
 
-    const cartCourses = state.cart.map(id => COURSES.find(c => c.id === id)).filter(Boolean);
-    let subtotal = 0;
-    cartCourses.forEach(c => subtotal += getCoursePrice(c));
-    let discount = state.appliedCoupon ? Math.round(subtotal * CONFIG.couponDiscount) : 0;
-    let total = subtotal - discount;
+    const curr = (method === 'paypal') ? 'USD' : 'ARS';
+    const totals = calculateCartTotals(curr);
 
     const whatsappComprobanteUrl = 'https://wa.me/5491123065347?text=Hola%20Daniel%2C%20adjunto%20comprobante%20de%20pago%20para%20habilitar%20mi%20curso%20en%20ElectroLab%20Educativa';
 
@@ -930,10 +1031,31 @@
               <span class="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-full">Sin Comisiones</span>
             </div>
 
-            <!-- Total a transferir -->
-            <div class="bg-black/50 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
-              <span class="text-xs text-slate-400 font-sans">Total a transferir:</span>
-              <span class="text-xl sm:text-2xl font-bold font-mono text-emerald-400">${formatMoney(total, 'ARS')}</span>
+            <!-- Total a transferir con desglose de descuento -->
+            <div class="bg-black/60 border border-slate-800 p-3.5 rounded-xl space-y-2">
+              ${totals.volumeDiscount > 0 ? `
+                <div class="flex justify-between items-center text-xs text-slate-400">
+                  <span>Subtotal (${totals.count} ${totals.count === 1 ? 'curso' : 'cursos'}):</span>
+                  <span class="line-through text-slate-500 font-mono">${formatMoney(totals.subtotal, 'ARS')}</span>
+                </div>
+                <div class="flex justify-between items-center text-xs text-emerald-400 font-semibold">
+                  <span class="flex items-center gap-1.5">
+                    <span>Descuento por volumen:</span>
+                    <span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-black px-1.5 py-0.5 rounded border border-emerald-500/30">${totals.badge}</span>
+                  </span>
+                  <span class="font-mono">- ${formatMoney(totals.volumeDiscount, 'ARS')}</span>
+                </div>
+              ` : ''}
+              ${totals.couponDiscount > 0 ? `
+                <div class="flex justify-between items-center text-xs text-emerald-400 font-semibold">
+                  <span>Cupón ${state.appliedCoupon} (10%):</span>
+                  <span class="font-mono">- ${formatMoney(totals.couponDiscount, 'ARS')}</span>
+                </div>
+              ` : ''}
+              <div class="flex items-center justify-between pt-1.5 border-t border-slate-800">
+                <span class="text-xs text-slate-200 font-sans font-bold">Total Final a transferir:</span>
+                <span class="text-xl sm:text-2xl font-bold font-mono text-emerald-400">${formatMoney(totals.total, 'ARS')}</span>
+              </div>
             </div>
 
             <!-- Datos de la cuenta -->
@@ -1002,10 +1124,31 @@
               <span class="text-[10px] bg-sky-500/20 text-sky-300 font-bold px-2 py-0.5 rounded-full">Acreditación Inmediata</span>
             </div>
 
-            <!-- Total a abonar -->
-            <div class="bg-black/50 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
-              <span class="text-xs text-slate-400 font-sans">Total a transferir:</span>
-              <span class="text-xl sm:text-2xl font-bold font-mono text-sky-400">${formatMoney(total, 'ARS')}</span>
+            <!-- Total a transferir con desglose de descuento -->
+            <div class="bg-black/60 border border-slate-800 p-3.5 rounded-xl space-y-2">
+              ${totals.volumeDiscount > 0 ? `
+                <div class="flex justify-between items-center text-xs text-slate-400">
+                  <span>Subtotal (${totals.count} ${totals.count === 1 ? 'curso' : 'cursos'}):</span>
+                  <span class="line-through text-slate-500 font-mono">${formatMoney(totals.subtotal, 'ARS')}</span>
+                </div>
+                <div class="flex justify-between items-center text-xs text-emerald-400 font-semibold">
+                  <span class="flex items-center gap-1.5">
+                    <span>Descuento por volumen:</span>
+                    <span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-black px-1.5 py-0.5 rounded border border-emerald-500/30">${totals.badge}</span>
+                  </span>
+                  <span class="font-mono">- ${formatMoney(totals.volumeDiscount, 'ARS')}</span>
+                </div>
+              ` : ''}
+              ${totals.couponDiscount > 0 ? `
+                <div class="flex justify-between items-center text-xs text-emerald-400 font-semibold">
+                  <span>Cupón ${state.appliedCoupon} (10%):</span>
+                  <span class="font-mono">- ${formatMoney(totals.couponDiscount, 'ARS')}</span>
+                </div>
+              ` : ''}
+              <div class="flex items-center justify-between pt-1.5 border-t border-slate-800">
+                <span class="text-xs text-slate-200 font-sans font-bold">Total Final a transferir:</span>
+                <span class="text-xl sm:text-2xl font-bold font-mono text-sky-400">${formatMoney(totals.total, 'ARS')}</span>
+              </div>
             </div>
 
             <!-- Datos oficiales MP -->
@@ -1066,10 +1209,31 @@
               <span class="text-[10px] bg-amber-500/20 text-amber-300 font-bold px-2 py-0.5 rounded-full">Exterior</span>
             </div>
 
-            <!-- Total en USD -->
-            <div class="bg-black/50 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
-              <span class="text-xs text-slate-400 font-sans">Total a abonar en USD:</span>
-              <span class="text-xl sm:text-2xl font-bold font-mono text-amber-400">${formatMoney(total, 'USD')}</span>
+            <!-- Total en USD con desglose de descuento -->
+            <div class="bg-black/60 border border-slate-800 p-3.5 rounded-xl space-y-2">
+              ${totals.volumeDiscount > 0 ? `
+                <div class="flex justify-between items-center text-xs text-slate-400">
+                  <span>Subtotal (${totals.count} ${totals.count === 1 ? 'curso' : 'cursos'}):</span>
+                  <span class="line-through text-slate-500 font-mono">${formatMoney(totals.subtotal, 'USD')}</span>
+                </div>
+                <div class="flex justify-between items-center text-xs text-emerald-400 font-semibold">
+                  <span class="flex items-center gap-1.5">
+                    <span>Descuento por volumen:</span>
+                    <span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-black px-1.5 py-0.5 rounded border border-emerald-500/30">${totals.badge}</span>
+                  </span>
+                  <span class="font-mono">- ${formatMoney(totals.volumeDiscount, 'USD')}</span>
+                </div>
+              ` : ''}
+              ${totals.couponDiscount > 0 ? `
+                <div class="flex justify-between items-center text-xs text-emerald-400 font-semibold">
+                  <span>Cupón ${state.appliedCoupon} (10%):</span>
+                  <span class="font-mono">- ${formatMoney(totals.couponDiscount, 'USD')}</span>
+                </div>
+              ` : ''}
+              <div class="flex items-center justify-between pt-1.5 border-t border-slate-800">
+                <span class="text-xs text-slate-200 font-sans font-bold">Total Final en USD:</span>
+                <span class="text-xl sm:text-2xl font-bold font-mono text-amber-400">${formatMoney(totals.total, 'USD')}</span>
+              </div>
             </div>
 
             <!-- Instrucciones de cuenta -->
@@ -1259,7 +1423,9 @@
     checkoutMercadoPago,
     checkoutTransferencia,
     checkoutPayPal,
+    openPaymentModal,
     closePaymentModal,
+    calculateCartTotals,
     copyToClipboard,
     sendPaymentReceipt,
     showToast
