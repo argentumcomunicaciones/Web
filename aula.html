@@ -370,6 +370,22 @@
             </button>
           </div>
 
+          <!-- Celebratory Exam Banner when Progress is 100% -->
+          <div id="classroom-exam-main-cta" class="hidden p-5 bg-gradient-to-r from-amber-950/60 via-slate-900 to-slate-950 border-2 border-amber-500/60 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-amber-500/10">
+            <div class="flex items-center gap-3.5">
+              <div class="w-11 h-11 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center text-2xl shrink-0">
+                🎓
+              </div>
+              <div>
+                <div class="text-sm font-heading font-extrabold text-white">¡Has completado el 100% de las clases!</div>
+                <div class="text-xs text-amber-300/90 font-mono">Ya puedes rendir tu Examen Final de Acreditación Oficial.</div>
+              </div>
+            </div>
+            <button onclick="openExamModal(currentCourse ? currentCourse.id : 'curso-1')" class="w-full sm:w-auto bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold py-3 px-6 rounded-xl transition-all shadow-lg shadow-amber-500/25 text-xs sm:text-sm shrink-0 flex items-center justify-center gap-2">
+              <span>📝 Rendir Examen Final</span>
+            </button>
+          </div>
+
         </div>
 
       </div>
@@ -386,6 +402,9 @@
             <div id="classroom-progress-bar" class="bg-gradient-to-r from-cyan-500 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
           </div>
         </div>
+
+        <!-- Banner cuando el progreso sea del 100% en el sidebar -->
+        <div id="classroom-exam-sidebar-cta" class="hidden"></div>
 
         <!-- Lessons Accordion Container -->
         <div id="classroom-syllabus-container" class="space-y-3 max-h-[600px] overflow-y-auto pr-1">
@@ -837,7 +856,8 @@
         course.modules.forEach(m => m.lessons.forEach(l => allLessonIds.push(l.id)));
         const completed = window.ElectroLabAuth.getLessonProgress(course.id);
         totalCompletedLessons += completed.length;
-        const percent = allLessonIds.length > 0 ? Math.round((completed.length / allLessonIds.length) * 100) : 0;
+        const percent = allLessonIds.length > 0 ? Math.min(100, Math.round((completed.length / allLessonIds.length) * 100)) : 0;
+        const isComplete = percent >= 100 || (allLessonIds.length > 0 && completed.length >= allLessonIds.length);
 
         if (isEnrolled) {
           enrolledCount++;
@@ -871,7 +891,14 @@
                 </div>
               </div>
 
-              <div class="p-6 pt-0 space-y-2">
+              <div class="p-6 pt-0 space-y-2.5">
+                ${(course.id === 'curso-1' || isComplete) ? `
+                  <button type="button" onclick="openExamModal('${course.id}')" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 text-xs sm:text-sm border-2 border-amber-300 cursor-pointer ${isComplete ? 'ring-4 ring-amber-400/50 ring-offset-2 ring-offset-slate-900 animate-pulse' : ''}">
+                    <span class="text-base">📝</span>
+                    <span>Rendir Examen Final</span>
+                    ${isComplete ? '<span class="text-[10px] bg-slate-950 text-amber-300 px-2 py-0.5 rounded-full font-mono uppercase font-black tracking-wider">100% Listo</span>' : ''}
+                  </button>
+                ` : ''}
                 <button onclick="enterClassroom('${course.id}')" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-heading font-bold py-2.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-xs">
                   <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                   <span>Entrar al Aula y Ver Clases</span>
@@ -1119,10 +1146,50 @@
 
       let allLessonsCount = 0;
       currentCourse.modules.forEach(m => allLessonsCount += m.lessons.length);
-      const percent = allLessonsCount > 0 ? Math.round((completedList.length / allLessonsCount) * 100) : 0;
+      const percent = allLessonsCount > 0 ? Math.min(100, Math.round((completedList.length / allLessonsCount) * 100)) : 0;
+      const isComplete = percent >= 100 || (allLessonsCount > 0 && completedList.length >= allLessonsCount);
 
       document.getElementById('classroom-progress-text').textContent = `${percent}%`;
       document.getElementById('classroom-progress-bar').style.width = `${percent}%`;
+
+      // Activar Banner Principal de Examen cuando el progreso sea del 100%
+      const mainCta = document.getElementById('classroom-exam-main-cta');
+      if (mainCta) {
+        if (isComplete && currentCourse.id === 'curso-1') {
+          mainCta.classList.remove('hidden');
+        } else {
+          mainCta.classList.add('hidden');
+        }
+      }
+
+      // Activar Banner Superior en el Sidebar del Temario cuando el progreso sea del 100%
+      const sidebarCta = document.getElementById('classroom-exam-sidebar-cta');
+      if (sidebarCta) {
+        if (isComplete && currentCourse.id === 'curso-1') {
+          sidebarCta.classList.remove('hidden');
+          sidebarCta.innerHTML = `
+            <div class="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/25 via-orange-500/20 to-amber-500/10 border-2 border-amber-400 shadow-xl shadow-amber-500/25 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono font-black uppercase text-amber-300 bg-slate-950/80 px-2.5 py-1 rounded-lg border border-amber-500/40 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                  🎉 100% COMPLETADO
+                </span>
+                <span class="text-[10px] font-mono text-amber-300 font-bold">10 Preguntas</span>
+              </div>
+              <p class="text-[11px] text-white font-medium leading-snug">
+                ¡Felicitaciones! Has completado las 11 clases. Ya puedes rendir tu Examen Final Oficial.
+              </p>
+              <button type="button" onclick="openExamModal('${currentCourse.id}')" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold py-3 px-3 rounded-xl transition-all shadow-lg text-xs flex items-center justify-center gap-2 border border-amber-300 cursor-pointer">
+                <span class="text-sm">📝</span>
+                <span class="tracking-wide">Rendir Examen Final</span>
+              </button>
+            </div>
+          `;
+        } else {
+          sidebarCta.classList.add('hidden');
+          sidebarCta.innerHTML = '';
+        }
+      }
 
       container.innerHTML = currentCourse.modules.map((mod, mIdx) => {
         const hasModuleName = mod.name && mod.name.trim().length > 0;
@@ -1181,6 +1248,7 @@
         `;
       }).join('');
 
+      // Botón destacado de Examen Final al final del temario de lecciones
       if (currentCourse.id === 'curso-1') {
         const uGrades = (user && user.grades && user.grades['curso-1']) || {};
         const attUsed = parseInt(uGrades.attemptsUsed || uGrades.attempts_used || 0, 10);
@@ -1188,26 +1256,36 @@
         const fGrade = uGrades.finalGrade || uGrades.final_grade || '';
 
         container.innerHTML += `
-          <div class="pt-2 border-t border-slate-800">
-            <button type="button" onclick="openExamModal('curso-1')" class="w-full text-left p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-transparent border border-amber-500/40 hover:border-amber-400 text-amber-300 font-bold text-xs flex items-center justify-between transition-all group shadow-lg shadow-amber-500/10">
-              <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-sm group-hover:scale-110 transition-transform shrink-0">
-                  📝
+          <div class="pt-4 border-t border-slate-800">
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-slate-950 border-2 ${isComplete ? 'border-amber-400 shadow-xl shadow-amber-500/25 ring-2 ring-amber-400/40' : 'border-amber-500/40'} space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="text-lg">🎓</span>
+                  <span class="text-xs font-heading font-extrabold text-white">Evaluación Final Oficial</span>
                 </div>
-                <div>
-                  <div class="text-white text-xs font-heading font-extrabold flex items-center gap-1.5">
-                    <span>Examen Final: Curso 1</span>
-                    ${stat === 'Aprobado' ? '<span class="text-[9px] px-1.5 py-0.2 bg-emerald-500/20 text-emerald-300 rounded border border-emerald-500/40 font-mono">Aprobado</span>' : ''}
-                  </div>
-                  <div class="text-[10px] text-amber-300/80 font-mono">
-                    10 Preguntas · ${attUsed >= 2 ? `2/2 Intentos (${fGrade || stat})` : `Intento ${attUsed + 1} de 2`}
-                  </div>
-                </div>
+                ${isComplete ? `
+                  <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full font-mono font-bold">100% Listo</span>
+                ` : `
+                  <span class="text-[10px] text-amber-300 font-mono">${percent}% completado</span>
+                `}
               </div>
-              <span class="text-[10px] bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-2.5 py-1 rounded-xl uppercase transition-all shadow-md shrink-0">
-                ${attUsed >= 2 ? 'Ver Nota' : 'Rendir'}
-              </span>
-            </button>
+              <p class="text-[11px] text-slate-300 leading-snug">
+                10 Preguntas técnicas · ${attUsed >= 2 ? `2/2 Intentos utilizados (${fGrade || stat})` : `Intento ${attUsed + 1} de 2 disponibles`}
+              </p>
+              <button type="button" onclick="openExamModal('curso-1')" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 text-xs sm:text-sm border-2 border-amber-300 cursor-pointer ${isComplete ? 'ring-2 ring-amber-400 animate-pulse' : ''}">
+                <span class="text-base">📝</span>
+                <span class="tracking-wide">Rendir Examen Final</span>
+              </button>
+            </div>
+          </div>
+        `;
+      } else if (isComplete) {
+        container.innerHTML += `
+          <div class="pt-4 border-t border-slate-800">
+            <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-center space-y-2">
+              <div class="text-xs font-heading font-bold text-slate-300">¡Temario 100% Completado!</div>
+              <p class="text-[11px] text-slate-400">La evaluación final de este curso se habilitará próximamente.</p>
+            </div>
           </div>
         `;
       }
