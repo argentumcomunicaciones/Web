@@ -288,69 +288,105 @@
       renderDashboard();
     });
 
-    // Base de datos de los 4 Cursos Oficiales en el Aula Virtual
+    // Base de datos de los 5 Cursos Oficiales en el Aula Virtual
     const COURSES_DATA = [
       {
         id: 'curso-1',
-        title: 'Curso 1: Fundamentos de Electrónica y Fuentes Lineales',
-        tag: 'CURSO 1 · BASE FUNDAMENTAL',
-        subtitle: 'Magnitudes fundamentales, circuitos mixtos, semiconductores, compuertas con diodos, transformadores, filtrado y proyecto integrador de fuente lineal completa.',
-        duration: '15 Clases · +30 Horas de video HD',
+        title: 'Curso 1: Introducción a la Electrónica, Análisis de Circuitos en Corriente Continua (CC)',
+        tag: 'CURSO 1 · BASE & CIRCUITOS CC/CA',
+        subtitle: 'Ley de Ohm, leyes de Kirchhoff, circuitos mixtos, Thévenin, Norton, capacitores, transitorios RC, fundamentos de CA, resonancia RLC e impedancia compleja.',
+        duration: '9 Clases / Guías · +22 Horas de video HD',
         image: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=800&q=80',
         videoUrl: 'https://www.youtube.com/embed/videoseries?list=PLZRAKzDxXlAI',
         driveFolder: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
         modules: [
           {
-            name: 'Módulo 1: Conceptos Eléctricos y Circuitos Resistivos',
+            name: 'Bloque 1: Análisis de Circuitos en Corriente Continua (CC)',
             lessons: [
-              { id: 'c1_l1', title: 'Clase 1: Conceptos Eléctricos Básicos', desc: 'Magnitudes fundamentales: tensión, corriente, resistencia y potencia. Análisis elemental de circuitos en CC.', duration: '45 min' },
-              { id: 'c1_l2', title: 'Clase 2: Circuitos Mixtos y Divisores', desc: 'Análisis resistivo serie, paralelo y mixto; divisores de tensión y corriente.', duration: '50 min' }
+              { id: 'c1_l1', title: 'Lección 1: Ley de Ohm (Guía 1)', desc: 'Relación entre voltaje, corriente y resistencia (V = I * R), analogía hidráulica y mediciones prácticas en protoboard con multímetro.', duration: '50 min' },
+              { id: 'c1_l2', title: 'Lección 2: Leyes de Kirchhoff (Guía 2)', desc: 'Análisis de redes mediante LKC para nodos (conservación de carga) y LKT para mallas (conservación de energía).', duration: '55 min' },
+              { id: 'c1_l3', title: 'Lección 3: Circuitos Mixtos y Divisores (Guía 3)', desc: 'Simplificación de redes resistivas combinadas mediante divisores de tensión y divisores de corriente.', duration: '50 min' },
+              { id: 'c1_l4', title: 'Lección 4: Teoremas de Thévenin y Norton (Guías 4, 5 y 6)', desc: 'Métodos paso a paso para simplificar circuitos complejos a un modelo equivalente (V_TH, R_TH o I_N, R_N).', duration: '60 min' }
             ]
           },
           {
-            name: 'Módulo 2: Diodos Semiconductores y Compuertas Lógicas',
+            name: 'Bloque 2: Capacitores y Respuesta Transitoria',
             lessons: [
-              { id: 'c1_l3', title: 'Clase 3: Introducción a los Diodos Semiconductores', desc: 'Juntura PN, diferencias silicio/germanio y estados de polarización.', duration: '40 min' },
-              { id: 'c1_l4', title: 'Clase 4: Circuitos con Diodos en Serie y Paralelo', desc: 'Comportamiento en mallas y punto de operación.', duration: '45 min' },
-              { id: 'c1_l5', title: 'Clase 5: Compuertas Lógicas con Diodos', desc: 'Implementación de funciones AND y OR con diodos y resistencias.', duration: '40 min' }
+              { id: 'c1_l5', title: 'Lección 5: Capacitores y Código EIA (Guía 7)', desc: 'Tipos de capacitores, lectura de valores con código EIA de 3 dígitos y conexiones serie/paralelo.', duration: '45 min' },
+              { id: 'c1_l6', title: 'Lección 6: Carga y Descarga RC (Guía 8)', desc: 'Comportamiento transitorio mediante la constante de tiempo (tau = R * C) y simulación con LTspice.', duration: '55 min' }
             ]
           },
           {
-            name: 'Módulo 3: Simulación Circuital e Inductores',
+            name: 'Bloque 3: Corriente Alterna (CA) y Circuitos RLC',
             lessons: [
-              { id: 'c1_l6', title: 'Clase 6: Simulación Circuital y Diodos de Germanio', desc: 'Simulaciones en LTspice y modelado de componentes no lineales.', duration: '55 min' },
-              { id: 'c1_l7', title: 'Clase 7: Electromagnetismo e Inductores', desc: 'Inducción magnética, comportamiento de inductores y relación de transformación.', duration: '45 min' }
-            ]
-          },
-          {
-            name: 'Módulo 4: Rectificación y Almacenamiento Capacitivo',
-            lessons: [
-              { id: 'c1_l8', title: 'Clase 8: Rectificación de Media Onda', desc: 'Conversión AC a CC con un diodo rectificador.', duration: '40 min' },
-              { id: 'c1_l9', title: 'Clase 9: Rectificación de Onda Completa', desc: 'Puente de diodos y flujo en ambos semiciclos.', duration: '50 min' },
-              { id: 'c1_l10', title: 'Clase 10: Capacitancia y Tipos de Capacitores', desc: 'Almacenamiento electrostático, dieléctricos y agrupamiento.', duration: '45 min' }
-            ]
-          },
-          {
-            name: 'Módulo 5: Filtrado, Regulación Zener y Fuentes Simétricas',
-            lessons: [
-              { id: 'c1_l11', title: 'Clase 11: Filtrado Capacitivo', desc: 'Reducción del rizado mediante descarga progresiva.', duration: '45 min' },
-              { id: 'c1_l12', title: 'Clase 12: Regulación con Diodo Zener', desc: 'Estabilización por zona de ruptura.', duration: '50 min' },
-              { id: 'c1_l13', title: 'Clase 13: Fuentes de Alimentación Simétricas', desc: 'Salidas positiva, negativa y masa.', duration: '55 min' }
-            ]
-          },
-          {
-            name: 'Módulo 6: Multiplicadores y Proyecto Integrador',
-            lessons: [
-              { id: 'c1_l14', title: 'Clase 14: Multiplicadores de Voltaje', desc: 'Circuitos escalonados diodo-capacitor para elevar tensión continua.', duration: '45 min' },
-              { id: 'c1_l15', title: 'Clase 15: Proyecto Integrador: Fuente Lineal Completa', desc: 'Ensamblado y prueba global: transformación, rectificación, filtrado y regulación.', duration: '65 min' }
+              { id: 'c1_l7', title: 'Lección 7: Fundamentos de CA (Guía 9)', desc: 'Parámetros de onda senoidal (Vrms, Vp, Vpp, frecuencia, periodo, omega) y desfase angular.', duration: '50 min' },
+              { id: 'c1_l8', title: 'Lección 8: Circuitos RLC y Resonancia (Guía 10)', desc: 'Reactancia inductiva (XL), reactancia capacitiva (XC), impedancia total (Z) y condición de resonancia (f0).', duration: '55 min' },
+              { id: 'c1_l9', title: 'Lección 9: Impedancia Compleja y Fasores (Guía 11)', desc: 'Cálculo de circuitos RLC utilizando números complejos y fasores en formas polar y rectangular.', duration: '60 min' }
             ]
           }
         ]
       },
       {
         id: 'curso-2',
-        title: 'Curso 2: Amplificación con Transistores y Electrónica de Potencia',
-        tag: 'CURSO 2 · POTENCIA & BJT/FET',
+        title: 'Curso 2: Fundamentos de Electrónica y Fuentes Lineales',
+        tag: 'CURSO 2 · FUENTES LINEALES & SEMICONDUCTORES',
+        subtitle: 'Magnitudes fundamentales, circuitos mixtos, semiconductores, compuertas con diodos, transformadores, filtrado y proyecto integrador de fuente lineal completa.',
+        duration: '15 Clases · +30 Horas de video HD',
+        image: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80',
+        videoUrl: 'https://www.youtube.com/embed/videoseries?list=PLZRAKzDxXlAI',
+        driveFolder: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
+        modules: [
+          {
+            name: 'Módulo 1: Conceptos Eléctricos y Circuitos Resistivos',
+            lessons: [
+              { id: 'c2_l1', title: 'Clase 1: Conceptos Eléctricos Básicos', desc: 'Magnitudes fundamentales: tensión, corriente, resistencia y potencia. Análisis elemental de circuitos en CC.', duration: '45 min' },
+              { id: 'c2_l2', title: 'Clase 2: Circuitos Mixtos y Divisores', desc: 'Análisis resistivo serie, paralelo y mixto; divisores de tensión y corriente.', duration: '50 min' }
+            ]
+          },
+          {
+            name: 'Módulo 2: Diodos Semiconductores y Compuertas Lógicas',
+            lessons: [
+              { id: 'c2_l3', title: 'Clase 3: Introducción a los Diodos Semiconductores', desc: 'Juntura PN, diferencias silicio/germanio y estados de polarización.', duration: '40 min' },
+              { id: 'c2_l4', title: 'Clase 4: Circuitos con Diodos en Serie y Paralelo', desc: 'Comportamiento en mallas y punto de operación.', duration: '45 min' },
+              { id: 'c2_l5', title: 'Clase 5: Compuertas Lógicas con Diodos', desc: 'Implementación de funciones AND y OR con diodos y resistencias.', duration: '40 min' }
+            ]
+          },
+          {
+            name: 'Módulo 3: Simulación Circuital e Inductores',
+            lessons: [
+              { id: 'c2_l6', title: 'Clase 6: Simulación Circuital y Diodos de Germanio', desc: 'Simulaciones en LTspice y modelado de componentes no lineales.', duration: '55 min' },
+              { id: 'c2_l7', title: 'Clase 7: Electromagnetismo e Inductores', desc: 'Inducción magnética, comportamiento de inductores y relación de transformación.', duration: '45 min' }
+            ]
+          },
+          {
+            name: 'Módulo 4: Rectificación y Almacenamiento Capacitivo',
+            lessons: [
+              { id: 'c2_l8', title: 'Clase 8: Rectificación de Media Onda', desc: 'Conversión AC a CC con un diodo rectificador.', duration: '40 min' },
+              { id: 'c2_l9', title: 'Clase 9: Rectificación de Onda Completa', desc: 'Puente de diodos y flujo en ambos semiciclos.', duration: '50 min' },
+              { id: 'c2_l10', title: 'Clase 10: Capacitancia y Tipos de Capacitores', desc: 'Almacenamiento electrostático, dieléctricos y agrupamiento.', duration: '45 min' }
+            ]
+          },
+          {
+            name: 'Módulo 5: Filtrado, Regulación Zener y Fuentes Simétricas',
+            lessons: [
+              { id: 'c2_l11', title: 'Clase 11: Filtrado Capacitivo', desc: 'Reducción del rizado mediante descarga progresiva.', duration: '45 min' },
+              { id: 'c2_l12', title: 'Clase 12: Regulación con Diodo Zener', desc: 'Estabilización por zona de ruptura.', duration: '50 min' },
+              { id: 'c2_l13', title: 'Clase 13: Fuentes de Alimentación Simétricas', desc: 'Salidas positiva, negativa y masa.', duration: '55 min' }
+            ]
+          },
+          {
+            name: 'Módulo 6: Multiplicadores y Proyecto Integrador',
+            lessons: [
+              { id: 'c2_l14', title: 'Clase 14: Multiplicadores de Voltaje', desc: 'Circuitos escalonados diodo-capacitor para elevar tensión continua.', duration: '45 min' },
+              { id: 'c2_l15', title: 'Clase 15: Proyecto Integrador: Fuente Lineal Completa', desc: 'Ensamblado y prueba global: transformación, rectificación, filtrado y regulación.', duration: '65 min' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'curso-3',
+        title: 'Curso 3: Amplificación con Transistores y Electrónica de Potencia',
+        tag: 'CURSO 3 · POTENCIA & BJT/FET',
         subtitle: 'Estructuras BJT NPN/PNP, polarización en CC, excursión simétrica, pequeña señal, respuesta en frecuencia, JFET/MOSFET y fuentes conmutadas.',
         duration: '12 Clases · +28 Horas de video HD',
         image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
@@ -360,46 +396,46 @@
           {
             name: 'Módulo 1: Fundamentos y Polarización del Transistor BJT',
             lessons: [
-              { id: 'c2_l1', title: 'Clase 1: Transistores BJT', desc: 'Estructura NPN y PNP, zonas de corte, saturación y activa; corrientes de terminal.', duration: '50 min' },
-              { id: 'c2_l2', title: 'Clase 2: Polarización en Corriente Continua', desc: 'Redes de polarización para fijar el punto de reposo estático.', duration: '55 min' },
-              { id: 'c2_l3', title: 'Clase 3: Punto de Trabajo Dinámico', desc: 'Superposición de señales alternas a la polarización CC.', duration: '50 min' }
+              { id: 'c3_l1', title: 'Clase 1: Transistores BJT', desc: 'Estructura NPN y PNP, zonas de corte, saturación y activa; corrientes de terminal.', duration: '50 min' },
+              { id: 'c3_l2', title: 'Clase 2: Polarización en Corriente Continua', desc: 'Redes de polarización para fijar el punto de reposo estático.', duration: '55 min' },
+              { id: 'c3_l3', title: 'Clase 3: Punto de Trabajo Dinámico', desc: 'Superposición de señales alternas a la polarización CC.', duration: '50 min' }
             ]
           },
           {
             name: 'Módulo 2: Excursión Simétrica y Rendimiento Energético',
             lessons: [
-              { id: 'c2_l4', title: 'Clase 4: Máxima Excursión Simétrica', desc: 'Recta de carga y punto Q central para evitar recortes.', duration: '55 min' },
-              { id: 'c2_l5', title: 'Clase 5: Balance de Potencia y Eficiencia', desc: 'Potencia de fuente, disipada y entregada a la carga.', duration: '50 min' }
+              { id: 'c3_l4', title: 'Clase 4: Máxima Excursión Simétrica', desc: 'Recta de carga y punto Q central para evitar recortes.', duration: '55 min' },
+              { id: 'c3_l5', title: 'Clase 5: Balance de Potencia y Eficiencia', desc: 'Potencia de fuente, disipada y entregada a la carga.', duration: '50 min' }
             ]
           },
           {
             name: 'Módulo 3: Configuraciones y Modelado en Pequeña Señal',
             lessons: [
-              { id: 'c2_l6', title: 'Clase 6: Configuración Colector Común', desc: 'Seguidor de emisor para adaptación de impedancias.', duration: '45 min' },
-              { id: 'c2_l7', title: 'Clase 7: Configuración Base Común', desc: 'Baja impedancia de entrada y alta respuesta en frecuencia.', duration: '45 min' },
-              { id: 'c2_l8', title: 'Clase 8: Modelado en Pequeña Señal', desc: 'Parámetros híbridos, cálculo de ganancias e impedancias.', duration: '60 min' }
+              { id: 'c3_l6', title: 'Clase 6: Configuración Colector Común', desc: 'Seguidor de emisor para adaptación de impedancias.', duration: '45 min' },
+              { id: 'c3_l7', title: 'Clase 7: Configuración Base Común', desc: 'Baja impedancia de entrada y alta respuesta en frecuencia.', duration: '45 min' },
+              { id: 'c3_l8', title: 'Clase 8: Modelado en Pequeña Señal', desc: 'Parámetros híbridos, cálculo de ganancias e impedancias.', duration: '60 min' }
             ]
           },
           {
             name: 'Módulo 4: Respuesta en Frecuencia y Diagramas de Bode',
             lessons: [
-              { id: 'c2_l9', title: 'Clase 9: Respuesta en Frecuencia', desc: 'Capacitores de acople y capacitancias parásitas internas.', duration: '55 min' },
-              { id: 'c2_l10', title: 'Clase 10: Ancho de Banda y Diagramas de Bode', desc: 'Frecuencias de corte inferior y superior.', duration: '60 min' }
+              { id: 'c3_l9', title: 'Clase 9: Respuesta en Frecuencia', desc: 'Capacitores de acople y capacitancias parásitas internas.', duration: '55 min' },
+              { id: 'c3_l10', title: 'Clase 10: Ancho de Banda y Diagramas de Bode', desc: 'Frecuencias de corte inferior y superior.', duration: '60 min' }
             ]
           },
           {
             name: 'Módulo 5: Transistores FET y Fuentes Conmutadas',
             lessons: [
-              { id: 'c2_l11', title: 'Clase 11: Transistores de Efecto de Campo (FET)', desc: 'Dispositivos JFET y MOSFET controlados por tensión.', duration: '60 min' },
-              { id: 'c2_l12', title: 'Clase 12: Fuentes Conmutadas', desc: 'Topologías reductoras/elevadoras y conmutación de alta frecuencia.', duration: '65 min' }
+              { id: 'c3_l11', title: 'Clase 11: Transistores de Efecto de Campo (FET)', desc: 'Dispositivos JFET y MOSFET controlados por tensión.', duration: '60 min' },
+              { id: 'c3_l12', title: 'Clase 12: Fuentes Conmutadas', desc: 'Topologías reductoras/elevadoras y conmutación de alta frecuencia.', duration: '65 min' }
             ]
           }
         ]
       },
       {
-        id: 'curso-3',
-        title: 'Curso 3: Amplificadores Operacionales y Filtros Analógicos',
-        tag: 'CURSO 3 · OP-AMPS & FILTROS',
+        id: 'curso-4',
+        title: 'Curso 4: Amplificadores Operacionales y Filtros Analógicos',
+        tag: 'CURSO 4 · OP-AMPS & FILTROS',
         subtitle: 'Etapas diferenciales, Op-Amps lineales y no lineales, Schmitt Triggers, temporizador 555, instrumentación, conversores ADC/DAC y filtros activos de orden superior.',
         duration: '19 Clases · +40 Horas de video HD',
         image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80',
@@ -409,58 +445,58 @@
           {
             name: 'Módulo 1: Arquitectura y Configuraciones Básicas',
             lessons: [
-              { id: 'c3_l1', title: 'Clase 1: Amplificadores Diferenciales', desc: 'Etapa de entrada, rechazo de modo común y fuentes de corriente.', duration: '50 min' },
-              { id: 'c3_l2', title: 'Clase 2: El Amplificador Operacional Ideal y Real', desc: 'Pines, arquitectura interna y lazo abierto.', duration: '55 min' },
-              { id: 'c3_l3', title: 'Clase 3: Configuración Inversora y Tierra Virtual', desc: 'Punto de suma virtual y ajuste de ganancia.', duration: '45 min' },
-              { id: 'c3_l4', title: 'Clase 4: Configuración No Inversora y Buffer', desc: 'Alta impedancia de entrada y seguidor de tensión.', duration: '45 min' }
+              { id: 'c4_l1', title: 'Clase 1: Amplificadores Diferenciales', desc: 'Etapa de entrada, rechazo de modo común y fuentes de corriente.', duration: '50 min' },
+              { id: 'c4_l2', title: 'Clase 2: El Amplificador Operacional Ideal y Real', desc: 'Pines, arquitectura interna y lazo abierto.', duration: '55 min' },
+              { id: 'c4_l3', title: 'Clase 3: Configuración Inversora y Tierra Virtual', desc: 'Punto de suma virtual y ajuste de ganancia.', duration: '45 min' },
+              { id: 'c4_l4', title: 'Clase 4: Configuración No Inversora y Buffer', desc: 'Alta impedancia de entrada y seguidor de tensión.', duration: '45 min' }
             ]
           },
           {
             name: 'Módulo 2: Procesamiento Matemático y Acondicionamiento',
             lessons: [
-              { id: 'c3_l5', title: 'Clase 5: Operaciones Sumadoras y Combinadas', desc: 'Mezcla y suma ponderada de señales.', duration: '40 min' },
-              { id: 'c3_l6', title: 'Clase 6: Amplificador Restador', desc: 'Sustracción diferencial de voltajes analógicos.', duration: '45 min' },
-              { id: 'c3_l9', title: 'Clase 9: Amplificadores de Instrumentación', desc: 'Arreglo de 3 op-amps para alta precisión y sensores.', duration: '55 min' },
-              { id: 'c3_l10', title: 'Clase 10: Integradores Analógicos', desc: 'Rampas y conversión cuadrada a triangular.', duration: '50 min' },
-              { id: 'c3_l11', title: 'Clase 11: Derivadores Analógicos', desc: 'Tasa de cambio de señal y respuesta a altas frecuencias.', duration: '50 min' }
+              { id: 'c4_l5', title: 'Clase 5: Operaciones Sumadoras y Combinadas', desc: 'Mezcla y suma ponderada de señales.', duration: '40 min' },
+              { id: 'c4_l6', title: 'Clase 6: Amplificador Restador', desc: 'Sustracción diferencial de voltajes analógicos.', duration: '45 min' },
+              { id: 'c4_l7', title: 'Clase 9: Amplificadores de Instrumentación', desc: 'Arreglo de 3 op-amps para alta precisión y sensores.', duration: '55 min' },
+              { id: 'c4_l8', title: 'Clase 10: Integradores Analógicos', desc: 'Rampas y conversión cuadrada a triangular.', duration: '50 min' },
+              { id: 'c4_l9', title: 'Clase 11: Derivadores Analógicos', desc: 'Tasa de cambio de señal y respuesta a altas frecuencias.', duration: '50 min' }
             ]
           },
           {
             name: 'Módulo 3: Comparadores, NE555 y Cuantización',
             lessons: [
-              { id: 'c3_l7', title: 'Clase 7: Comparadores e Histéresis', desc: 'Comparación en lazo abierto y Schmitt Trigger antirruido.', duration: '50 min' },
-              { id: 'c3_l8', title: 'Clase 8: Temporizador NE555', desc: 'Comparadores internos, modos astable y monoestable.', duration: '55 min' },
-              { id: 'c3_l12', title: 'Clase 12: Conversores ADC y DAC', desc: 'Redes R-2R y comparadores de cuantización.', duration: '50 min' }
+              { id: 'c4_l10', title: 'Clase 7: Comparadores e Histéresis', desc: 'Comparación en lazo abierto y Schmitt Trigger antirruido.', duration: '50 min' },
+              { id: 'c4_l11', title: 'Clase 8: Temporizador NE555', desc: 'Comparadores internos, modos astable y monoestable.', duration: '55 min' },
+              { id: 'c4_l12', title: 'Clase 12: Conversores ADC y DAC', desc: 'Redes R-2R y comparadores de cuantización.', duration: '50 min' }
             ]
           },
           {
             name: 'Módulo 4: Decibeles y Teoría de Filtros',
             lessons: [
-              { id: 'c3_l13', title: 'Clase 13: Decibeles y Respuesta Logarítmica', desc: 'Escala logarítmica y acondicionamiento.', duration: '45 min' },
-              { id: 'c3_l14', title: 'Clase 14: Introducción Teórica a los Filtros', desc: 'Banda de paso, atenuación y frecuencia de corte.', duration: '50 min' }
+              { id: 'c4_l13', title: 'Clase 13: Decibeles y Respuesta Logarítmica', desc: 'Escala logarítmica y acondicionamiento.', duration: '45 min' },
+              { id: 'c4_l14', title: 'Clase 14: Introducción Teórica a los Filtros', desc: 'Banda de paso, atenuación y frecuencia de corte.', duration: '50 min' }
             ]
           },
           {
             name: 'Módulo 5: Filtros Pasivos (RC y RL)',
             lessons: [
-              { id: 'c3_l15', title: 'Clase 15: Filtros Pasivos Pasa Bajo', desc: 'Topologías RC y RL.', duration: '45 min' },
-              { id: 'c3_l16', title: 'Clase 16: Filtros Pasivos Pasa Alto', desc: 'Atenuación de componentes de baja frecuencia.', duration: '45 min' },
-              { id: 'c3_l17', title: 'Clase 17: Filtros Pasivos Pasa Banda', desc: 'Resonancia, selectividad y factor Q.', duration: '55 min' }
+              { id: 'c4_l15', title: 'Clase 15: Filtros Pasivos Pasa Bajo', desc: 'Topologías RC y RL.', duration: '45 min' },
+              { id: 'c4_l16', title: 'Clase 16: Filtros Pasivos Pasa Alto', desc: 'Atenuación de componentes de baja frecuencia.', duration: '45 min' },
+              { id: 'c4_l17', title: 'Clase 17: Filtros Pasivos Pasa Banda', desc: 'Resonancia, selectividad y factor Q.', duration: '55 min' }
             ]
           },
           {
             name: 'Módulo 6: Filtros Activos Lineales y Orden Superior',
             lessons: [
-              { id: 'c3_l18', title: 'Clase 18: Filtros Activos de Primer Orden', desc: 'Filtros con op-amps sin pérdidas por carga.', duration: '55 min' },
-              { id: 'c3_l19', title: 'Clase 19: Filtros Activos de Orden Superior', desc: 'Filtros de segundo orden con pendientes pronunciadas.', duration: '60 min' }
+              { id: 'c4_l18', title: 'Clase 18: Filtros Activos de Primer Orden', desc: 'Filtros con op-amps sin pérdidas por carga.', duration: '55 min' },
+              { id: 'c4_l19', title: 'Clase 19: Filtros Activos de Orden Superior', desc: 'Filtros de segundo orden con pendientes pronunciadas.', duration: '60 min' }
             ]
           }
         ]
       },
       {
-        id: 'curso-4',
-        title: 'Curso 4: Microcontroladores, Sensores y Adquisición de Datos',
-        tag: 'CURSO 4 · FIRMWARE & SENSORES',
+        id: 'curso-5',
+        title: 'Curso 5: Microcontroladores, Sensores y Adquisición de Datos',
+        tag: 'CURSO 5 · FIRMWARE & SENSORES',
         subtitle: 'Programación estructurada en C/C++, lógica no bloqueante con millis, multiplexación de 7 segmentos, lecturas analógicas ADC, termostatos y telemetría en tiempo real.',
         duration: '10 Clases · +25 Horas de video HD',
         image: 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80',
@@ -470,31 +506,31 @@
           {
             name: 'Módulo 1: Salidas Digitales, Temporización y Comunicación',
             lessons: [
-              { id: 'c4_l1', title: 'Clase 1: Introducción a Microcontroladores y Salidas Digitales', desc: 'Estructura setup/loop y control de LEDs.', duration: '40 min' },
-              { id: 'c4_l2', title: 'Clase 2: Temporización y Secuenciadores Lógicos', desc: 'Retardos, millis y secuencias de semáforo.', duration: '50 min' },
-              { id: 'c4_l3', title: 'Clase 3: Comunicación Serial y Declaración de Variables', desc: 'Envío de telemetría y variables numéricas a la PC.', duration: '45 min' }
+              { id: 'c5_l1', title: 'Clase 1: Introducción a Microcontroladores y Salidas Digitales', desc: 'Estructura setup/loop y control de LEDs.', duration: '40 min' },
+              { id: 'c5_l2', title: 'Clase 2: Temporización y Secuenciadores Lógicos', desc: 'Retardos, millis y secuencias de semáforo.', duration: '50 min' },
+              { id: 'c5_l3', title: 'Clase 3: Comunicación Serial y Declaración de Variables', desc: 'Envío de telemetría y variables numéricas a la PC.', duration: '45 min' }
             ]
           },
           {
             name: 'Módulo 2: Entradas Digitales, Anti-Rebote y Control de Flujo',
             lessons: [
-              { id: 'c4_l4', title: 'Clase 4: Lectura de Entradas Digitales y Pulsadores', desc: 'Pull-up interno y detección de pulsos.', duration: '45 min' },
-              { id: 'c4_l5', title: 'Clase 5: Estructuras de Control y Contadores', desc: 'Condicionales, bucles y control de eventos no bloqueantes.', duration: '50 min' }
+              { id: 'c5_l4', title: 'Clase 4: Lectura de Entradas Digitales y Pulsadores', desc: 'Pull-up interno y detección de pulsos.', duration: '45 min' },
+              { id: 'c5_l5', title: 'Clase 5: Estructuras de Control y Contadores', desc: 'Condicionales, bucles y control de eventos no bloqueantes.', duration: '50 min' }
             ]
           },
           {
             name: 'Módulo 3: Multiplexación de Displays y Lectura Analógica ADC',
             lessons: [
-              { id: 'c4_l6', title: 'Clase 6: Multiplexación de Pantallas de 7 Segmentos', desc: 'Barrido multiplexado para displays de 4 dígitos.', duration: '55 min' },
-              { id: 'c4_l7', title: 'Clase 7: Lectura Analógica y Conversión Digital', desc: 'Muestreo ADC interno de potenciómetros y mapeo de rangos.', duration: '50 min' }
+              { id: 'c5_l6', title: 'Clase 6: Multiplexación de Pantallas de 7 Segmentos', desc: 'Barrido multiplexado para displays de 4 dígitos.', duration: '55 min' },
+              { id: 'c5_l7', title: 'Clase 7: Lectura Analógica y Conversión Digital', desc: 'Muestreo ADC interno de potenciómetros y mapeo de rangos.', duration: '50 min' }
             ]
           },
           {
             name: 'Módulo 4: Control de Procesos, Sensores y Adquisición',
             lessons: [
-              { id: 'c4_l8', title: 'Clase 8: Control de Procesos y Termostatos', desc: 'Umbrales de temperatura, control de relés y motores.', duration: '55 min' },
-              { id: 'c4_l9', title: 'Clase 9: Integración de Módulos Sensores y Actuadores', desc: 'Luz, sonido, presencia, inclinación y buzzers.', duration: '50 min' },
-              { id: 'c4_l10', title: 'Clase 10: Adquisición de Datos e Interfaz en Tiempo Real', desc: 'Telemetría en serie, graficación continua y enlace a hojas de cálculo.', duration: '60 min' }
+              { id: 'c5_l8', title: 'Clase 8: Control de Procesos y Termostatos', desc: 'Umbrales de temperatura, control de relés y motores.', duration: '55 min' },
+              { id: 'c5_l9', title: 'Clase 9: Integración de Módulos Sensores y Actuadores', desc: 'Luz, sonido, presencia, inclinación y buzzers.', duration: '50 min' },
+              { id: 'c5_l10', title: 'Clase 10: Adquisición de Datos e Interfaz en Tiempo Real', desc: 'Telemetría en serie, graficación continua y enlace a hojas de cálculo.', duration: '60 min' }
             ]
           }
         ]

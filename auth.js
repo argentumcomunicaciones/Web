@@ -13,25 +13,26 @@
   const STORAGE_KEY_ENROLLMENTS = 'electrolab_mock_enrollments_db';
   const STORAGE_KEY_PROGRESS = 'electrolab_lesson_progress';
 
-  const ALL_OFFICIAL_COURSES = ['curso-1', 'curso-2', 'curso-3', 'curso-4'];
+  const ALL_OFFICIAL_COURSES = ['curso-1', 'curso-2', 'curso-3', 'curso-4', 'curso-5'];
 
-  // Normaliza IDs antiguos de cursos a los 4 Cursos Oficiales
+  // Normaliza IDs de cursos a los 5 Cursos Oficiales
   function normalizeCourseList(courses = []) {
     const normalized = new Set();
     courses.forEach(cid => {
-      if (cid === 'curso-1' || cid === 'curso-electronica-cero') {
+      if (cid === 'curso-1') {
         normalized.add('curso-1');
-      } else if (cid === 'curso-2' || cid === 'curso-arduino-microcontroladores') {
+      } else if (cid === 'curso-2' || cid === 'curso-electronica-cero') {
         normalized.add('curso-2');
       } else if (cid === 'curso-3' || cid === 'combo-master-electronica-arduino') {
-        // El pack master o curso 3
         if (cid === 'combo-master-electronica-arduino') {
           ALL_OFFICIAL_COURSES.forEach(c => normalized.add(c));
         } else {
           normalized.add('curso-3');
         }
-      } else if (cid === 'curso-4' || cid === 'guia-simulaciones-ltspice') {
+      } else if (cid === 'curso-4') {
         normalized.add('curso-4');
+      } else if (cid === 'curso-5' || cid === 'curso-arduino-microcontroladores') {
+        normalized.add('curso-5');
       } else {
         normalized.add(cid);
       }
@@ -48,7 +49,7 @@
       password: 'Lobita2026',
       role: 'admin',
       createdAt: '2026-01-10T10:00:00Z',
-      courses: ['curso-1', 'curso-2', 'curso-3', 'curso-4']
+      courses: ['curso-1', 'curso-2', 'curso-3', 'curso-4', 'curso-5']
     },
     {
       id: 'usr_alumno1',
@@ -76,7 +77,7 @@
               u.password = 'Lobita2026';
               updated = true;
             }
-            u.courses = ['curso-1', 'curso-2', 'curso-3', 'curso-4'];
+            u.courses = ['curso-1', 'curso-2', 'curso-3', 'curso-4', 'curso-5'];
             updated = true;
           } else if (u.courses && u.courses.length > 0) {
             const norm = normalizeCourseList(u.courses);

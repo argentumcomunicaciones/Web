@@ -36,18 +36,72 @@
     }
   };
 
-  // Base de datos de los 4 Cursos Oficiales y Recursos
+  // Base de datos de los 5 Cursos Oficiales y Recursos
   const COURSES = [
     {
       id: 'curso-1',
       category: 'curso-1',
-      title: 'Curso 1: Fundamentos de Electrónica y Fuentes Lineales',
+      title: 'Curso 1: Introducción a la Electrónica, Análisis de Circuitos en Corriente Continua (CC)',
+      subtitle: 'Ley de Ohm, leyes de Kirchhoff, circuitos mixtos, Thévenin, Norton, capacitores, transitorios RC, fundamentos de CA, resonancia RLC e impedancia compleja.',
+      tag: '⭐ CURSO 1 · BASE & CIRCUITOS CC/CA',
+      level: 'Principiante a Intermedio',
+      duration: '9 Clases / Guías · +22 Horas de video HD',
+      projectsCount: '9 Clases Prácticas',
+      image: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=800&q=80',
+      badgeColor: 'blue',
+      priceARS: 25000,
+      origARS: 35000,
+      priceUSD: 25,
+      origUSD: 35,
+      driveFolder: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
+      youtubePreview: 'https://www.youtube.com/embed/videoseries?list=PLZRAKzDxXlAI',
+      features: [
+        'Ley de Ohm (V = I * R), analogía hidráulica y mediciones prácticas con multímetro',
+        'Leyes de Kirchhoff (LKC para nodos y LKT para mallas) en circuitos CC',
+        'Circuitos resistivos combinados, divisores de tensión y divisores de corriente',
+        'Teoremas de Thévenin, Norton y Máxima Transferencia de Potencia',
+        'Capacitores: código EIA de marcación y agrupamiento serie/paralelo',
+        'Respuesta transitoria en circuitos RC y simulación de curvas en LTspice',
+        'Fundamentos de Corriente Alterna (CA): ondas senoidales, Vrms, Vp y frecuencia',
+        'Circuitos RLC, resonancia, factor de calidad e impedancia fasorial compleja'
+      ],
+      syllabus: [
+        {
+          module: 'Bloque 1: Análisis de Circuitos en Corriente Continua (CC)',
+          lessons: [
+            { title: 'Lección 1: Ley de Ohm (Guía 1)', desc: 'Relación entre voltaje, corriente y resistencia (V = I * R), analogía hidráulica y mediciones prácticas en protoboard con multímetro.', duration: '50 min', isDemo: true },
+            { title: 'Lección 2: Leyes de Kirchhoff (Guía 2)', desc: 'Análisis de redes mediante LKC para nodos (conservación de carga) y LKT para mallas (conservación de energía).', duration: '55 min' },
+            { title: 'Lección 3: Circuitos Mixtos y Divisores (Guía 3)', desc: 'Simplificación de redes resistivas combinadas mediante divisores de tensión y divisores de corriente.', duration: '50 min' },
+            { title: 'Lección 4: Teoremas de Thévenin y Norton (Guías 4, 5 y 6)', desc: 'Métodos paso a paso para simplificar circuitos complejos a un modelo equivalente (V_TH, R_TH o I_N, R_N).', duration: '60 min' }
+          ]
+        },
+        {
+          module: 'Bloque 2: Capacitores y Respuesta Transitoria',
+          lessons: [
+            { title: 'Lección 5: Capacitores y Código EIA (Guía 7)', desc: 'Tipos de capacitores, lectura de valores con código EIA de 3 dígitos y conexiones serie/paralelo.', duration: '45 min' },
+            { title: 'Lección 6: Carga y Descarga RC (Guía 8)', desc: 'Comportamiento transitorio mediante la constante de tiempo (tau = R * C) y simulación con LTspice.', duration: '55 min' }
+          ]
+        },
+        {
+          module: 'Bloque 3: Corriente Alterna (CA) y Circuitos RLC',
+          lessons: [
+            { title: 'Lección 7: Fundamentos de CA (Guía 9)', desc: 'Parámetros de onda senoidal (Vrms, Vp, Vpp, frecuencia, periodo, omega) y desfase angular.', duration: '50 min' },
+            { title: 'Lección 8: Circuitos RLC y Resonancia (Guía 10)', desc: 'Reactancia inductiva (XL), reactancia capacitiva (XC), impedancia total (Z) y condición de resonancia (f0).', duration: '55 min' },
+            { title: 'Lección 9: Impedancia Compleja y Fasores (Guía 11)', desc: 'Cálculo de circuitos RLC utilizando números complejos y fasores en formas polar y rectangular.', duration: '60 min' }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'curso-2',
+      category: 'curso-2',
+      title: 'Curso 2: Fundamentos de Electrónica y Fuentes Lineales',
       subtitle: 'Magnitudes fundamentales, circuitos mixtos, semiconductores, compuertas con diodos, transformadores, filtrado y proyecto integrador de fuente lineal completa.',
-      tag: '⭐ CURSO 1 · BASE FUNDAMENTAL',
+      tag: '⚡ CURSO 2 · FUENTES LINEALES & SEMICONDUCTORES',
       level: 'Principiante a Intermedio',
       duration: '15 Clases · +30 Horas de video HD',
       projectsCount: '15 Clases Prácticas',
-      image: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'blue',
       priceARS: 25000,
       origARS: 35000,
@@ -114,11 +168,11 @@
       ]
     },
     {
-      id: 'curso-2',
-      category: 'curso-2',
-      title: 'Curso 2: Amplificación con Transistores y Electrónica de Potencia',
+      id: 'curso-3',
+      category: 'curso-3',
+      title: 'Curso 3: Amplificación con Transistores y Electrónica de Potencia',
       subtitle: 'Estructuras BJT NPN/PNP, polarización en CC, excursión simétrica, pequeña señal, respuesta en frecuencia, JFET/MOSFET y fuentes conmutadas.',
-      tag: '⚡ CURSO 2 · POTENCIA & BJT/FET',
+      tag: '⚡ CURSO 3 · POTENCIA & BJT/FET',
       level: 'Intermedio a Avanzado',
       duration: '12 Clases · +28 Horas de video HD',
       projectsCount: '12 Clases Prácticas',
@@ -181,11 +235,11 @@
       ]
     },
     {
-      id: 'curso-3',
-      category: 'curso-3',
-      title: 'Curso 3: Amplificadores Operacionales y Filtros Analógicos',
+      id: 'curso-4',
+      category: 'curso-4',
+      title: 'Curso 4: Amplificadores Operacionales y Filtros Analógicos',
       subtitle: 'Etapas diferenciales, Op-Amps lineales y no lineales, Schmitt Triggers, temporizador 555, instrumentación, conversores ADC/DAC y filtros activos de orden superior.',
-      tag: '🎛️ CURSO 3 · OP-AMPS & FILTROS',
+      tag: '🎛️ CURSO 4 · OP-AMPS & FILTROS',
       level: 'Intermedio a Avanzado',
       duration: '19 Clases · +40 Horas de video HD',
       projectsCount: '19 Clases Prácticas',
@@ -260,16 +314,16 @@
       ]
     },
     {
-      id: 'curso-4',
-      category: 'curso-4',
-      title: 'Curso 4: Microcontroladores, Sensores y Adquisición de Datos',
+      id: 'curso-5',
+      category: 'curso-5',
+      title: 'Curso 5: Microcontroladores, Sensores y Adquisición de Datos',
       subtitle: 'Programación estructurada en C/C++, lógica no bloqueante con millis, multiplexación de 7 segmentos, lecturas analógicas ADC, termostatos y telemetría en tiempo real.',
-      tag: '🤖 CURSO 4 · FIRMWARE & SENSORES',
+      tag: '🤖 CURSO 5 · FIRMWARE & SENSORES',
       level: 'Todos los niveles',
       duration: '10 Clases · +25 Horas de video HD',
       projectsCount: '10 Clases Prácticas',
       image: 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80',
-      badgeColor: 'cyan',
+      badgeColor: 'purple',
       priceARS: 25000,
       origARS: 35000,
       priceUSD: 25,
@@ -363,7 +417,8 @@
     1: { discountPct: 0, totalARS: 25000, totalUSD: 25, savingARS: 0, savingUSD: 0, badge: '' },
     2: { discountPct: 15, totalARS: 42500, totalUSD: 42, savingARS: 7500, savingUSD: 8, badge: '15% OFF' },
     3: { discountPct: 25, totalARS: 56250, totalUSD: 56, savingARS: 18750, savingUSD: 19, badge: '25% OFF' },
-    4: { discountPct: 35, totalARS: 65000, totalUSD: 65, savingARS: 35000, savingUSD: 35, badge: '35% OFF (Pack Completo)' }
+    4: { discountPct: 35, totalARS: 65000, totalUSD: 65, savingARS: 35000, savingUSD: 35, badge: '35% OFF' },
+    5: { discountPct: 40, totalARS: 75000, totalUSD: 75, savingARS: 50000, savingUSD: 50, badge: '40% OFF (Pack Completo)' }
   };
 
   // Cálculo en tiempo real de subtotales, descuentos y total a transferir
@@ -386,10 +441,10 @@
     }
 
     const subtotal = currency === 'ARS' ? count * 25000 : count * 25;
-    const ruleKey = Math.min(count, 4);
+    const ruleKey = Math.min(count, 5);
     const rule = VOLUME_DISCOUNT_RULES[ruleKey] || VOLUME_DISCOUNT_RULES[1];
 
-    const volumeTotal = count <= 4 ? (currency === 'ARS' ? rule.totalARS : rule.totalUSD) : Math.round(subtotal * 0.65);
+    const volumeTotal = count <= 5 ? (currency === 'ARS' ? rule.totalARS : rule.totalUSD) : Math.round(subtotal * 0.60);
     const volumeDiscount = subtotal - volumeTotal;
     const saving = currency === 'ARS' ? rule.savingARS : rule.savingUSD;
     const discountPct = rule.discountPct;
@@ -694,11 +749,15 @@
         cartVolumeTip.classList.remove('hidden');
       } else if (totalCount === 3) {
         cartVolumeTip.className = 'text-[11px] px-3 py-2 rounded-xl bg-purple-950/40 border border-purple-500/30 text-purple-300 flex items-center gap-2';
-        cartVolumeTipText.innerHTML = '🚀 <strong>¡Suma el 4to curso</strong> y llevate el <strong>Pack Completo con 35% OFF</strong>!';
+        cartVolumeTipText.innerHTML = '🚀 <strong>¡Suma 1 curso más</strong> para alcanzar un <strong>35% OFF</strong>!';
         cartVolumeTip.classList.remove('hidden');
-      } else if (totalCount >= 4) {
+      } else if (totalCount === 4) {
+        cartVolumeTip.className = 'text-[11px] px-3 py-2 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-300 flex items-center gap-2';
+        cartVolumeTipText.innerHTML = '👑 <strong>¡Suma el 5to curso</strong> y llevate el <strong>Pack Completo con 40% OFF</strong>!';
+        cartVolumeTip.classList.remove('hidden');
+      } else if (totalCount >= 5) {
         cartVolumeTip.className = 'text-[11px] px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-950/80 to-cyan-950/80 border border-emerald-500/40 text-emerald-300 flex items-center gap-2';
-        cartVolumeTipText.innerHTML = `🎉 <strong>¡Máximo Descuento Aplicado!</strong> 35% OFF Pack Completo (Ahorras ${formatMoney(totals.saving)}).`;
+        cartVolumeTipText.innerHTML = `🎉 <strong>¡Máximo Descuento Aplicado!</strong> 40% OFF Pack Completo (Ahorras ${formatMoney(totals.saving)}).`;
         cartVolumeTip.classList.remove('hidden');
       } else {
         cartVolumeTip.classList.add('hidden');

@@ -386,11 +386,11 @@
             CATÁLOGO OFICIAL DE FORMACIÓN
           </span>
           <h2 class="text-3xl sm:text-5xl font-heading font-black text-white">
-            Los 4 Cursos Oficiales de ElectroLab
+            Los 5 Cursos Oficiales de ElectroLab
           </h2>
         </div>
         <p class="text-xs sm:text-sm text-slate-400 max-w-md">
-          Aprende desde los fundamentos eléctricos y semiconductores hasta la amplificación con transistores, amplificadores operacionales y microcontroladores con sensado en tiempo real.
+          Aprende desde introducción y análisis de circuitos en CC y CA, semiconductores y fuentes lineales, hasta la amplificación con transistores, amplificadores operacionales y microcontroladores con sensado en tiempo real.
         </p>
       </div>
 
@@ -409,7 +409,7 @@
           </div>
 
           <!-- Volume Tiers Grid -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full lg:w-auto">
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 w-full lg:w-auto">
             <div class="bg-slate-950/80 border border-slate-800 p-3 rounded-2xl text-center">
               <span class="text-[10px] text-slate-400 uppercase font-bold block mb-1">1 Curso</span>
               <span class="text-xs sm:text-sm font-black font-mono text-white block">$ 25.000</span>
@@ -433,12 +433,20 @@
               <span class="text-[10px] text-cyan-400/90 font-semibold mt-1 block">Ahorrás $18.750 / 19 USD</span>
             </div>
 
+            <div class="bg-slate-950/80 border border-purple-500/30 p-3 rounded-2xl text-center relative overflow-hidden">
+              <span class="absolute top-0 right-0 bg-purple-400 text-slate-950 text-[9px] font-black px-1.5 py-0.5 rounded-bl">35% OFF</span>
+              <span class="text-[10px] text-slate-300 uppercase font-bold block mb-1">4 Cursos</span>
+              <span class="text-xs sm:text-sm font-black font-mono text-purple-300 block">$ 65.000</span>
+              <span class="text-[10px] text-purple-300 font-mono block">65 USD</span>
+              <span class="text-[10px] text-purple-400/90 font-semibold mt-1 block">Ahorrás $35.000 / 35 USD</span>
+            </div>
+
             <div class="bg-gradient-to-br from-emerald-950/60 to-slate-950 border-2 border-emerald-500/80 p-3 rounded-2xl text-center relative overflow-hidden shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-              <span class="absolute top-0 right-0 bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-950 text-[9px] font-black px-1.5 py-0.5 rounded-bl">35% OFF</span>
-              <span class="text-[10px] text-emerald-300 uppercase font-extrabold block mb-1">4 Cursos (Pack)</span>
-              <span class="text-xs sm:text-sm font-black font-mono text-emerald-300 block">$ 65.000</span>
-              <span class="text-[10px] text-emerald-300 font-mono block">65 USD</span>
-              <span class="text-[10px] text-emerald-300 font-bold mt-1 block">¡Ahorrás $35.000 / 35 USD!</span>
+              <span class="absolute top-0 right-0 bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-950 text-[9px] font-black px-1.5 py-0.5 rounded-bl">40% OFF</span>
+              <span class="text-[10px] text-emerald-300 uppercase font-extrabold block mb-1">5 Cursos (Pack)</span>
+              <span class="text-xs sm:text-sm font-black font-mono text-emerald-300 block">$ 75.000</span>
+              <span class="text-[10px] text-emerald-300 font-mono block">75 USD</span>
+              <span class="text-[10px] text-emerald-300 font-bold mt-1 block">¡Ahorrás $50.000 / 50 USD!</span>
             </div>
           </div>
         </div>
@@ -447,24 +455,27 @@
       <!-- Filter Tabs -->
       <div class="flex flex-wrap items-center gap-2 mb-10">
         <button type="button" data-filter="all" class="px-4 py-2 rounded-xl text-xs font-bold bg-cyan-500 text-slate-950 transition-all">
-          Todos los Cursos (4)
+          Todos los Cursos (5)
         </button>
         <button type="button" data-filter="curso-1" class="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800/80 text-slate-300 hover:text-white transition-all">
-          Curso 1: Fundamentos & Fuentes
+          Curso 1: Intro & Circuitos CC/CA
         </button>
         <button type="button" data-filter="curso-2" class="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800/80 text-slate-300 hover:text-white transition-all">
-          Curso 2: Transistores & Potencia
+          Curso 2: Fundamentos & Fuentes
         </button>
         <button type="button" data-filter="curso-3" class="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800/80 text-slate-300 hover:text-white transition-all">
-          Curso 3: Operacionales & Filtros
+          Curso 3: Transistores & Potencia
         </button>
         <button type="button" data-filter="curso-4" class="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800/80 text-slate-300 hover:text-white transition-all">
-          Curso 4: Microcontroladores & Sensores
+          Curso 4: Operacionales & Filtros
+        </button>
+        <button type="button" data-filter="curso-5" class="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800/80 text-slate-300 hover:text-white transition-all">
+          Curso 5: Microcontroladores & Sensores
         </button>
       </div>
 
       <!-- Courses Grid Container (Populated by app.js) -->
-      <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Courses will be rendered dynamically here -->
       </div>
 
@@ -902,7 +913,7 @@
         <div class="pt-4 border-t border-slate-800 space-y-4 mt-auto">
           <!-- Volume Promo Tip Banner -->
           <div id="cart-volume-tip" class="hidden text-[11px] px-3 py-2 rounded-xl bg-cyan-950/40 border border-cyan-500/30 text-cyan-300 flex items-center gap-2">
-            <span id="cart-volume-tip-text">💡 Agregá más cursos para obtener hasta un 35% OFF.</span>
+            <span id="cart-volume-tip-text">💡 Agregá más cursos para obtener hasta un 40% OFF.</span>
           </div>
 
           <!-- Coupon Box -->
@@ -1027,7 +1038,7 @@
   <!-- Scripts -->
   <script src="./auth.js"></script>
   <script src="./circuit-sim.js"></script>
-  <script src="./app.js?v=20261015-1500"></script>
+  <script src="./app.js?v=20261016-0130"></script>
   <!-- Vercel Analytics -->
   <script defer src="/_vercel/insights/script.js"></script>
 </body>

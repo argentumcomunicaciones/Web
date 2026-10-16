@@ -79,12 +79,13 @@ def init_database():
             VALUES (?, ?, ?, ?, ?, ?)
         ''', (admin_id, 'Admin ElectroLab', 'admin@electrolab.com', hash_password('Lobita2026'), 'admin', now))
 
-        # Habilitar todos los 4 cursos oficiales para el admin
+        # Habilitar todos los 5 cursos oficiales para el admin
         all_courses = [
             'curso-1',
             'curso-2',
             'curso-3',
-            'curso-4'
+            'curso-4',
+            'curso-5'
         ]
         for cid in all_courses:
             cursor.execute('''
@@ -96,8 +97,8 @@ def init_database():
     else:
         # Asegurar que la clave de administrador esté actualizada a Lobita2026
         cursor.execute("UPDATE users SET password_hash = ? WHERE email = ?", (hash_password('Lobita2026'), 'admin@electrolab.com'))
-        # Asegurar que el admin tenga los 4 cursos oficiales
-        for cid in ['curso-1', 'curso-2', 'curso-3', 'curso-4']:
+        # Asegurar que el admin tenga los 5 cursos oficiales
+        for cid in ['curso-1', 'curso-2', 'curso-3', 'curso-4', 'curso-5']:
             cursor.execute('''
                 INSERT OR IGNORE INTO enrollments (id, user_id, course_id, granted_at)
                 VALUES (?, ?, ?, ?)
