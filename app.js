@@ -45,8 +45,8 @@
       subtitle: 'Ley de Ohm, leyes de Kirchhoff, circuitos mixtos, Thévenin, Norton, capacitores, transitorios RC, fundamentos de CA, resonancia RLC e impedancia compleja.',
       tag: '⭐ CURSO 1 · BASE & CIRCUITOS CC/CA',
       level: 'Principiante a Intermedio',
-      duration: '9 Clases / Guías · +22 Horas de video HD',
-      projectsCount: '9 Clases Prácticas',
+      duration: '11 Lecciones / Guías · +25 Horas de video HD',
+      projectsCount: '11 Clases Prácticas',
       image: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'blue',
       priceARS: 25000,
@@ -54,41 +54,120 @@
       priceUSD: 25,
       origUSD: 35,
       driveFolder: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
-      youtubePreview: 'https://www.youtube.com/embed/videoseries?list=PLZRAKzDxXlAI',
+      youtubePreview: 'https://www.youtube.com/embed/8RVmRnfEvhQ',
       features: [
-        'Ley de Ohm (V = I * R), analogía hidráulica y mediciones prácticas con multímetro',
-        'Leyes de Kirchhoff (LKC para nodos y LKT para mallas) en circuitos CC',
-        'Circuitos resistivos combinados, divisores de tensión y divisores de corriente',
-        'Teoremas de Thévenin, Norton y Máxima Transferencia de Potencia',
-        'Capacitores: código EIA de marcación y agrupamiento serie/paralelo',
-        'Respuesta transitoria en circuitos RC y simulación de curvas en LTspice',
-        'Fundamentos de Corriente Alterna (CA): ondas senoidales, Vrms, Vp y frecuencia',
-        'Circuitos RLC, resonancia, factor de calidad e impedancia fasorial compleja'
+        'Ley de Ohm (V = I * R), analogía hidráulica y mediciones con multímetro (Guía 1)',
+        'Leyes de Kirchhoff (LKC para nodos y LKT para mallas en CC) (Guía 2)',
+        'Circuitos combinados, divisores de tensión y divisores de corriente (Guía 3)',
+        'Resolución integral de circuitos mixtos y mallas complejas (Guía 4)',
+        'Teorema de Thévenin: cálculo de Vth, Rth y simulación circuital (Guía 5)',
+        'Teorema de Norton: cálculo de In, Rn y equivalencia con Thévenin (Guía 6)',
+        'Capacitores y código EIA de 3 dígitos serie/paralelo (Guía 7)',
+        'Respuesta transitoria y constante de tiempo en circuitos RC (Guía 8)',
+        'Fundamentos de Corriente Alterna: valores RMS, pico a pico y desfase (Guía 9)',
+        'Circuitos RLC, reactancia inductiva/capacitiva y resonancia f0 (Guía 10)',
+        'Impedancia compleja Z, fasores polares y rectangulares (Guía 11)'
       ],
       syllabus: [
         {
-          module: 'Bloque 1: Análisis de Circuitos en Corriente Continua (CC)',
-          lessons: [
-            { title: 'Lección 1: Ley de Ohm (Guía 1)', desc: 'Relación entre voltaje, corriente y resistencia (V = I * R), analogía hidráulica y mediciones prácticas en protoboard con multímetro.', duration: '50 min', isDemo: true },
-            { title: 'Lección 2: Leyes de Kirchhoff (Guía 2)', desc: 'Análisis de redes mediante LKC para nodos (conservación de carga) y LKT para mallas (conservación de energía).', duration: '55 min' },
-            { title: 'Lección 3: Circuitos Mixtos y Divisores (Guía 3)', desc: 'Simplificación de redes resistivas combinadas mediante divisores de tensión y divisores de corriente.', duration: '50 min' },
-            { title: 'Lección 4: Teoremas de Thévenin y Norton (Guías 4, 5 y 6)', desc: 'Métodos paso a paso para simplificar circuitos complejos a un modelo equivalente (V_TH, R_TH o I_N, R_N).', duration: '60 min' }
-          ]
+          id: 'c1_l1',
+          title: 'Lección 1 (Guía 1 - Ley de Ohm)',
+          desc: 'Relación entre voltaje, corriente y resistencia (V = I * R), analogía hidráulica y mediciones prácticas en protoboard con multímetro.',
+          duration: '50 min',
+          videoId: '8RVmRnfEvhQ',
+          videoUrl: 'https://youtu.be/8RVmRnfEvhQ',
+          embedUrl: 'https://www.youtube.com/embed/8RVmRnfEvhQ',
+          isDemo: true
         },
         {
-          module: 'Bloque 2: Capacitores y Respuesta Transitoria',
-          lessons: [
-            { title: 'Lección 5: Capacitores y Código EIA (Guía 7)', desc: 'Tipos de capacitores, lectura de valores con código EIA de 3 dígitos y conexiones serie/paralelo.', duration: '45 min' },
-            { title: 'Lección 6: Carga y Descarga RC (Guía 8)', desc: 'Comportamiento transitorio mediante la constante de tiempo (tau = R * C) y simulación con LTspice.', duration: '55 min' }
-          ]
+          id: 'c1_l2',
+          title: 'Lección 2 (Guía 2 - Leyes de Kirchhoff)',
+          desc: 'Análisis de redes mediante LKC para nodos (conservación de carga) y LKT para mallas (conservación de energía).',
+          duration: '55 min',
+          videoId: 'kOlhWGeLAgg',
+          videoUrl: 'https://youtu.be/kOlhWGeLAgg',
+          embedUrl: 'https://www.youtube.com/embed/kOlhWGeLAgg'
         },
         {
-          module: 'Bloque 3: Corriente Alterna (CA) y Circuitos RLC',
-          lessons: [
-            { title: 'Lección 7: Fundamentos de CA (Guía 9)', desc: 'Parámetros de onda senoidal (Vrms, Vp, Vpp, frecuencia, periodo, omega) y desfase angular.', duration: '50 min' },
-            { title: 'Lección 8: Circuitos RLC y Resonancia (Guía 10)', desc: 'Reactancia inductiva (XL), reactancia capacitiva (XC), impedancia total (Z) y condición de resonancia (f0).', duration: '55 min' },
-            { title: 'Lección 9: Impedancia Compleja y Fasores (Guía 11)', desc: 'Cálculo de circuitos RLC utilizando números complejos y fasores en formas polar y rectangular.', duration: '60 min' }
-          ]
+          id: 'c1_l3',
+          title: 'Lección 3 (Guía 3 - Circuitos Mixtos)',
+          desc: 'Simplificación de redes resistivas combinadas mediante divisores de tensión y divisores de corriente.',
+          duration: '50 min',
+          videoId: 'dnAPrSLchuo',
+          videoUrl: 'https://youtu.be/dnAPrSLchuo',
+          embedUrl: 'https://www.youtube.com/embed/dnAPrSLchuo'
+        },
+        {
+          id: 'c1_l4',
+          title: 'Lección 4 (Guía 4 - Resolución Integral de Circuitos Mixtos)',
+          desc: 'Estrategias y métodos para abordar mallas complejas y combinación de herramientas esenciales.',
+          duration: '55 min',
+          videoId: 'XPuJWjUJjRk',
+          videoUrl: 'https://youtu.be/XPuJWjUJjRk',
+          embedUrl: 'https://www.youtube.com/embed/XPuJWjUJjRk'
+        },
+        {
+          id: 'c1_l5',
+          title: 'Lección 5 (Guía 5 - Teorema de Thévenin)',
+          desc: 'Obtención del circuito equivalente de Thévenin, cálculo de Vth, Rth y ejercicios resueltos con simulación.',
+          duration: '60 min',
+          videoId: '0FEhYOAUWRI',
+          videoUrl: 'https://youtu.be/0FEhYOAUWRI',
+          embedUrl: 'https://www.youtube.com/embed/0FEhYOAUWRI'
+        },
+        {
+          id: 'c1_l6',
+          title: 'Lección 6 (Guía 6 - Teorema de Norton)',
+          desc: 'Determinación de la corriente de Norton (In), resistencia equivalente (Rn) y equivalencia con Thévenin.',
+          duration: '55 min',
+          videoId: '2pkqHBu3ri4',
+          videoUrl: 'https://youtu.be/2pkqHBu3ri4',
+          embedUrl: 'https://www.youtube.com/embed/2pkqHBu3ri4'
+        },
+        {
+          id: 'c1_l7',
+          title: 'Lección 7 (Guía 7 - Capacitores)',
+          desc: 'Tipos de capacitores (electrolítico, cerámico, poliéster), lectura con código EIA de 3 dígitos y conexiones serie/paralelo.',
+          duration: '45 min',
+          videoId: 'hEt5l89S5Zo',
+          videoUrl: 'https://youtu.be/hEt5l89S5Zo',
+          embedUrl: 'https://www.youtube.com/embed/hEt5l89S5Zo'
+        },
+        {
+          id: 'c1_l8',
+          title: 'Lección 8 (Guía 8 - Carga y Descarga RC)',
+          desc: 'Comportamiento en el tiempo mediante la constante de tiempo (tau = R * C) y análisis transitorio con simulación.',
+          duration: '55 min',
+          videoId: '-XlLB1FmQkE',
+          videoUrl: 'https://youtu.be/-XlLB1FmQkE',
+          embedUrl: 'https://www.youtube.com/embed/-XlLB1FmQkE'
+        },
+        {
+          id: 'c1_l9',
+          title: 'Lección 9 (Guía 9 - Fundamentos de Corriente Alterna)',
+          desc: 'Parámetros de la onda senoidal (Vrms, Vp, Vpp, frecuencia, periodo, omega) y cálculo de desfase angular.',
+          duration: '50 min',
+          videoId: 'bf5Qp9lEhlI',
+          videoUrl: 'https://youtu.be/bf5Qp9lEhlI',
+          embedUrl: 'https://www.youtube.com/embed/bf5Qp9lEhlI'
+        },
+        {
+          id: 'c1_l10',
+          title: 'Lección 10 (Guía 10 - Circuitos RLC y Resonancia)',
+          desc: 'Reactancia inductiva (XL), reactancia capacitiva (XC), impedancia total (Z) y frecuencia de resonancia (f0).',
+          duration: '55 min',
+          videoId: 'D-HXRKJBq2U',
+          videoUrl: 'https://youtu.be/D-HXRKJBq2U',
+          embedUrl: 'https://www.youtube.com/embed/D-HXRKJBq2U'
+        },
+        {
+          id: 'c1_l11',
+          title: 'Lección 11 (Guía 11 - Impedancia Compleja)',
+          desc: 'Resolución analítica de circuitos RLC utilizando números complejos y fasores (forma polar y rectangular).',
+          duration: '60 min',
+          videoId: 'M02HkNtz23M',
+          videoUrl: 'https://youtu.be/M02HkNtz23M',
+          embedUrl: 'https://www.youtube.com/embed/M02HkNtz23M'
         }
       ]
     },
@@ -856,37 +935,67 @@
         </div>
 
         <!-- Syllabus Modules Accordion -->
-        <div class="space-y-4 mb-8">
-          ${course.syllabus.map((mod, idx) => `
-            <div class="border border-slate-800 rounded-2xl bg-slate-950/40 overflow-hidden">
-              <button onclick="window.ElectroLab.toggleModuleAccordion(this)" class="w-full text-left p-4 sm:p-5 flex items-center justify-between font-heading font-bold text-sm sm:text-base text-slate-200 hover:text-cyan-400 transition-colors">
-                <span class="flex items-center gap-3">
-                  <span class="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-xs font-mono font-bold shrink-0">
-                    ${idx + 1}
+        <div class="space-y-3 mb-8">
+          ${(course.id === 'curso-1' || !course.syllabus[0]?.lessons) ? `
+            ${course.syllabus.map((lesson, idx) => `
+              <div class="border border-slate-800 rounded-2xl bg-slate-950/40 overflow-hidden">
+                <button onclick="window.ElectroLab.toggleModuleAccordion(this)" class="w-full text-left p-4 sm:p-5 flex items-center justify-between font-heading font-bold text-sm sm:text-base text-slate-200 hover:text-cyan-400 transition-colors">
+                  <span class="flex items-center gap-3">
+                    <span class="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-xs font-mono font-bold shrink-0">
+                      ${idx + 1}
+                    </span>
+                    <span class="font-bold text-white text-sm sm:text-base">${lesson.title}</span>
+                    ${lesson.isDemo ? '<span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30 ml-1">Clase Demo Gratis</span>' : ''}
                   </span>
-                  <span>${mod.module}</span>
-                </span>
-                <svg class="w-5 h-5 text-slate-500 transition-transform duration-200 shrink-0 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-              </button>
-              <div class="module-body px-4 sm:px-6 pb-4 pt-1 space-y-2 border-t border-slate-900">
-                ${mod.lessons.map(lesson => `
-                  <div class="flex items-start justify-between text-xs py-2 text-slate-300 border-b border-slate-900/50 last:border-0 gap-3">
-                    <div class="flex items-start gap-2.5">
-                      <svg class="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
-                      <div>
-                        <div class="flex items-center gap-2">
-                          <span class="font-bold text-white text-xs">${lesson.title}</span>
-                          ${lesson.isDemo ? '<span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">Clase Demo Gratis</span>' : ''}
-                        </div>
-                        ${lesson.desc ? `<p class="text-[11px] text-slate-400 mt-0.5 leading-relaxed">${lesson.desc}</p>` : ''}
-                      </div>
-                    </div>
-                    <span class="text-slate-500 font-mono text-[11px] shrink-0 pt-0.5">${lesson.duration}</span>
+                  <div class="flex items-center gap-2 shrink-0">
+                    <span class="text-xs font-mono text-slate-500">${lesson.duration}</span>
+                    <svg class="w-5 h-5 text-slate-500 transition-transform duration-200 shrink-0 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                   </div>
-                `).join('')}
+                </button>
+                <div class="module-body px-4 sm:px-6 pb-4 pt-1 border-t border-slate-900 space-y-3">
+                  <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">${lesson.desc}</p>
+                  <div class="flex items-center justify-between pt-1 border-t border-slate-900/60">
+                    <span class="text-[11px] font-mono text-slate-500">Video oficial de la clase:</span>
+                    <a href="${lesson.videoUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 font-semibold bg-cyan-500/10 hover:bg-cyan-500/20 px-3 py-1.5 rounded-lg border border-cyan-500/30 transition-all">
+                      <svg class="w-3.5 h-3.5 fill-current text-red-500" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                      <span>Ver en YouTube</span>
+                    </a>
+                  </div>
+                </div>
               </div>
-            </div>
-          `).join('')}
+            `).join('')}
+          ` : `
+            ${course.syllabus.map((mod, idx) => `
+              <div class="border border-slate-800 rounded-2xl bg-slate-950/40 overflow-hidden">
+                <button onclick="window.ElectroLab.toggleModuleAccordion(this)" class="w-full text-left p-4 sm:p-5 flex items-center justify-between font-heading font-bold text-sm sm:text-base text-slate-200 hover:text-cyan-400 transition-colors">
+                  <span class="flex items-center gap-3">
+                    <span class="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-xs font-mono font-bold shrink-0">
+                      ${idx + 1}
+                    </span>
+                    <span>${mod.module}</span>
+                  </span>
+                  <svg class="w-5 h-5 text-slate-500 transition-transform duration-200 shrink-0 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div class="module-body px-4 sm:px-6 pb-4 pt-1 space-y-2 border-t border-slate-900">
+                  ${mod.lessons.map(lesson => `
+                    <div class="flex items-start justify-between text-xs py-2 text-slate-300 border-b border-slate-900/50 last:border-0 gap-3">
+                      <div class="flex items-start gap-2.5">
+                        <svg class="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
+                        <div>
+                          <div class="flex items-center gap-2">
+                            <span class="font-bold text-white text-xs">${lesson.title}</span>
+                            ${lesson.isDemo ? '<span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">Clase Demo Gratis</span>' : ''}
+                          </div>
+                          ${lesson.desc ? `<p class="text-[11px] text-slate-400 mt-0.5 leading-relaxed">${lesson.desc}</p>` : ''}
+                        </div>
+                      </div>
+                      <span class="text-slate-500 font-mono text-[11px] shrink-0 pt-0.5">${lesson.duration}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `).join('')}
+          `}
         </div>
 
         <!-- Call to Action Footer -->
