@@ -66,6 +66,22 @@ def init_database():
         )
     ''')
 
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS grades (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            course_id TEXT NOT NULL,
+            final_grade TEXT DEFAULT '',
+            attempts_used INTEGER DEFAULT 0,
+            status TEXT DEFAULT 'Pendiente',
+            graded_at TEXT DEFAULT '',
+            observations TEXT DEFAULT '',
+            updated_at TEXT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            UNIQUE(user_id, course_id)
+        )
+    ''')
+
     conn.commit()
 
     # Verificar y actualizar clave del usuario administrador
@@ -122,14 +138,26 @@ def init_database():
             INSERT INTO enrollments (id, user_id, course_id, granted_at)
             VALUES (?, ?, ?, ?)
         ''', (uuid.uuid4().hex, student_id, 'curso-1', now))
+
+        # Cargar calificación inicial demo para Curso 1
+        cursor.execute('''
+            INSERT OR IGNORE INTO grades (id, user_id, course_id, final_grade, attempts_used, status, graded_at, observations, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (uuid.uuid4().hex, student_id, 'curso-1', '9/10', 1, 'Aprobado', '2026-03-20', 'Excelente proyecto integrador y resolución analítica de circuitos en CC.', now))
+
         conn.commit()
         print("[DB] Alumno Demo creado: alumno@demo.com (Clave: alumno123)")
     else:
-        # Asegurar que el alumno demo tenga curso-1
+        # Asegurar que el alumno demo tenga curso-1 y su calificación oficial
         cursor.execute('''
             INSERT OR IGNORE INTO enrollments (id, user_id, course_id, granted_at)
             VALUES (?, ?, ?, ?)
         ''', (uuid.uuid4().hex, student_row['id'], 'curso-1', datetime.utcnow().isoformat()))
+
+        cursor.execute('''
+            INSERT OR IGNORE INTO grades (id, user_id, course_id, final_grade, attempts_used, status, graded_at, observations, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (uuid.uuid4().hex, student_row['id'], 'curso-1', '9/10', 1, 'Aprobado', '2026-03-20', 'Excelente proyecto integrador y resolución analítica de circuitos en CC.', datetime.utcnow().isoformat()))
         conn.commit()
 
     conn.close()
@@ -138,6 +166,24 @@ def get_user_courses(cursor, user_id):
     cursor.execute("SELECT course_id FROM enrollments WHERE user_id = ?", (user_id,))
     rows = cursor.fetchall()
     return [r['course_id'] for r in rows]
+
+def get_user_grades(cursor, user_id):
+    cursor.execute('''
+        SELECT course_id, final_grade, attempts_used, status, graded_at, observations, updated_at
+        FROM grades WHERE user_id = ?
+    ''', (user_id,))
+    rows = cursor.fetchall()
+    result = {}
+    for r in rows:
+        result[r['course_id']] = {
+            'finalGrade': r['final_grade'] or '',
+            'attemptsUsed': int(r['attempts_used'] or 0),
+            'status': r['status'] or 'Pendiente',
+            'gradedAt': r['graded_at'] or '',
+            'observations': r['observations'] or '',
+            'updatedAt': r['updated_at'] or ''
+        }
+    return result
 
 def get_user_from_token(token):
     if not token:
@@ -156,6 +202,7 @@ def get_user_from_token(token):
         return None
     user = dict(row)
     user['courses'] = get_user_courses(cursor, user['id'])
+    user['grades'] = get_user_grades(cursor, user['id'])
     conn.close()
     return user
 
@@ -222,6 +269,7 @@ class ElectroLabHandler(http.server.SimpleHTTPRequestHandler):
             for row in cursor.fetchall():
                 u = dict(row)
                 u['courses'] = get_user_courses(cursor, u['id'])
+                u['grades'] = get_user_grades(cursor, u['id'])
                 users.append(u)
             conn.close()
             return self._send_json(users)
@@ -254,6 +302,7 @@ class ElectroLabHandler(http.server.SimpleHTTPRequestHandler):
                 user = dict(row)
                 del user['password_hash']
                 user['courses'] = get_user_courses(cursor, user['id'])
+                user['grades'] = get_user_grades(cursor, user['id'])
 
                 # Generar token de sesión
                 token = 'tok_' + uuid.uuid4().hex
@@ -302,7 +351,8 @@ class ElectroLabHandler(http.server.SimpleHTTPRequestHandler):
                         'name': name,
                         'email': email,
                         'role': 'student',
-                        'courses': []
+                        'courses': [],
+                        'grades': {}
                     }
                 })
             except Exception as e:
@@ -381,6 +431,104 @@ class ElectroLabHandler(http.server.SimpleHTTPRequestHandler):
             conn.commit()
             conn.close()
             return self._send_json({'success': True, 'userId': user_id})
+
+        if path == '/api/admin/save-grades':
+            token = self._get_auth_token()
+            user = get_user_from_token(token)
+            if not user or user.get('role') != 'admin':
+                return self._send_json({'error': 'Acceso no autorizado: Solo el Administrador puede asentar calificaciones'}, 403)
+
+            data = self._read_json()
+            user_id = data.get('userId')
+            if not user_id:
+                return self._send_json({'error': 'userId es obligatorio'}, 400)
+
+            conn = get_db()
+            cursor = conn.cursor()
+            now = datetime.utcnow().isoformat()
+
+            batch_grades = data.get('grades')
+            if isinstance(batch_grades, dict):
+                for cid, gdata in batch_grades.items():
+                    if not isinstance(gdata, dict):
+                        continue
+                    final_grade = str(gdata.get('finalGrade', '')).strip()
+                    attempts_used = int(gdata.get('attemptsUsed', 0))
+                    status = str(gdata.get('status', 'Pendiente')).strip()
+                    graded_at = str(gdata.get('gradedAt', '')).strip()
+                    observations = str(gdata.get('observations', '')).strip()
+
+                    cursor.execute('''
+                        INSERT INTO grades (id, user_id, course_id, final_grade, attempts_used, status, graded_at, observations, updated_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ON CONFLICT(user_id, course_id) DO UPDATE SET
+                            final_grade = excluded.final_grade,
+                            attempts_used = excluded.attempts_used,
+                            status = excluded.status,
+                            graded_at = excluded.graded_at,
+                            observations = excluded.observations,
+                            updated_at = excluded.updated_at
+                    ''', (uuid.uuid4().hex, user_id, cid, final_grade, attempts_used, status, graded_at, observations, now))
+            else:
+                course_id = data.get('courseId')
+                if not course_id:
+                    conn.close()
+                    return self._send_json({'error': 'courseId o mapa de calificaciones requerido'}, 400)
+                final_grade = str(data.get('finalGrade', '')).strip()
+                attempts_used = int(data.get('attemptsUsed', 0))
+                status = str(data.get('status', 'Pendiente')).strip()
+                graded_at = str(data.get('gradedAt', '')).strip()
+                observations = str(data.get('observations', '')).strip()
+
+                cursor.execute('''
+                    INSERT INTO grades (id, user_id, course_id, final_grade, attempts_used, status, graded_at, observations, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(user_id, course_id) DO UPDATE SET
+                        final_grade = excluded.final_grade,
+                        attempts_used = excluded.attempts_used,
+                        status = excluded.status,
+                        graded_at = excluded.graded_at,
+                        observations = excluded.observations,
+                        updated_at = excluded.updated_at
+                ''', (uuid.uuid4().hex, user_id, course_id, final_grade, attempts_used, status, graded_at, observations, now))
+
+            conn.commit()
+            updated_grades = get_user_grades(cursor, user_id)
+            conn.close()
+            return self._send_json({'success': True, 'grades': updated_grades})
+
+        if path == '/api/student/exam-result':
+            token = self._get_auth_token()
+            user = get_user_from_token(token)
+            if not user:
+                return self._send_json({'error': 'No autorizado'}, 401)
+
+            data = self._read_json()
+            course_id = data.get('courseId')
+            final_grade = str(data.get('finalGrade', '')).strip()
+            attempts_used = int(data.get('attemptsUsed', 1))
+            status = str(data.get('status', 'Pendiente')).strip()
+            graded_at = str(data.get('gradedAt', '')).strip()
+            observations = str(data.get('observations', '')).strip()
+
+            conn = get_db()
+            cursor = conn.cursor()
+            now = datetime.utcnow().isoformat()
+            cursor.execute('''
+                INSERT INTO grades (id, user_id, course_id, final_grade, attempts_used, status, graded_at, observations, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(user_id, course_id) DO UPDATE SET
+                    final_grade = excluded.final_grade,
+                    attempts_used = excluded.attempts_used,
+                    status = excluded.status,
+                    graded_at = excluded.graded_at,
+                    observations = excluded.observations,
+                    updated_at = excluded.updated_at
+            ''', (uuid.uuid4().hex, user['id'], course_id, final_grade, attempts_used, status, graded_at, observations, now))
+            conn.commit()
+            updated_grades = get_user_grades(cursor, user['id'])
+            conn.close()
+            return self._send_json({'success': True, 'grades': updated_grades})
 
         return self._send_json({'error': 'Ruta no encontrada'}, 404)
 

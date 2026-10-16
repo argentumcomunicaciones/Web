@@ -49,7 +49,8 @@
       password: 'Lobita2026',
       role: 'admin',
       createdAt: '2026-01-10T10:00:00Z',
-      courses: ['curso-1', 'curso-2', 'curso-3', 'curso-4', 'curso-5']
+      courses: ['curso-1', 'curso-2', 'curso-3', 'curso-4', 'curso-5'],
+      grades: {}
     },
     {
       id: 'usr_alumno1',
@@ -58,7 +59,16 @@
       password: 'alumno123',
       role: 'student',
       createdAt: '2026-02-15T14:30:00Z',
-      courses: ['curso-1'] // Acceso inicial al Curso 1
+      courses: ['curso-1'], // Acceso inicial al Curso 1
+      grades: {
+        'curso-1': {
+          finalGrade: '9/10',
+          attemptsUsed: 1,
+          status: 'Aprobado',
+          gradedAt: '2026-03-20',
+          observations: 'Excelente proyecto integrador y resolución analítica de circuitos en CC.'
+        }
+      }
     }
   ];
 
@@ -67,7 +77,7 @@
     if (!localStorage.getItem(STORAGE_KEY_USERS_DB)) {
       localStorage.setItem(STORAGE_KEY_USERS_DB, JSON.stringify(DEFAULT_USERS));
     } else {
-      // Actualizar automáticamente la clave de admin y migrar cursos
+      // Actualizar automáticamente la clave de admin y migrar cursos y calificaciones
       try {
         const users = JSON.parse(localStorage.getItem(STORAGE_KEY_USERS_DB) || '[]');
         let updated = false;
@@ -78,8 +88,27 @@
               updated = true;
             }
             u.courses = ['curso-1', 'curso-2', 'curso-3', 'curso-4', 'curso-5'];
+            if (!u.grades) { u.grades = {}; updated = true; }
             updated = true;
-          } else if (u.courses && u.courses.length > 0) {
+          } else if (u.email === 'alumno@demo.com') {
+            if (!u.grades || Object.keys(u.grades).length === 0) {
+              u.grades = {
+                'curso-1': {
+                  finalGrade: '9/10',
+                  attemptsUsed: 1,
+                  status: 'Aprobado',
+                  gradedAt: '2026-03-20',
+                  observations: 'Excelente proyecto integrador y resolución analítica de circuitos en CC.'
+                }
+              };
+              updated = true;
+            }
+          }
+          if (!u.grades) {
+            u.grades = {};
+            updated = true;
+          }
+          if (u.courses && u.courses.length > 0) {
             const norm = normalizeCourseList(u.courses);
             if (JSON.stringify(norm) !== JSON.stringify(u.courses)) {
               u.courses = norm;
@@ -121,11 +150,21 @@
     return isBackendAvailable;
   }
 
-  // Obtener usuario actualmente autenticado
+  // Obtener usuario actualmente autenticado con notas sincronizadas
   function getCurrentUser() {
     try {
       const data = localStorage.getItem(STORAGE_KEY_USER);
-      return data ? JSON.parse(data) : null;
+      if (!data) return null;
+      const user = JSON.parse(data);
+      const localUsers = getLocalUsers();
+      const fresh = localUsers.find(u => u.id === user.id || u.email.toLowerCase() === user.email.toLowerCase());
+      if (fresh) {
+        user.grades = fresh.grades || {};
+        user.courses = normalizeCourseList(fresh.courses || user.courses || []);
+      } else {
+        user.grades = user.grades || {};
+      }
+      return user;
     } catch (e) {
       return null;
     }
@@ -171,7 +210,8 @@
       name: found.name,
       email: found.email,
       role: found.role,
-      courses: normalizeCourseList(found.courses || [])
+      courses: normalizeCourseList(found.courses || []),
+      grades: found.grades || {}
     };
     localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(sessionUser));
     localStorage.setItem(STORAGE_KEY_TOKEN, 'mock_token_' + Date.now());
@@ -216,7 +256,8 @@
       password: password,
       role: 'student',
       createdAt: new Date().toISOString(),
-      courses: [] // Inicialmente sin cursos comprados hasta que el admin los habilite o pague
+      courses: [],
+      grades: {}
     };
 
     users.push(newUser);
@@ -227,7 +268,8 @@
       name: newUser.name,
       email: newUser.email,
       role: newUser.role,
-      courses: []
+      courses: [],
+      grades: {}
     };
     localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(sessionUser));
     localStorage.setItem(STORAGE_KEY_TOKEN, 'mock_token_' + Date.now());
@@ -325,7 +367,8 @@
       email: u.email,
       role: u.role,
       createdAt: u.createdAt,
-      courses: u.courses || []
+      courses: u.courses || [],
+      grades: u.grades || {}
     }));
   }
 
@@ -367,6 +410,176 @@
     return { success: true, courses: user.courses };
   }
 
+  // Guardar calificaciones de un curso específico para un alumno
+  async function adminSaveGrades(userId, courseId, gradeData) {
+    const curr = getCurrentUser();
+    if (!curr || curr.role !== 'admin') {
+      throw new Error('Acceso denegado: Solo el Administrador puede asentar calificaciones.');
+    }
+
+    const hasBackend = await checkBackend();
+    if (hasBackend) {
+      const res = await fetch('/api/admin/save-grades', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + getToken()
+        },
+        body: JSON.stringify({ userId, courseId, ...gradeData })
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Error al persistir calificaciones en el servidor');
+      }
+      const data = await res.json();
+      const users = getLocalUsers();
+      const u = users.find(x => x.id === userId);
+      if (u) {
+        u.grades = data.grades || u.grades || {};
+        saveLocalUsers(users);
+      }
+      return data;
+    }
+
+    // Fallback local permanente
+    const users = getLocalUsers();
+    const user = users.find(u => u.id === userId);
+    if (!user) throw new Error('Usuario no encontrado');
+
+    if (!user.grades) user.grades = {};
+    user.grades[courseId] = {
+      finalGrade: gradeData.finalGrade || '',
+      attemptsUsed: parseInt(gradeData.attemptsUsed || 0, 10),
+      status: gradeData.status || 'Pendiente',
+      gradedAt: gradeData.gradedAt || (gradeData.finalGrade ? new Date().toISOString().split('T')[0] : ''),
+      observations: gradeData.observations || '',
+      updatedAt: new Date().toISOString()
+    };
+    saveLocalUsers(users);
+
+    if (curr.id === userId) {
+      curr.grades = user.grades;
+      localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(curr));
+    }
+    return { success: true, grades: user.grades };
+  }
+
+  // Guardar boletín completo de un alumno (en lote para los 5 cursos)
+  async function adminSaveUserReportCard(userId, gradesMap) {
+    const curr = getCurrentUser();
+    if (!curr || curr.role !== 'admin') {
+      throw new Error('Acceso denegado: Solo el Administrador puede asentar calificaciones.');
+    }
+
+    const hasBackend = await checkBackend();
+    if (hasBackend) {
+      const res = await fetch('/api/admin/save-grades', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + getToken()
+        },
+        body: JSON.stringify({ userId, grades: gradesMap })
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Error al persistir calificaciones en el servidor');
+      }
+      const data = await res.json();
+      const users = getLocalUsers();
+      const u = users.find(x => x.id === userId);
+      if (u) {
+        u.grades = data.grades || u.grades || {};
+        saveLocalUsers(users);
+      }
+      return data;
+    }
+
+    // Fallback local permanente
+    const users = getLocalUsers();
+    const user = users.find(u => u.id === userId);
+    if (!user) throw new Error('Usuario no encontrado');
+
+    if (!user.grades) user.grades = {};
+    for (const cid in gradesMap) {
+      const g = gradesMap[cid];
+      user.grades[cid] = {
+        finalGrade: g.finalGrade || '',
+        attemptsUsed: parseInt(g.attemptsUsed || 0, 10),
+        status: g.status || 'Pendiente',
+        gradedAt: g.gradedAt || (g.finalGrade ? new Date().toISOString().split('T')[0] : ''),
+        observations: g.observations || '',
+        updatedAt: new Date().toISOString()
+      };
+    }
+    saveLocalUsers(users);
+
+    if (curr.id === userId) {
+      curr.grades = user.grades;
+      localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(curr));
+    }
+    return { success: true, grades: user.grades };
+  }
+
+  // Registrar resultado de examen rendido por el propio alumno
+  async function recordStudentExamResult(courseId, { finalGrade, status, attemptsUsed, gradedAt, observations }) {
+    const curr = getCurrentUser();
+    if (!curr) throw new Error('No hay sesión activa.');
+
+    const users = getLocalUsers();
+    const user = users.find(u => u.id === curr.id);
+    if (!user) throw new Error('Usuario no encontrado');
+
+    if (!user.grades) user.grades = {};
+
+    const existing = user.grades[courseId] || {};
+    const attempts = attemptsUsed !== undefined ? attemptsUsed : ((existing.attemptsUsed || existing.attempts_used || 0) + 1);
+
+    user.grades[courseId] = {
+      finalGrade: finalGrade || '',
+      attemptsUsed: Math.min(parseInt(attempts, 10), 2),
+      status: status || (parseInt(finalGrade, 10) >= 6 ? 'Aprobado' : 'Desaprobado'),
+      gradedAt: gradedAt || new Date().toISOString().split('T')[0],
+      observations: observations || `Examen final calificado automáticamente. Intento ${attempts} de 2.`,
+      updatedAt: new Date().toISOString()
+    };
+
+    saveLocalUsers(users);
+    curr.grades = user.grades;
+    localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(curr));
+
+    const hasBackend = await checkBackend();
+    if (hasBackend) {
+      try {
+        await fetch('/api/student/exam-result', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + getToken()
+          },
+          body: JSON.stringify({
+            courseId,
+            finalGrade: user.grades[courseId].finalGrade,
+            status: user.grades[courseId].status,
+            attemptsUsed: user.grades[courseId].attemptsUsed,
+            gradedAt: user.grades[courseId].gradedAt,
+            observations: user.grades[courseId].observations
+          })
+        });
+      } catch (e) {}
+    }
+
+    return { success: true, grades: user.grades };
+  }
+
+  function getUserGrades(userId) {
+    const targetId = userId || (getCurrentUser() ? getCurrentUser().id : null);
+    if (!targetId) return {};
+    const users = getLocalUsers();
+    const found = users.find(u => u.id === targetId);
+    return found && found.grades ? found.grades : {};
+  }
+
   async function adminCreateUser(name, email, password, courses = [], role = 'student') {
     email = email.trim().toLowerCase();
     name = name.trim();
@@ -401,7 +614,8 @@
       password,
       role,
       createdAt: new Date().toISOString(),
-      courses
+      courses,
+      grades: {}
     };
     users.push(newUser);
     saveLocalUsers(users);
@@ -471,10 +685,14 @@
     getEnrolledCourses,
     getLessonProgress,
     toggleLessonCompleted,
+    getUserGrades,
     adminGetUsers,
     adminToggleCourseAccess,
     adminCreateUser,
     adminDeleteUser,
+    adminSaveGrades,
+    adminSaveUserReportCard,
+    recordStudentExamResult,
     updateNavAuthUI
   };
 

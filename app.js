@@ -36,6 +36,62 @@
     }
   };
 
+  // BANCO OFICIAL DE PREGUNTAS: Examen Final del Curso 1 (10 Preguntas)
+  const examenCurso1 = [
+    {
+      pregunta: "Si en un circuito resistivo puro se duplica el voltaje manteniendo constante la resistencia, ¿qué ocurre con la corriente?",
+      opciones: ["Se reduce a la mitad", "Se mantiene constante", "Se duplica", "Se cuadruplica"],
+      correcta: 2
+    },
+    {
+      pregunta: "La Ley de Corrientes de Kirchhoff (LKC) aplicada a un nodo se fundamenta en la conservación de:",
+      opciones: ["La energía", "La carga eléctrica", "La masa", "El campo magnético"],
+      correcta: 1
+    },
+    {
+      pregunta: "En un divisor serie con fuente de 12V, R1 = 1kΩ y R2 = 3kΩ, ¿cuál es la tensión sobre R2?",
+      opciones: ["3V", "6V", "9V", "12V"],
+      correcta: 2
+    },
+    {
+      pregunta: "Para calcular la resistencia equivalente de Thévenin (Rth), las fuentes de tensión independientes ideales deben:",
+      opciones: ["Dejarse en circuito abierto", "Reemplazarse por un cortocircuito", "Conectarse a tierra con 1MΩ", "Mantener su valor nominal"],
+      correcta: 1
+    },
+    {
+      pregunta: "La corriente de Norton (In) en un circuito equivalente se obtiene calculando la corriente al:",
+      opciones: ["Abrir los terminales de carga", "Conectar un voltímetro de alta impedancia", "Cortocircuitar los terminales de carga", "Apagar fuentes dependientes"],
+      correcta: 2
+    },
+    {
+      pregunta: "Si un capacitor cerámico presenta en su encapsulado el código '104', su capacitancia equivale a:",
+      opciones: ["104 pF", "10 nF", "100 nF (0.1 µF)", "1 µF"],
+      correcta: 2
+    },
+    {
+      pregunta: "En un circuito serie RC, la constante de tiempo (tau) define el tiempo en que el capacitor alcanza aproximadamente el:",
+      opciones: ["50% de la tensión de entrada", "63.2% de la tensión de entrada", "86.5% de la tensión de entrada", "99.3% de la tensión de entrada"],
+      correcta: 1
+    },
+    {
+      pregunta: "Para una señal senoidal pura con tensión de pico Vp = 311V, el valor eficaz (Vrms) aproximado es:",
+      opciones: ["155V", "220V", "311V", "622V"],
+      correcta: 1
+    },
+    {
+      pregunta: "En un circuito serie RLC, la frecuencia de resonancia se produce exactamente cuando:",
+      opciones: ["XL es igual a cero", "R es igual a la impedancia Z", "XL es igual a XC", "La corriente por el circuito es mínima"],
+      correcta: 2
+    },
+    {
+      pregunta: "Al representar impedancias en notación compleja, la reactancia de un capacitor puro se define como:",
+      opciones: ["+j XL", "-j XC", "R + jω", "1 / jR"],
+      correcta: 1
+    }
+  ];
+
+  window.examenCurso1 = examenCurso1;
+
   // Base de datos de los 5 Cursos Oficiales y Recursos
   const COURSES = [
     {
@@ -1721,7 +1777,8 @@
     calculateCartTotals,
     copyToClipboard,
     sendPaymentReceipt,
-    showToast
+    showToast,
+    examenCurso1
   };
 
   if (document.readyState === 'loading') {
