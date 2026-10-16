@@ -161,6 +161,27 @@
         <!-- Video Player Frame -->
         <div class="relative aspect-video rounded-3xl overflow-hidden bg-black border border-slate-800 shadow-2xl">
           <iframe id="classroom-iframe" class="w-full h-full" src="" title="Video de la Lección" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+          <!-- Locked Player Overlay (Acceso Restringido para usuarios sin el curso habilitado) -->
+          <div id="classroom-locked-overlay" class="absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-20 hidden">
+            <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mb-4 shadow-lg shadow-amber-500/10">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            </div>
+            <span class="text-xs font-mono font-bold tracking-widest text-amber-400 uppercase mb-2">ACCESO RESTRINGIDO</span>
+            <h3 class="text-xl sm:text-2xl font-heading font-extrabold text-white mb-2" id="locked-overlay-title">Curso no habilitado en tu cuenta</h3>
+            <p class="text-xs sm:text-sm text-slate-300 max-w-md mb-6 leading-relaxed" id="locked-overlay-desc">
+              Las clases en video HD, esquemáticos en PDF descargables, códigos de Arduino y archivos de simulación LTspice (.asc) son de acceso exclusivo para estudiantes con el curso activo.
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-3">
+              <a href="./index.html#cursos" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-heading font-bold px-5 py-2.5 rounded-xl text-xs transition-all shadow-lg flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                <span>Adquirir o Desbloquear Curso</span>
+              </a>
+              <button onclick="exitClassroom()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2.5 rounded-xl text-xs transition-all border border-slate-700">
+                Volver a Mis Cursos
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Lesson Meta Header & Completion Button -->
@@ -285,7 +306,16 @@
         document.getElementById('admin-shortcut').classList.remove('hidden');
       }
 
-      renderDashboard();
+      // Comprobar parámetros de la URL para acceso directo a cursos/lecciones
+      const urlParams = new URLSearchParams(window.location.search);
+      const reqCourseId = urlParams.get('course');
+      const reqLessonId = urlParams.get('lesson');
+
+      if (reqCourseId && COURSES_DATA.some(c => c.id === reqCourseId)) {
+        enterClassroom(reqCourseId, reqLessonId);
+      } else {
+        renderDashboard();
+      }
     });
 
     // Base de datos de los 5 Cursos Oficiales en el Aula Virtual
@@ -651,9 +681,14 @@
     }
 
     // Classroom logic
-    function enterClassroom(courseId) {
+    function enterClassroom(courseId, targetLessonId) {
       currentCourse = COURSES_DATA.find(c => c.id === courseId);
-      if (!currentCourse) return;
+      if (!currentCourse) {
+        renderDashboard();
+        return;
+      }
+
+      const hasAccess = window.ElectroLabAuth && window.ElectroLabAuth.hasCourseAccess(courseId);
 
       document.getElementById('dashboard-view').classList.add('hidden');
       document.getElementById('classroom-view').classList.remove('hidden');
@@ -661,35 +696,85 @@
       document.getElementById('classroom-course-title').textContent = currentCourse.title;
       document.getElementById('classroom-course-tag').textContent = currentCourse.tag;
 
-      // Select first lesson by default
-      const firstLesson = currentCourse.modules[0].lessons[0];
-      selectLesson(currentCourse.modules[0].name, firstLesson);
+      const lockedOverlay = document.getElementById('classroom-locked-overlay');
+      const iframe = document.getElementById('classroom-iframe');
 
-      // Update Google Drive folder links for this course
-      const driveUrl = currentCourse.driveFolder || '#';
-      const btnMain = document.getElementById('btn-drive-folder-main');
-      const linkLt = document.getElementById('link-drive-ltspice');
-      const linkArd = document.getElementById('link-drive-arduino');
-      const linkSch = document.getElementById('link-drive-schematics');
+      if (!hasAccess) {
+        // Bloqueo estricto del reproductor: NO inyectar ningún video
+        if (iframe) iframe.src = '';
+        if (lockedOverlay) {
+          const titleEl = document.getElementById('locked-overlay-title');
+          if (titleEl) titleEl.textContent = `Acceso Restringido: ${currentCourse.title}`;
+          lockedOverlay.classList.remove('hidden');
+        }
+        setDriveLinksState(false, '#');
+        renderClassroomSyllabus(false);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
 
-      if (btnMain) btnMain.href = driveUrl;
-      if (linkLt) linkLt.href = driveUrl;
-      if (linkArd) linkArd.href = driveUrl;
-      if (linkSch) linkSch.href = driveUrl;
+      // Si tiene acceso habilitado:
+      if (lockedOverlay) lockedOverlay.classList.add('hidden');
+      setDriveLinksState(true, currentCourse.driveFolder || '#');
 
-      renderClassroomSyllabus();
+      // Buscar la lección objetivo o la primera del curso
+      let targetLesson = null;
+      let targetModuleName = '';
+      if (targetLessonId && currentCourse.modules) {
+        for (const mod of currentCourse.modules) {
+          const found = mod.lessons.find(l => l.id === targetLessonId);
+          if (found) {
+            targetLesson = found;
+            targetModuleName = mod.name;
+            break;
+          }
+        }
+      }
+
+      if (!targetLesson && currentCourse.modules[0] && currentCourse.modules[0].lessons[0]) {
+        targetLesson = currentCourse.modules[0].lessons[0];
+        targetModuleName = currentCourse.modules[0].name;
+      }
+
+      if (targetLesson) {
+        selectLesson(targetModuleName, targetLesson);
+      } else {
+        renderClassroomSyllabus(true);
+      }
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function exitClassroom() {
-      document.getElementById('classroom-iframe').src = '';
+      const iframe = document.getElementById('classroom-iframe');
+      if (iframe) iframe.src = '';
+      const lockedOverlay = document.getElementById('classroom-locked-overlay');
+      if (lockedOverlay) lockedOverlay.classList.add('hidden');
+
       document.getElementById('classroom-view').classList.add('hidden');
       document.getElementById('dashboard-view').classList.remove('hidden');
+      currentCourse = null;
+      currentLesson = null;
       renderDashboard();
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
 
     function selectLesson(moduleName, lesson) {
+      if (!currentCourse) return;
+
+      const hasAccess = window.ElectroLabAuth && window.ElectroLabAuth.hasCourseAccess(currentCourse.id);
+      const iframe = document.getElementById('classroom-iframe');
+      const lockedOverlay = document.getElementById('classroom-locked-overlay');
+
+      if (!hasAccess) {
+        if (iframe) iframe.src = '';
+        if (lockedOverlay) lockedOverlay.classList.remove('hidden');
+        return;
+      }
+
+      if (lockedOverlay) lockedOverlay.classList.add('hidden');
       currentLesson = lesson;
+
       const modEl = document.getElementById('current-lesson-module');
       if (modEl) {
         if (moduleName && moduleName.trim().length > 0) {
@@ -705,8 +790,7 @@
         descEl.textContent = lesson.desc || 'En esta lección analizamos los fundamentos teóricos y las mediciones prácticas en la protoboard. Revisa los diagramas y recursos descargables en la carpeta de Google Drive.';
       }
 
-      // Actualizar reproductor embebido de YouTube estándar
-      const iframe = document.getElementById('classroom-iframe');
+      // Inyectar el video embebido de YouTube ÚNICAMENTE si el usuario tiene permiso habilitado
       if (iframe) {
         if (lesson.videoId) {
           iframe.src = `https://www.youtube.com/embed/${lesson.videoId}`;
@@ -721,7 +805,26 @@
       }
 
       updateLessonCompleteButton();
-      renderClassroomSyllabus();
+      renderClassroomSyllabus(true);
+    }
+
+    function setDriveLinksState(isEnabled, driveUrl) {
+      const btnMain = document.getElementById('btn-drive-folder-main');
+      const linkLt = document.getElementById('link-drive-ltspice');
+      const linkArd = document.getElementById('link-drive-arduino');
+      const linkSch = document.getElementById('link-drive-schematics');
+
+      if (isEnabled && driveUrl && driveUrl !== '#') {
+        if (btnMain) { btnMain.href = driveUrl; btnMain.classList.remove('opacity-40', 'pointer-events-none'); }
+        if (linkLt) { linkLt.href = driveUrl; linkLt.classList.remove('opacity-40', 'pointer-events-none'); }
+        if (linkArd) { linkArd.href = driveUrl; linkArd.classList.remove('opacity-40', 'pointer-events-none'); }
+        if (linkSch) { linkSch.href = driveUrl; linkSch.classList.remove('opacity-40', 'pointer-events-none'); }
+      } else {
+        if (btnMain) { btnMain.href = '#'; btnMain.classList.add('opacity-40', 'pointer-events-none'); }
+        if (linkLt) { linkLt.href = '#'; linkLt.classList.add('opacity-40', 'pointer-events-none'); }
+        if (linkArd) { linkArd.href = '#'; linkArd.classList.add('opacity-40', 'pointer-events-none'); }
+        if (linkSch) { linkSch.href = '#'; linkSch.classList.add('opacity-40', 'pointer-events-none'); }
+      }
     }
 
     function updateLessonCompleteButton() {
@@ -745,10 +848,10 @@
       if (!currentCourse || !currentLesson) return;
       window.ElectroLabAuth.toggleLessonCompleted(currentCourse.id, currentLesson.id);
       updateLessonCompleteButton();
-      renderClassroomSyllabus();
+      renderClassroomSyllabus(true);
     }
 
-    function renderClassroomSyllabus() {
+    function renderClassroomSyllabus(hasAccess = true) {
       if (!currentCourse) return;
       const container = document.getElementById('classroom-syllabus-container');
       const completedList = window.ElectroLabAuth.getLessonProgress(currentCourse.id);
@@ -773,6 +876,23 @@
               ${mod.lessons.map(les => {
                 const isActive = currentLesson && currentLesson.id === les.id;
                 const isCompleted = completedList.includes(les.id);
+
+                if (!hasAccess) {
+                  return `
+                    <div class="w-full text-left p-2.5 rounded-xl text-xs flex items-start justify-between opacity-60 bg-slate-950/40 border border-slate-800/40 cursor-not-allowed">
+                      <span class="flex items-start gap-2 text-left flex-1 min-w-0">
+                        <span class="w-4 h-4 rounded flex items-center justify-center text-[10px] shrink-0 mt-0.5 text-amber-400">
+                          🔒
+                        </span>
+                        <span class="flex-1 min-w-0 pr-1">
+                          <span class="font-bold text-slate-300 block truncate">${les.title}</span>
+                          ${les.desc ? `<span class="text-[10px] text-slate-500 block line-clamp-1">${les.desc}</span>` : ''}
+                        </span>
+                      </span>
+                      <span class="text-[10px] font-mono text-slate-600 shrink-0 ml-2 mt-0.5">${les.duration}</span>
+                    </div>
+                  `;
+                }
 
                 return `
                   <button type="button" onclick="selectLesson('${mod.name}', ${JSON.stringify(les).replace(/"/g, '&quot;')})" class="w-full text-left p-2.5 rounded-xl text-xs flex items-start justify-between transition-all ${

@@ -937,33 +937,52 @@
         <!-- Syllabus Modules Accordion -->
         <div class="space-y-3 mb-8">
           ${(course.id === 'curso-1' || !course.syllabus[0]?.lessons) ? `
-            ${course.syllabus.map((lesson, idx) => `
-              <div class="border border-slate-800 rounded-2xl bg-slate-950/40 overflow-hidden">
+            ${course.syllabus.map((lesson, idx) => {
+              const thumbUrl = lesson.videoId ? `https://img.youtube.com/vi/${lesson.videoId}/mqdefault.jpg` : course.image;
+              return `
+              <div class="border border-slate-800 rounded-2xl bg-slate-950/40 overflow-hidden group">
                 <button onclick="window.ElectroLab.toggleModuleAccordion(this)" class="w-full text-left p-4 sm:p-5 flex items-center justify-between font-heading font-bold text-sm sm:text-base text-slate-200 hover:text-cyan-400 transition-colors">
                   <span class="flex items-center gap-3">
                     <span class="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-xs font-mono font-bold shrink-0">
                       ${idx + 1}
                     </span>
                     <span class="font-bold text-white text-sm sm:text-base">${lesson.title}</span>
-                    ${lesson.isDemo ? '<span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30 ml-1">Clase Demo Gratis</span>' : ''}
+                    ${lesson.isDemo ? '<span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30 ml-1">Clase Demo</span>' : ''}
                   </span>
                   <div class="flex items-center gap-2 shrink-0">
                     <span class="text-xs font-mono text-slate-500">${lesson.duration}</span>
                     <svg class="w-5 h-5 text-slate-500 transition-transform duration-200 shrink-0 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                   </div>
                 </button>
-                <div class="module-body px-4 sm:px-6 pb-4 pt-1 border-t border-slate-900 space-y-3">
-                  <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">${lesson.desc}</p>
-                  <div class="flex items-center justify-between pt-1 border-t border-slate-900/60">
-                    <span class="text-[11px] font-mono text-slate-500">Video oficial de la clase:</span>
-                    <a href="${lesson.videoUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 font-semibold bg-cyan-500/10 hover:bg-cyan-500/20 px-3 py-1.5 rounded-lg border border-cyan-500/30 transition-all">
-                      <svg class="w-3.5 h-3.5 fill-current text-red-500" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
-                      <span>Ver en YouTube</span>
-                    </a>
+                <div class="module-body px-4 sm:px-6 pb-4 pt-3 border-t border-slate-900 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                  <div class="flex items-start gap-3 sm:gap-4 flex-1">
+                    <!-- Miniatura ilustrativa estática -->
+                    <div class="relative w-24 sm:w-28 aspect-video rounded-xl overflow-hidden bg-slate-950 border border-slate-800 shrink-0 shadow-inner group-hover:border-cyan-500/40">
+                      <img src="${thumbUrl}" alt="${lesson.title}" class="w-full h-full object-cover">
+                      <div class="absolute inset-0 bg-slate-950/40 flex items-center justify-center">
+                        <span class="w-6 h-6 rounded-lg bg-slate-900/90 border border-slate-700/80 text-amber-400 flex items-center justify-center text-[11px] shadow">
+                          🔒
+                        </span>
+                      </div>
+                    </div>
+                    <!-- Título y síntesis teórica -->
+                    <div class="space-y-1 flex-1">
+                      <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-xs font-bold text-white">${lesson.title}</span>
+                        <span class="text-[10px] font-mono text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/40">${lesson.duration}</span>
+                      </div>
+                      <p class="text-xs text-slate-300 leading-relaxed">${lesson.desc}</p>
+                    </div>
                   </div>
+
+                  <!-- Botón de acceso protegido -->
+                  <button onclick="window.ElectroLab.handleLessonAccess('${course.id}', '${lesson.id || ''}')" class="shrink-0 w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-bold text-cyan-300 hover:text-white bg-slate-900 hover:bg-cyan-500/20 border border-slate-700 hover:border-cyan-400/60 px-3.5 py-2 rounded-xl transition-all shadow">
+                    <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    <span>Acceder a esta clase</span>
+                  </button>
                 </div>
               </div>
-            `).join('')}
+            `;}).join('')}
           ` : `
             ${course.syllabus.map((mod, idx) => `
               <div class="border border-slate-800 rounded-2xl bg-slate-950/40 overflow-hidden">
@@ -976,20 +995,29 @@
                   </span>
                   <svg class="w-5 h-5 text-slate-500 transition-transform duration-200 shrink-0 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
-                <div class="module-body px-4 sm:px-6 pb-4 pt-1 space-y-2 border-t border-slate-900">
+                <div class="module-body px-4 sm:px-6 pb-4 pt-2 space-y-3 border-t border-slate-900">
                   ${mod.lessons.map(lesson => `
-                    <div class="flex items-start justify-between text-xs py-2 text-slate-300 border-b border-slate-900/50 last:border-0 gap-3">
-                      <div class="flex items-start gap-2.5">
-                        <svg class="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
-                        <div>
-                          <div class="flex items-center gap-2">
-                            <span class="font-bold text-white text-xs">${lesson.title}</span>
-                            ${lesson.isDemo ? '<span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">Clase Demo Gratis</span>' : ''}
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs py-3 border-b border-slate-900/60 last:border-0 gap-3">
+                      <div class="flex items-start gap-3 flex-1">
+                        <!-- Miniatura ilustrativa -->
+                        <div class="relative w-20 sm:w-24 aspect-video rounded-xl overflow-hidden bg-slate-950 border border-slate-800 shrink-0">
+                          <img src="${course.image}" alt="${lesson.title}" class="w-full h-full object-cover opacity-80">
+                          <div class="absolute inset-0 bg-slate-950/40 flex items-center justify-center">
+                            <span class="w-5 h-5 rounded-md bg-slate-900/90 border border-slate-700 text-amber-400 flex items-center justify-center text-[10px]">🔒</span>
                           </div>
-                          ${lesson.desc ? `<p class="text-[11px] text-slate-400 mt-0.5 leading-relaxed">${lesson.desc}</p>` : ''}
+                        </div>
+                        <div>
+                          <div class="flex items-center gap-2 flex-wrap">
+                            <span class="font-bold text-white text-xs">${lesson.title}</span>
+                            <span class="text-[10px] font-mono text-cyan-400 bg-cyan-950/60 px-1.5 py-0.5 rounded border border-cyan-800/40">${lesson.duration}</span>
+                          </div>
+                          ${lesson.desc ? `<p class="text-[11px] text-slate-300 mt-1 leading-relaxed">${lesson.desc}</p>` : ''}
                         </div>
                       </div>
-                      <span class="text-slate-500 font-mono text-[11px] shrink-0 pt-0.5">${lesson.duration}</span>
+                      <button onclick="window.ElectroLab.handleLessonAccess('${course.id}', '${lesson.id || ''}')" class="shrink-0 w-full sm:w-auto inline-flex items-center justify-center gap-1.5 text-[11px] font-bold text-cyan-300 hover:text-white bg-slate-900 hover:bg-cyan-500/20 border border-slate-700 hover:border-cyan-400/60 px-3 py-1.5 rounded-lg transition-all">
+                        <svg class="w-3 h-3 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        <span>Acceder a esta clase</span>
+                      </button>
                     </div>
                   `).join('')}
                 </div>
@@ -1040,25 +1068,117 @@
     }
   }
 
-  // Modal de Video Demo Gratis
-  function openDemoVideo() {
-    const modal = document.getElementById('demo-modal');
-    const iframe = document.getElementById('demo-iframe');
-    if (modal && iframe) {
-      iframe.src = 'https://www.youtube.com/embed/videoseries?list=PLZRAKzDxXlAI&autoplay=1';
-      modal.classList.remove('hidden');
-      document.body.classList.add('overflow-hidden');
+  // Control de Acceso a Clases y Modal Informativo
+  function handleLessonAccess(courseId, lessonId) {
+    const user = window.ElectroLabAuth ? window.ElectroLabAuth.getCurrentUser() : null;
+    const hasAccess = window.ElectroLabAuth && window.ElectroLabAuth.hasCourseAccess(courseId);
+
+    if (user && hasAccess) {
+      let targetUrl = `./aula.html?course=${encodeURIComponent(courseId)}`;
+      if (lessonId) {
+        targetUrl += `&lesson=${encodeURIComponent(lessonId)}`;
+      }
+      window.location.href = targetUrl;
+    } else {
+      openAccessNoticeModal(courseId, lessonId);
     }
   }
 
-  function closeDemoVideo() {
-    const modal = document.getElementById('demo-modal');
-    const iframe = document.getElementById('demo-iframe');
-    if (modal && iframe) {
-      iframe.src = '';
+  function openAccessNoticeModal(courseId, lessonId) {
+    const course = COURSES.find(c => c.id === courseId) || COURSES[0];
+    const user = window.ElectroLabAuth ? window.ElectroLabAuth.getCurrentUser() : null;
+    const price = getCoursePrice(course);
+
+    const modal = document.getElementById('access-notice-modal');
+    const body = document.getElementById('access-notice-modal-body');
+    if (!modal || !body) return;
+
+    body.innerHTML = `
+      <div class="relative bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl text-slate-100 text-center">
+        <!-- Close Button -->
+        <button onclick="window.ElectroLab.closeAccessNoticeModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 mx-auto flex items-center justify-center mb-4 shadow-lg shadow-amber-500/10">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        </div>
+
+        <span class="inline-block text-[11px] font-mono font-bold tracking-widest text-amber-400 uppercase bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/60 mb-3">
+          ACCESO EXCLUSIVO PARA ALUMNOS
+        </span>
+
+        <h3 class="text-xl sm:text-2xl font-heading font-extrabold text-white mb-2">
+          Inicia sesión o adquiere el curso para acceder a esta clase
+        </h3>
+
+        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-6">
+          Los videos en alta definición, esquemáticos en PDF, códigos de Arduino y archivos .ASC de simulación LTspice están disponibles exclusivamente dentro del <strong>Aula Virtual</strong> para estudiantes habilitados.
+        </p>
+
+        <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 text-left mb-6 space-y-2">
+          <div class="text-[11px] font-mono font-bold text-cyan-400 uppercase">${course.tag}</div>
+          <div class="font-bold text-sm text-white">${course.title}</div>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-900 text-xs">
+            <span class="text-slate-400">Inversión única de acceso de por vida:</span>
+            <span class="text-base font-black text-cyan-300">${formatMoney(price)}</span>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <a href="./login.html" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-xl text-xs transition-all border border-slate-700 flex items-center justify-center gap-2">
+              <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+              <span>${user ? 'Cambiar de Cuenta' : 'Iniciar Sesión'}</span>
+            </a>
+
+            <button onclick="window.ElectroLab.enrollAndCheckout('${course.id}')" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-heading font-extrabold py-3 px-4 rounded-xl text-xs transition-all shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+              <span>Adquirir Curso</span>
+            </button>
+          </div>
+
+          <div class="text-[11px] text-slate-400 pt-2">
+            ¿Ya realizaste el pago por transferencia o Mercado Pago?
+            <a href="https://wa.me/5491123065347?text=Hola!%20Ya%20realic%C3%A9%20el%20pago%20para%20el%20curso%20${encodeURIComponent(course.title)}.%20Quiero%20habilitar%20mi%20cuenta." target="_blank" class="text-emerald-400 hover:underline font-bold block sm:inline ml-1">
+              Enviar comprobante por WhatsApp
+            </a>
+          </div>
+        </div>
+
+      </div>
+    `;
+
+    modal.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+  }
+
+  function closeAccessNoticeModal() {
+    const modal = document.getElementById('access-notice-modal');
+    if (modal) {
       modal.classList.add('hidden');
       document.body.classList.remove('overflow-hidden');
     }
+  }
+
+  function enrollAndCheckout(courseId) {
+    closeAccessNoticeModal();
+    closeSyllabus();
+    if (!state.cart.includes(courseId)) {
+      state.cart.push(courseId);
+      saveState();
+      updateCartUI();
+    }
+    openCartDrawer();
+  }
+
+  // Compatibilidad hacia atrás (redirección a control de acceso)
+  function openDemoVideo() {
+    handleLessonAccess('curso-1', 'c1_l1');
+  }
+
+  function closeDemoVideo() {
+    closeAccessNoticeModal();
   }
 
   // Pasarelas de Pago
@@ -1569,6 +1689,7 @@
         closeCartDrawer();
         closeSyllabus();
         closeDemoVideo();
+        closeAccessNoticeModal();
         closePaymentModal();
       }
     });
@@ -1585,6 +1706,10 @@
     openSyllabus,
     closeSyllabus,
     toggleModuleAccordion,
+    handleLessonAccess,
+    openAccessNoticeModal,
+    closeAccessNoticeModal,
+    enrollAndCheckout,
     openDemoVideo,
     closeDemoVideo,
     checkoutWhatsApp,
