@@ -912,11 +912,17 @@
             </div>
           `;
         } else {
+          const isComingSoon = course.id !== 'curso-1';
           lockedHtml += `
             <div class="bg-slate-950/60 border border-slate-800/80 rounded-3xl overflow-hidden opacity-75 hover:opacity-100 transition-all flex flex-col justify-between">
               <div>
                 <div class="relative aspect-video w-full overflow-hidden bg-black">
                   <img src="${course.image}" alt="${course.title}" class="w-full h-full object-cover grayscale">
+                  ${isComingSoon ? `
+                    <div class="absolute top-3 right-3 bg-amber-400 text-slate-950 font-black text-[10px] px-2.5 py-1 rounded-lg shadow-lg border border-amber-300 tracking-wider z-10">
+                      PRÓXIMAMENTE
+                    </div>
+                  ` : ''}
                   <div class="absolute inset-0 bg-black/60 flex items-center justify-center">
                     <div class="w-12 h-12 rounded-2xl bg-slate-900/90 border border-slate-700 text-slate-400 flex items-center justify-center">
                       <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
@@ -930,10 +936,24 @@
                 </div>
               </div>
               <div class="p-6 pt-0">
-                <a href="./index.html#cursos" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 text-xs border border-slate-700">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                  <span>Ver Oferta y Desbloquear</span>
-                </a>
+                ${isComingSoon ? `
+                  ${(window.ElectroLabAuth && window.ElectroLabAuth.isInWaitlist(course.id)) ? `
+                    <button disabled class="w-full bg-emerald-950/70 text-emerald-300 font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs border border-emerald-500/40 cursor-default opacity-90 shadow-sm" title="Ya estás registrado en la lista de espera de este curso">
+                      <span class="text-emerald-400 text-xs">✓</span>
+                      <span>Ya estás en la lista de espera</span>
+                    </button>
+                  ` : `
+                    <button onclick="joinAulaWaitlist('${course.id}')" class="w-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 hover:text-amber-200 font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs border border-amber-500/50 hover:border-amber-400 transition-all cursor-pointer shadow-md shadow-amber-500/10" title="Recibir aviso por correo al lanzarse este curso">
+                      <span class="text-amber-400 text-xs">🔔</span>
+                      <span>Avisarme cuando esté disponible</span>
+                    </button>
+                  `}
+                ` : `
+                  <a href="./index.html#cursos" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 text-xs border border-slate-700">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                    <span>Ver Oferta y Desbloquear</span>
+                  </a>
+                `}
               </div>
             </div>
           `;
@@ -966,6 +986,34 @@
       document.getElementById('stat-completed-lessons').textContent = totalCompletedLessons;
 
       renderBoletin();
+    }
+
+    async function joinAulaWaitlist(courseId) {
+      const course = COURSES_DATA.find(c => c.id === courseId);
+      if (!course) return;
+      try {
+        await window.ElectroLabAuth.addToWaitlist(courseId, course.title);
+        showAulaToast('¡Listo! Te avisaremos por correo apenas el curso esté disponible para su lanzamiento.');
+        renderDashboard();
+      } catch (err) {
+        showAulaToast(err.message || 'Error al anotarte en la lista de espera', 'error');
+      }
+    }
+
+    function showAulaToast(message, type = 'success') {
+      let toast = document.getElementById('aula-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'aula-toast';
+        document.body.appendChild(toast);
+      }
+      toast.textContent = message;
+      toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-xl shadow-2xl text-xs sm:text-sm font-semibold transition-all duration-300 flex items-center gap-2 border ' +
+        (type === 'success' ? 'bg-emerald-950 text-emerald-300 border-emerald-600/50' : 'bg-red-950 text-red-300 border-red-600/50');
+      toast.style.display = 'flex';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 4000);
     }
 
     // Classroom logic

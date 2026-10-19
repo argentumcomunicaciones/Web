@@ -82,6 +82,17 @@ def init_database():
         )
     ''')
 
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS waitlist (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            course_id TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            UNIQUE(user_id, course_id)
+        )
+    ''')
+
     conn.commit()
 
     # Verificar y actualizar clave del usuario administrador
@@ -185,6 +196,11 @@ def get_user_grades(cursor, user_id):
         }
     return result
 
+def get_user_waitlist(cursor, user_id):
+    cursor.execute("SELECT course_id FROM waitlist WHERE user_id = ?", (user_id,))
+    rows = cursor.fetchall()
+    return [r['course_id'] for r in rows]
+
 def get_user_from_token(token):
     if not token:
         return None
@@ -203,6 +219,7 @@ def get_user_from_token(token):
     user = dict(row)
     user['courses'] = get_user_courses(cursor, user['id'])
     user['grades'] = get_user_grades(cursor, user['id'])
+    user['lista_espera'] = get_user_waitlist(cursor, user['id'])
     conn.close()
     return user
 
@@ -270,6 +287,7 @@ class ElectroLabHandler(http.server.SimpleHTTPRequestHandler):
                 u = dict(row)
                 u['courses'] = get_user_courses(cursor, u['id'])
                 u['grades'] = get_user_grades(cursor, u['id'])
+                u['lista_espera'] = get_user_waitlist(cursor, u['id'])
                 users.append(u)
             conn.close()
             return self._send_json(users)
@@ -303,6 +321,7 @@ class ElectroLabHandler(http.server.SimpleHTTPRequestHandler):
                 del user['password_hash']
                 user['courses'] = get_user_courses(cursor, user['id'])
                 user['grades'] = get_user_grades(cursor, user['id'])
+                user['lista_espera'] = get_user_waitlist(cursor, user['id'])
 
                 # Generar token de sesión
                 token = 'tok_' + uuid.uuid4().hex
@@ -352,7 +371,8 @@ class ElectroLabHandler(http.server.SimpleHTTPRequestHandler):
                         'email': email,
                         'role': 'student',
                         'courses': [],
-                        'grades': {}
+                        'grades': {},
+                        'lista_espera': []
                     }
                 })
             except Exception as e:
@@ -529,6 +549,29 @@ class ElectroLabHandler(http.server.SimpleHTTPRequestHandler):
             updated_grades = get_user_grades(cursor, user['id'])
             conn.close()
             return self._send_json({'success': True, 'grades': updated_grades})
+
+        if path == '/api/waitlist':
+            token = self._get_auth_token()
+            user = get_user_from_token(token)
+            if not user:
+                return self._send_json({'error': 'No autorizado'}, 401)
+
+            data = self._read_json()
+            course_id = data.get('courseId')
+            if not course_id:
+                return self._send_json({'error': 'Falta courseId'}, 400)
+
+            conn = get_db()
+            cursor = conn.cursor()
+            now = datetime.utcnow().isoformat()
+            cursor.execute('''
+                INSERT OR IGNORE INTO waitlist (id, user_id, course_id, created_at)
+                VALUES (?, ?, ?, ?)
+            ''', (uuid.uuid4().hex, user['id'], course_id, now))
+            conn.commit()
+            waitlist = get_user_waitlist(cursor, user['id'])
+            conn.close()
+            return self._send_json({'success': True, 'lista_espera': waitlist})
 
         return self._send_json({'error': 'Ruta no encontrada'}, 404)
 

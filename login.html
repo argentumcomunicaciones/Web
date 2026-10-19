@@ -50,6 +50,12 @@
         <p class="text-xs text-slate-400">Ingresa para ver tus cursos, videos y archivos descargables</p>
       </div>
 
+      <!-- Waitlist notice banner if pending -->
+      <div id="waitlist-pending-banner" class="hidden mb-6 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs text-center font-medium leading-relaxed shadow-sm">
+        <span class="block font-bold text-amber-400 mb-0.5">🔔 Lista de Espera</span>
+        <span>Inicia sesión o regístrate gratis para anotarte en la lista de espera de este curso.</span>
+      </div>
+
       <!-- Tabs Toggle (Ingresar / Registrarse) -->
       <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 mb-6 text-xs font-semibold">
         <button id="tab-login" type="button" class="flex-1 py-2 rounded-lg bg-cyan-500 text-slate-950 font-bold transition-all shadow-sm">
@@ -145,6 +151,26 @@
       alertBox.classList.add('hidden');
     });
 
+    const COURSE_TITLES = {
+      'curso-1': 'Curso 1: Introducción a la Electrónica, Análisis de Circuitos en Corriente Continua (CC)',
+      'curso-2': 'Curso 2: Fundamentos de Electrónica y Fuentes Lineales',
+      'curso-3': 'Curso 3: Amplificación con Transistores y Electrónica de Potencia',
+      'curso-4': 'Curso 4: Amplificadores Operacionales y Filtros Analógicos',
+      'curso-5': 'Curso 5: Microcontroladores, Sensores y Adquisición de Datos'
+    };
+
+    // Detección de lista de espera pendiente
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramWaitlist = urlParams.get('waitlist');
+    if (paramWaitlist) {
+      localStorage.setItem('electrolab_pending_waitlist', paramWaitlist);
+    }
+    const pendingWaitlist = localStorage.getItem('electrolab_pending_waitlist');
+    if (pendingWaitlist) {
+      const banner = document.getElementById('waitlist-pending-banner');
+      if (banner) banner.classList.remove('hidden');
+    }
+
     // Submit Login
     formLogin.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -153,6 +179,17 @@
 
       try {
         const res = await window.ElectroLabAuth.login(email, pass);
+        const pending = localStorage.getItem('electrolab_pending_waitlist');
+        if (pending) {
+          await window.ElectroLabAuth.addToWaitlist(pending, COURSE_TITLES[pending] || pending);
+          localStorage.removeItem('electrolab_pending_waitlist');
+          showAlert(`¡Bienvenido, ${res.user.name}! Te hemos anotado con éxito en la lista de espera. Redirigiendo a la tienda...`, false);
+          setTimeout(() => {
+            window.location.href = './index.html#cursos';
+          }, 1200);
+          return;
+        }
+
         showAlert(`¡Bienvenido, ${res.user.name}! Redirigiendo...`, false);
         setTimeout(() => {
           if (res.user.role === 'admin') {
@@ -175,6 +212,17 @@
 
       try {
         const res = await window.ElectroLabAuth.register(name, email, pass);
+        const pending = localStorage.getItem('electrolab_pending_waitlist');
+        if (pending) {
+          await window.ElectroLabAuth.addToWaitlist(pending, COURSE_TITLES[pending] || pending);
+          localStorage.removeItem('electrolab_pending_waitlist');
+          showAlert(`¡Cuenta creada con éxito, ${res.user.name}! Te hemos anotado en la lista de espera. Redirigiendo a la tienda...`, false);
+          setTimeout(() => {
+            window.location.href = './index.html#cursos';
+          }, 1200);
+          return;
+        }
+
         showAlert('¡Cuenta creada con éxito! Redirigiendo a tu aula...', false);
         setTimeout(() => {
           window.location.href = './aula.html';

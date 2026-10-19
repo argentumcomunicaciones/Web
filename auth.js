@@ -50,7 +50,8 @@
       role: 'admin',
       createdAt: '2026-01-10T10:00:00Z',
       courses: ['curso-1', 'curso-2', 'curso-3', 'curso-4', 'curso-5'],
-      grades: {}
+      grades: {},
+      lista_espera: []
     },
     {
       id: 'usr_alumno1',
@@ -68,7 +69,8 @@
           gradedAt: '2026-03-20',
           observations: 'Excelente proyecto integrador y resolución analítica de circuitos en CC.'
         }
-      }
+      },
+      lista_espera: []
     }
   ];
 
@@ -77,7 +79,7 @@
     if (!localStorage.getItem(STORAGE_KEY_USERS_DB)) {
       localStorage.setItem(STORAGE_KEY_USERS_DB, JSON.stringify(DEFAULT_USERS));
     } else {
-      // Actualizar automáticamente la clave de admin y migrar cursos y calificaciones
+      // Actualizar automáticamente la clave de admin y migrar cursos, calificaciones y lista de espera
       try {
         const users = JSON.parse(localStorage.getItem(STORAGE_KEY_USERS_DB) || '[]');
         let updated = false;
@@ -106,6 +108,10 @@
           }
           if (!u.grades) {
             u.grades = {};
+            updated = true;
+          }
+          if (!Array.isArray(u.lista_espera)) {
+            u.lista_espera = [];
             updated = true;
           }
           if (u.courses && u.courses.length > 0) {
@@ -161,8 +167,10 @@
       if (fresh) {
         user.grades = fresh.grades || {};
         user.courses = normalizeCourseList(fresh.courses || user.courses || []);
+        user.lista_espera = Array.isArray(fresh.lista_espera) ? fresh.lista_espera : (Array.isArray(user.lista_espera) ? user.lista_espera : []);
       } else {
         user.grades = user.grades || {};
+        user.lista_espera = Array.isArray(user.lista_espera) ? user.lista_espera : [];
       }
       return user;
     } catch (e) {
@@ -190,6 +198,9 @@
         if (!res.ok) {
           throw new Error(data.error || 'Credenciales inválidas');
         }
+        if (!Array.isArray(data.user.lista_espera)) {
+          data.user.lista_espera = [];
+        }
         localStorage.setItem(STORAGE_KEY_TOKEN, data.token);
         localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(data.user));
         return { success: true, user: data.user };
@@ -211,7 +222,8 @@
       email: found.email,
       role: found.role,
       courses: normalizeCourseList(found.courses || []),
-      grades: found.grades || {}
+      grades: found.grades || {},
+      lista_espera: Array.isArray(found.lista_espera) ? found.lista_espera : []
     };
     localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(sessionUser));
     localStorage.setItem(STORAGE_KEY_TOKEN, 'mock_token_' + Date.now());
@@ -235,6 +247,9 @@
         if (!res.ok) {
           throw new Error(data.error || 'Error al registrar');
         }
+        if (!Array.isArray(data.user.lista_espera)) {
+          data.user.lista_espera = [];
+        }
         localStorage.setItem(STORAGE_KEY_TOKEN, data.token);
         localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(data.user));
         return { success: true, user: data.user };
@@ -257,7 +272,8 @@
       role: 'student',
       createdAt: new Date().toISOString(),
       courses: [],
-      grades: {}
+      grades: {},
+      lista_espera: []
     };
 
     users.push(newUser);
@@ -269,7 +285,8 @@
       email: newUser.email,
       role: newUser.role,
       courses: [],
-      grades: {}
+      grades: {},
+      lista_espera: []
     };
     localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(sessionUser));
     localStorage.setItem(STORAGE_KEY_TOKEN, 'mock_token_' + Date.now());
@@ -639,6 +656,102 @@
     return { success: true };
   }
 
+  // ================= LISTA DE ESPERA (WAITLIST) =================
+  // Notificación silenciosa POST a Formspree para Lista de Espera
+  async function sendWaitlistNotification(user, courseTitle) {
+    try {
+      await fetch('https://formspree.io/f/xbgdqedy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          tipo_evento: "Lista de Espera",
+          email_usuario: user.email || '',
+          nombre_usuario: user.name || 'Estudiante',
+          curso_solicitado: courseTitle || 'Curso ElectroLab',
+          fecha_registro: new Date().toLocaleString()
+        })
+      });
+    } catch (err) {
+      console.warn('Notificación Formspree de Lista de Espera enviada en segundo plano:', err);
+    }
+  }
+
+  // Comprueba si el usuario tiene un curso en su lista de espera
+  function isInWaitlist(courseId, userId = null) {
+    if (!courseId) return false;
+    let user = null;
+    if (userId) {
+      const users = getLocalUsers();
+      user = users.find(u => u.id === userId);
+    } else {
+      user = getCurrentUser();
+    }
+    if (!user || !Array.isArray(user.lista_espera)) return false;
+    return user.lista_espera.includes(courseId);
+  }
+
+  // Anotar al usuario autenticado en la lista de espera (sin costo ni checkout)
+  async function addToWaitlist(courseId, courseTitle = '') {
+    if (!courseId) throw new Error('ID de curso no especificado');
+    const curr = getCurrentUser();
+    if (!curr) {
+      throw new Error('Debes iniciar sesión o registrarte gratis para unirte a la lista de espera.');
+    }
+
+    const users = getLocalUsers();
+    const user = users.find(u => u.id === curr.id || u.email.toLowerCase() === curr.email.toLowerCase());
+
+    if (user) {
+      if (!Array.isArray(user.lista_espera)) user.lista_espera = [];
+      if (!user.lista_espera.includes(courseId)) {
+        user.lista_espera.push(courseId);
+      }
+      saveLocalUsers(users);
+      curr.lista_espera = user.lista_espera;
+    } else {
+      if (!Array.isArray(curr.lista_espera)) curr.lista_espera = [];
+      if (!curr.lista_espera.includes(courseId)) {
+        curr.lista_espera.push(courseId);
+      }
+    }
+    localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(curr));
+
+    // Si hay backend Python respondiendo en /api, sincronizar en SQLite
+    const hasBackend = await checkBackend();
+    if (hasBackend) {
+      try {
+        await fetch('/api/waitlist', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + getToken()
+          },
+          body: JSON.stringify({ courseId })
+        });
+      } catch (e) {}
+    }
+
+    // Notificación silenciosa POST a Formspree
+    await sendWaitlistNotification(curr, courseTitle || courseId);
+
+    return { success: true, lista_espera: curr.lista_espera };
+  }
+
+  // Obtener cursos en lista de espera del usuario
+  function getWaitlist(userId = null) {
+    let user = null;
+    if (userId) {
+      const users = getLocalUsers();
+      user = users.find(u => u.id === userId);
+    } else {
+      user = getCurrentUser();
+    }
+    return user && Array.isArray(user.lista_espera) ? user.lista_espera : [];
+  }
+
   // Actualizar la barra superior en páginas públicas
   function updateNavAuthUI() {
     const container = document.getElementById('nav-auth-container');
@@ -693,6 +806,10 @@
     adminSaveGrades,
     adminSaveUserReportCard,
     recordStudentExamResult,
+    isInWaitlist,
+    addToWaitlist,
+    getWaitlist,
+    sendWaitlistNotification,
     updateNavAuthUI
   };
 
