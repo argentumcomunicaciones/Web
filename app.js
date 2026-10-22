@@ -230,12 +230,12 @@
     {
       id: 'curso-2',
       category: 'curso-2',
-      title: 'Curso 2: Fundamentos de Electrónica y Fuentes Lineales',
-      subtitle: 'Magnitudes fundamentales, circuitos mixtos, semiconductores, compuertas con diodos, transformadores, filtrado y proyecto integrador de fuente lineal completa.',
-      tag: '⚡ CURSO 2 · FUENTES LINEALES & SEMICONDUCTORES',
+      title: 'Curso 2: Diodos, Fuentes Lineales Reguladas y Fuentes Conmutadas (DC-DC)',
+      subtitle: 'Diseño, dimensionamiento y simulación en LTspice de fuentes de alimentación: diodos, zener, transformadores, rectificación, fuentes simétricas y convertidores DC-DC.',
+      tag: '⚡ CURSO 2 · DIODOS & FUENTES LINEALES/CONMUTADAS',
       level: 'Principiante a Intermedio',
-      duration: '15 Clases · +30 Horas de video HD',
-      projectsCount: '15 Clases Prácticas',
+      duration: '10 Clases · +20 Horas de video HD',
+      projectsCount: '10 Clases Prácticas',
       image: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'blue',
       priceARS: 50000,
@@ -243,62 +243,139 @@
       priceUSD: 50,
       origUSD: 70,
       driveFolder: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
-      youtubePreview: 'https://www.youtube.com/embed/videoseries?list=PLZRAKzDxXlAI',
+      youtubePreview: 'https://www.youtube.com/embed/oEIF7iT-68o',
       features: [
-        'Magnitudes fundamentales: tensión, corriente, resistencia y potencia en CC',
-        'Circuitos resistivos serie, paralelo y mixto; divisores de tensión y corriente',
-        'Diodos de silicio y germanio: juntura PN y compuertas lógicas con diodos',
-        'Simulaciones profesionales en LTspice y modelado de componentes no lineales',
-        'Electromagnetismo, inductores y transformación de corriente alterna',
-        'Rectificación de media onda y onda completa con puente de diodos',
-        'Filtrado capacitivo, rizado y regulación con Diodo Zener',
-        'Fuentes simétricas, multiplicadores de voltaje y ensamble de Fuente Lineal'
+        'Conexión de diodos en serie y paralelo: cálculo de resistencias limitadoras',
+        'Diodo Zener: regulación de voltaje y cálculo de resistencia serie',
+        'El Transformador: inductancia mutua, relación de transformación y LTspice',
+        'Rectificador de media onda: simulación en Multisim, Tinkercad y LTspice',
+        'Cálculo de capacitor de filtro y porcentaje de rizado en fuentes',
+        'Diseño y simulación de fuente lineal de 12V con LTspice',
+        'Fuente simétrica regulada (+12V/-12V) y reguladores LM7805 / LM317',
+        'Reguladores con transistores: análisis serie vs paralelo',
+        'Introducción a fuentes conmutadas (switching): convertidores Buck y Boost',
+        'Convertidor Buck Step-Down: conmutación, lazo de control y PWM en LTspice'
       ],
       syllabus: [
         {
-          module: 'Módulo 1: Conceptos Eléctricos y Circuitos Resistivos',
-          lessons: [
-            { title: 'Clase 1: Conceptos Eléctricos Básicos', desc: 'Magnitudes fundamentales: tensión, corriente, resistencia y potencia. Análisis elemental de circuitos en CC.', duration: '45 min', isDemo: true },
-            { title: 'Clase 2: Circuitos Mixtos y Divisores', desc: 'Análisis resistivo serie, paralelo y mixto; divisores de tensión y corriente.', duration: '50 min' }
-          ]
+          id: 1,
+          lessonId: 'c2_l1',
+          titulo: 'Clase 1: Conexión de Diodos en Serie y Paralelo: Cálculo de Resistencias',
+          title: 'Clase 1: Conexión de Diodos en Serie y Paralelo: Cálculo de Resistencias',
+          videoUrl: 'https://www.youtube.com/embed/oEIF7iT-68o',
+          embedUrl: 'https://www.youtube.com/embed/oEIF7iT-68o',
+          videoId: 'oEIF7iT-68o',
+          duracion: '12:05',
+          duration: '12:05',
+          desc: 'Análisis de junturas PN polarizadas en serie y paralelo, cálculo de resistencias limitadoras y distribución de corriente en mallas.'
         },
         {
-          module: 'Módulo 2: Diodos Semiconductores y Compuertas Lógicas',
-          lessons: [
-            { title: 'Clase 3: Introducción a los Diodos Semiconductores', desc: 'Juntura PN, diferencias silicio/germanio y estados de polarización.', duration: '40 min' },
-            { title: 'Clase 4: Circuitos con Diodos en Serie y Paralelo', desc: 'Comportamiento en mallas y punto de operación.', duration: '45 min' },
-            { title: 'Clase 5: Compuertas Lógicas con Diodos', desc: 'Implementación de funciones AND y OR con diodos y resistencias.', duration: '40 min' }
-          ]
+          id: 2,
+          lessonId: 'c2_l2',
+          titulo: 'Clase 2: Diodo Zener: Regulación de Voltaje y Cálculo de Resistencia Serie',
+          title: 'Clase 2: Diodo Zener: Regulación de Voltaje y Cálculo de Resistencia Serie',
+          videoUrl: 'https://www.youtube.com/embed/31MSP4YxTgY',
+          embedUrl: 'https://www.youtube.com/embed/31MSP4YxTgY',
+          videoId: '31MSP4YxTgY',
+          duracion: '22:57',
+          duration: '22:57',
+          desc: 'Zona de ruptura inversa, estabilización de tensión de salida y cálculo analítico de la resistencia limitadora serie Rs.'
         },
         {
-          module: 'Módulo 3: Simulación Circuital e Inductores',
-          lessons: [
-            { title: 'Clase 6: Simulación Circuital y Diodos de Germanio', desc: 'Simulaciones en LTspice y modelado de componentes no lineales.', duration: '55 min' },
-            { title: 'Clase 7: Electromagnetismo e Inductores', desc: 'Inducción magnética, comportamiento de inductores y relación de transformación.', duration: '45 min' }
-          ]
+          id: 3,
+          lessonId: 'c2_l3',
+          titulo: 'Clase 3: El Transformador: Inductancia Mutua, Relación de Transformación y LTspice',
+          title: 'Clase 3: El Transformador: Inductancia Mutua, Relación de Transformación y LTspice',
+          videoUrl: 'https://www.youtube.com/embed/wkW9UXw378k',
+          embedUrl: 'https://www.youtube.com/embed/wkW9UXw378k',
+          videoId: 'wkW9UXw378k',
+          duracion: '28:10',
+          duration: '28:10',
+          desc: 'Principios de inducción electromagnética, acoplamiento inductivo mutuo, relación de espiras Vp/Vs y modelado en LTspice.'
         },
         {
-          module: 'Módulo 4: Rectificación y Almacenamiento Capacitivo',
-          lessons: [
-            { title: 'Clase 8: Rectificación de Media Onda', desc: 'Conversión AC a CC con un diodo rectificador.', duration: '40 min' },
-            { title: 'Clase 9: Rectificación de Onda Completa', desc: 'Puente de diodos y flujo en ambos semiciclos.', duration: '50 min' },
-            { title: 'Clase 10: Capacitancia y Tipos de Capacitores', desc: 'Almacenamiento electrostático, dieléctricos y agrupamiento.', duration: '45 min' }
-          ]
+          id: 4,
+          lessonId: 'c2_l4',
+          titulo: 'Clase 4: Rectificador de Media Onda: Simulación en Multisim, Tinkercad y LTspice',
+          title: 'Clase 4: Rectificador de Media Onda: Simulación en Multisim, Tinkercad y LTspice',
+          videoUrl: 'https://www.youtube.com/embed/2ChV-jZMfEw',
+          embedUrl: 'https://www.youtube.com/embed/2ChV-jZMfEw',
+          videoId: '2ChV-jZMfEw',
+          duracion: '12:04',
+          duration: '12:04',
+          desc: 'Conversión AC a CC con diodo rectificador, análisis de formas de onda en osciloscopio y comparación en simuladores.'
         },
         {
-          module: 'Módulo 5: Filtrado, Regulación Zener y Fuentes Simétricas',
-          lessons: [
-            { title: 'Clase 11: Filtrado Capacitivo', desc: 'Reducción del rizado mediante descarga progresiva.', duration: '45 min' },
-            { title: 'Clase 12: Regulación con Diodo Zener', desc: 'Estabilización por zona de ruptura.', duration: '50 min' },
-            { title: 'Clase 13: Fuentes de Alimentación Simétricas', desc: 'Salidas positiva, negativa y masa.', duration: '55 min' }
-          ]
+          id: 5,
+          lessonId: 'c2_l5',
+          titulo: 'Clase 5: Cálculo de Capacitor de Filtro y Porcentaje de Rizado en Fuentes',
+          title: 'Clase 5: Cálculo de Capacitor de Filtro y Porcentaje de Rizado en Fuentes',
+          videoUrl: 'https://www.youtube.com/embed/qDkpvQyHIJY',
+          embedUrl: 'https://www.youtube.com/embed/qDkpvQyHIJY',
+          videoId: 'qDkpvQyHIJY',
+          duracion: '22:28',
+          duration: '22:28',
+          desc: 'Filtrado capacitivo, régimen de descarga, cálculo analítico del capacitor de filtro C y determinación del factor de rizado (ripple).'
         },
         {
-          module: 'Módulo 6: Multiplicadores y Proyecto Integrador',
-          lessons: [
-            { title: 'Clase 14: Multiplicadores de Voltaje', desc: 'Circuitos escalonados diodo-capacitor para elevar tensión continua.', duration: '45 min' },
-            { title: 'Clase 15: Proyecto Integrador: Fuente Lineal Completa', desc: 'Ensamblado y prueba global: transformación, rectificación, filtrado y regulación.', duration: '65 min' }
-          ]
+          id: 6,
+          lessonId: 'c2_l6',
+          titulo: 'Clase 6: Diseño y Simulación de Fuente Lineal de 12V con LTspice',
+          title: 'Clase 6: Diseño y Simulación de Fuente Lineal de 12V con LTspice',
+          videoUrl: 'https://www.youtube.com/embed/Pyk8Jvn9r18',
+          embedUrl: 'https://www.youtube.com/embed/Pyk8Jvn9r18',
+          videoId: 'Pyk8Jvn9r18',
+          duracion: '36:35',
+          duration: '36:35',
+          desc: 'Flujo completo de diseño: transformación, puente rectificador de Graetz, filtrado capacitivo y estabilización a 12V.'
+        },
+        {
+          id: 7,
+          lessonId: 'c2_l7',
+          titulo: 'Clase 7: Fuente Simétrica Regulada (+12V/-12V) y Reguladores LM7805 / LM317',
+          title: 'Clase 7: Fuente Simétrica Regulada (+12V/-12V) y Reguladores LM7805 / LM317',
+          videoUrl: 'https://www.youtube.com/embed/OT8gnotv_vg',
+          embedUrl: 'https://www.youtube.com/embed/OT8gnotv_vg',
+          videoId: 'OT8gnotv_vg',
+          duracion: '20:09',
+          duration: '20:09',
+          desc: 'Diseño de fuente dual partida (+12V, 0V, -12V), integración de reguladores lineales integrados serie 78XX y regulador ajustable LM317.'
+        },
+        {
+          id: 8,
+          lessonId: 'c2_l8',
+          titulo: 'Clase 8: Reguladores con Transistores: Análisis Serie vs Paralelo',
+          title: 'Clase 8: Reguladores con Transistores: Análisis Serie vs Paralelo',
+          videoUrl: 'https://www.youtube.com/embed/QoignuPSQK0',
+          embedUrl: 'https://www.youtube.com/embed/QoignuPSQK0',
+          videoId: 'QoignuPSQK0',
+          duracion: '13:43',
+          duration: '13:43',
+          desc: 'Regulación de tensión con transistor de paso BJT en configuración seguidor de emisor (serie) y regulación en derivación (paralelo).'
+        },
+        {
+          id: 9,
+          lessonId: 'c2_l9',
+          titulo: 'Clase 9: Introducción a Fuentes Conmutadas (Switching): Convertidores Buck y Boost',
+          title: 'Clase 9: Introducción a Fuentes Conmutadas (Switching): Convertidores Buck y Boost',
+          videoUrl: 'https://www.youtube.com/embed/J8ZDi02wqnA',
+          embedUrl: 'https://www.youtube.com/embed/J8ZDi02wqnA',
+          videoId: 'J8ZDi02wqnA',
+          duracion: '22:31',
+          duration: '22:31',
+          desc: 'Principios de conversión conmutada de alta eficiencia, conmutación por PWM y topologías Buck (reductora) y Boost (elevadora).'
+        },
+        {
+          id: 10,
+          lessonId: 'c2_l10',
+          titulo: 'Clase 10: Convertidor Buck Step-Down: Conmutación, Lazo de Control y PWM en LTspice',
+          title: 'Clase 10: Convertidor Buck Step-Down: Conmutación, Lazo de Control y PWM en LTspice',
+          videoUrl: 'https://www.youtube.com/embed/F8wp4wQSp-g',
+          embedUrl: 'https://www.youtube.com/embed/F8wp4wQSp-g',
+          videoId: 'F8wp4wQSp-g',
+          duracion: '18:37',
+          duration: '18:37',
+          desc: 'Análisis del convertidor reductor Buck en modo continuo (CCM), conmutación con MOSFET, lazo de realimentación y simulación dinámica en LTspice.'
         }
       ]
     },
@@ -980,6 +1057,10 @@
           ${(course.id === 'curso-1' || !course.syllabus[0]?.lessons) ? `
             ${course.syllabus.map((lesson, idx) => {
               const thumbUrl = lesson.videoId ? `https://img.youtube.com/vi/${lesson.videoId}/mqdefault.jpg` : course.image;
+              const lessonTitle = lesson.title || lesson.titulo || `Clase ${idx + 1}`;
+              const lessonDuration = lesson.duration || lesson.duracion || '';
+              const lessonDesc = lesson.desc || '';
+              const lessonId = lesson.id || lesson.lessonId || '';
               return `
               <div class="border border-slate-800 rounded-2xl bg-slate-950/40 overflow-hidden group">
                 <button onclick="window.ElectroLab.toggleModuleAccordion(this)" class="w-full text-left p-4 sm:p-5 flex items-center justify-between font-heading font-bold text-sm sm:text-base text-slate-200 hover:text-cyan-400 transition-colors">
@@ -987,11 +1068,11 @@
                     <span class="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-xs font-mono font-bold shrink-0">
                       ${idx + 1}
                     </span>
-                    <span class="font-bold text-white text-sm sm:text-base">${lesson.title}</span>
+                    <span class="font-bold text-white text-sm sm:text-base">${lessonTitle}</span>
                     ${lesson.isDemo ? '<span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30 ml-1">Clase Demo</span>' : ''}
                   </span>
                   <div class="flex items-center gap-2 shrink-0">
-                    <span class="text-xs font-mono text-slate-500">${lesson.duration}</span>
+                    <span class="text-xs font-mono text-slate-500">${lessonDuration}</span>
                     <svg class="w-5 h-5 text-slate-500 transition-transform duration-200 shrink-0 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                   </div>
                 </button>
@@ -999,7 +1080,7 @@
                   <div class="flex items-start gap-3 sm:gap-4 flex-1">
                     <!-- Miniatura ilustrativa estática -->
                     <div class="relative w-24 sm:w-28 aspect-video rounded-xl overflow-hidden bg-slate-950 border border-slate-800 shrink-0 shadow-inner group-hover:border-cyan-500/40">
-                      <img src="${thumbUrl}" alt="${lesson.title}" class="w-full h-full object-cover">
+                      <img src="${thumbUrl}" alt="${lessonTitle}" class="w-full h-full object-cover">
                       <div class="absolute inset-0 bg-slate-950/40 flex items-center justify-center">
                         <span class="w-6 h-6 rounded-lg bg-slate-900/90 border border-slate-700/80 text-amber-400 flex items-center justify-center text-[11px] shadow">
                           🔒
@@ -1009,15 +1090,15 @@
                     <!-- Título y síntesis teórica -->
                     <div class="space-y-1 flex-1">
                       <div class="flex items-center gap-2 flex-wrap">
-                        <span class="text-xs font-bold text-white">${lesson.title}</span>
-                        <span class="text-[10px] font-mono text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/40">${lesson.duration}</span>
+                        <span class="text-xs font-bold text-white">${lessonTitle}</span>
+                        ${lessonDuration ? `<span class="text-[10px] font-mono text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/40">${lessonDuration}</span>` : ''}
                       </div>
-                      <p class="text-xs text-slate-300 leading-relaxed">${lesson.desc}</p>
+                      ${lessonDesc ? `<p class="text-xs text-slate-300 leading-relaxed">${lessonDesc}</p>` : ''}
                     </div>
                   </div>
 
                   <!-- Botón de acceso protegido -->
-                  <button onclick="window.ElectroLab.handleLessonAccess('${course.id}', '${lesson.id || ''}')" class="shrink-0 w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-bold text-cyan-300 hover:text-white bg-slate-900 hover:bg-cyan-500/20 border border-slate-700 hover:border-cyan-400/60 px-3.5 py-2 rounded-xl transition-all shadow">
+                  <button onclick="window.ElectroLab.handleLessonAccess('${course.id}', '${lessonId}')" class="shrink-0 w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-bold text-cyan-300 hover:text-white bg-slate-900 hover:bg-cyan-500/20 border border-slate-700 hover:border-cyan-400/60 px-3.5 py-2 rounded-xl transition-all shadow">
                     <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                     <span>Acceder a esta clase</span>
                   </button>

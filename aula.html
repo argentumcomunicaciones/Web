@@ -628,57 +628,127 @@
       },
       {
         id: 'curso-2',
-        title: 'Curso 2: Fundamentos de Electrónica y Fuentes Lineales',
-        tag: 'CURSO 2 · FUENTES LINEALES & SEMICONDUCTORES',
-        subtitle: 'Magnitudes fundamentales, circuitos mixtos, semiconductores, compuertas con diodos, transformadores, filtrado y proyecto integrador de fuente lineal completa.',
-        duration: '15 Clases · +30 Horas de video HD',
+        title: 'Curso 2: Diodos, Fuentes Lineales Reguladas y Fuentes Conmutadas (DC-DC)',
+        tag: 'CURSO 2 · DIODOS & FUENTES LINEALES/CONMUTADAS',
+        subtitle: 'Diseño, dimensionamiento y simulación en LTspice de fuentes de alimentación: diodos, zener, transformadores, rectificación, fuentes simétricas y convertidores DC-DC.',
+        duration: '10 Clases · +20 Horas de video HD',
         image: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80',
-        videoUrl: 'https://www.youtube.com/embed/videoseries?list=PLZRAKzDxXlAI',
+        videoUrl: 'https://www.youtube.com/embed/oEIF7iT-68o',
         driveFolder: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
         modules: [
           {
-            name: 'Módulo 1: Conceptos Eléctricos y Circuitos Resistivos',
+            name: '',
             lessons: [
-              { id: 'c2_l1', title: 'Clase 1: Conceptos Eléctricos Básicos', desc: 'Magnitudes fundamentales: tensión, corriente, resistencia y potencia. Análisis elemental de circuitos en CC.', duration: '45 min' },
-              { id: 'c2_l2', title: 'Clase 2: Circuitos Mixtos y Divisores', desc: 'Análisis resistivo serie, paralelo y mixto; divisores de tensión y corriente.', duration: '50 min' }
-            ]
-          },
-          {
-            name: 'Módulo 2: Diodos Semiconductores y Compuertas Lógicas',
-            lessons: [
-              { id: 'c2_l3', title: 'Clase 3: Introducción a los Diodos Semiconductores', desc: 'Juntura PN, diferencias silicio/germanio y estados de polarización.', duration: '40 min' },
-              { id: 'c2_l4', title: 'Clase 4: Circuitos con Diodos en Serie y Paralelo', desc: 'Comportamiento en mallas y punto de operación.', duration: '45 min' },
-              { id: 'c2_l5', title: 'Clase 5: Compuertas Lógicas con Diodos', desc: 'Implementación de funciones AND y OR con diodos y resistencias.', duration: '40 min' }
-            ]
-          },
-          {
-            name: 'Módulo 3: Simulación Circuital e Inductores',
-            lessons: [
-              { id: 'c2_l6', title: 'Clase 6: Simulación Circuital y Diodos de Germanio', desc: 'Simulaciones en LTspice y modelado de componentes no lineales.', duration: '55 min' },
-              { id: 'c2_l7', title: 'Clase 7: Electromagnetismo e Inductores', desc: 'Inducción magnética, comportamiento de inductores y relación de transformación.', duration: '45 min' }
-            ]
-          },
-          {
-            name: 'Módulo 4: Rectificación y Almacenamiento Capacitivo',
-            lessons: [
-              { id: 'c2_l8', title: 'Clase 8: Rectificación de Media Onda', desc: 'Conversión AC a CC con un diodo rectificador.', duration: '40 min' },
-              { id: 'c2_l9', title: 'Clase 9: Rectificación de Onda Completa', desc: 'Puente de diodos y flujo en ambos semiciclos.', duration: '50 min' },
-              { id: 'c2_l10', title: 'Clase 10: Capacitancia y Tipos de Capacitores', desc: 'Almacenamiento electrostático, dieléctricos y agrupamiento.', duration: '45 min' }
-            ]
-          },
-          {
-            name: 'Módulo 5: Filtrado, Regulación Zener y Fuentes Simétricas',
-            lessons: [
-              { id: 'c2_l11', title: 'Clase 11: Filtrado Capacitivo', desc: 'Reducción del rizado mediante descarga progresiva.', duration: '45 min' },
-              { id: 'c2_l12', title: 'Clase 12: Regulación con Diodo Zener', desc: 'Estabilización por zona de ruptura.', duration: '50 min' },
-              { id: 'c2_l13', title: 'Clase 13: Fuentes de Alimentación Simétricas', desc: 'Salidas positiva, negativa y masa.', duration: '55 min' }
-            ]
-          },
-          {
-            name: 'Módulo 6: Multiplicadores y Proyecto Integrador',
-            lessons: [
-              { id: 'c2_l14', title: 'Clase 14: Multiplicadores de Voltaje', desc: 'Circuitos escalonados diodo-capacitor para elevar tensión continua.', duration: '45 min' },
-              { id: 'c2_l15', title: 'Clase 15: Proyecto Integrador: Fuente Lineal Completa', desc: 'Ensamblado y prueba global: transformación, rectificación, filtrado y regulación.', duration: '65 min' }
+              {
+                id: 'c2_l1',
+                lessonNumber: 1,
+                title: 'Clase 1: Conexión de Diodos en Serie y Paralelo: Cálculo de Resistencias',
+                titulo: 'Clase 1: Conexión de Diodos en Serie y Paralelo: Cálculo de Resistencias',
+                desc: 'Análisis de junturas PN polarizadas en serie y paralelo, cálculo de resistencias limitadoras y distribución de corriente en mallas.',
+                duration: '12:05',
+                duracion: '12:05',
+                videoId: 'oEIF7iT-68o',
+                videoUrl: 'https://www.youtube.com/embed/oEIF7iT-68o'
+              },
+              {
+                id: 'c2_l2',
+                lessonNumber: 2,
+                title: 'Clase 2: Diodo Zener: Regulación de Voltaje y Cálculo de Resistencia Serie',
+                titulo: 'Clase 2: Diodo Zener: Regulación de Voltaje y Cálculo de Resistencia Serie',
+                desc: 'Zona de ruptura inversa, estabilización de tensión de salida y cálculo analítico de la resistencia limitadora serie Rs.',
+                duration: '22:57',
+                duracion: '22:57',
+                videoId: '31MSP4YxTgY',
+                videoUrl: 'https://www.youtube.com/embed/31MSP4YxTgY'
+              },
+              {
+                id: 'c2_l3',
+                lessonNumber: 3,
+                title: 'Clase 3: El Transformador: Inductancia Mutua, Relación de Transformación y LTspice',
+                titulo: 'Clase 3: El Transformador: Inductancia Mutua, Relación de Transformación y LTspice',
+                desc: 'Principios de inducción electromagnética, acoplamiento inductivo mutuo, relación de espiras Vp/Vs y modelado en LTspice.',
+                duration: '28:10',
+                duracion: '28:10',
+                videoId: 'wkW9UXw378k',
+                videoUrl: 'https://www.youtube.com/embed/wkW9UXw378k'
+              },
+              {
+                id: 'c2_l4',
+                lessonNumber: 4,
+                title: 'Clase 4: Rectificador de Media Onda: Simulación en Multisim, Tinkercad y LTspice',
+                titulo: 'Clase 4: Rectificador de Media Onda: Simulación en Multisim, Tinkercad y LTspice',
+                desc: 'Conversión AC a CC con diodo rectificador, análisis de formas de onda en osciloscopio y comparación en simuladores.',
+                duration: '12:04',
+                duracion: '12:04',
+                videoId: '2ChV-jZMfEw',
+                videoUrl: 'https://www.youtube.com/embed/2ChV-jZMfEw'
+              },
+              {
+                id: 'c2_l5',
+                lessonNumber: 5,
+                title: 'Clase 5: Cálculo de Capacitor de Filtro y Porcentaje de Rizado en Fuentes',
+                titulo: 'Clase 5: Cálculo de Capacitor de Filtro y Porcentaje de Rizado en Fuentes',
+                desc: 'Filtrado capacitivo, régimen de descarga, cálculo analítico del capacitor de filtro C y determinación del factor de rizado (ripple).',
+                duration: '22:28',
+                duracion: '22:28',
+                videoId: 'qDkpvQyHIJY',
+                videoUrl: 'https://www.youtube.com/embed/qDkpvQyHIJY'
+              },
+              {
+                id: 'c2_l6',
+                lessonNumber: 6,
+                title: 'Clase 6: Diseño y Simulación de Fuente Lineal de 12V con LTspice',
+                titulo: 'Clase 6: Diseño y Simulación de Fuente Lineal de 12V con LTspice',
+                desc: 'Flujo completo de diseño: transformación, puente rectificador de Graetz, filtrado capacitivo y estabilización a 12V.',
+                duration: '36:35',
+                duracion: '36:35',
+                videoId: 'Pyk8Jvn9r18',
+                videoUrl: 'https://www.youtube.com/embed/Pyk8Jvn9r18'
+              },
+              {
+                id: 'c2_l7',
+                lessonNumber: 7,
+                title: 'Clase 7: Fuente Simétrica Regulada (+12V/-12V) y Reguladores LM7805 / LM317',
+                titulo: 'Clase 7: Fuente Simétrica Regulada (+12V/-12V) y Reguladores LM7805 / LM317',
+                desc: 'Diseño de fuente dual partida (+12V, 0V, -12V), integración de reguladores lineales integrados serie 78XX y regulador ajustable LM317.',
+                duration: '20:09',
+                duracion: '20:09',
+                videoId: 'OT8gnotv_vg',
+                videoUrl: 'https://www.youtube.com/embed/OT8gnotv_vg'
+              },
+              {
+                id: 'c2_l8',
+                lessonNumber: 8,
+                title: 'Clase 8: Reguladores con Transistores: Análisis Serie vs Paralelo',
+                titulo: 'Clase 8: Reguladores con Transistores: Análisis Serie vs Paralelo',
+                desc: 'Regulación de tensión con transistor de paso BJT en configuración seguidor de emisor (serie) y regulación en derivación (paralelo).',
+                duration: '13:43',
+                duracion: '13:43',
+                videoId: 'QoignuPSQK0',
+                videoUrl: 'https://www.youtube.com/embed/QoignuPSQK0'
+              },
+              {
+                id: 'c2_l9',
+                lessonNumber: 9,
+                title: 'Clase 9: Introducción a Fuentes Conmutadas (Switching): Convertidores Buck y Boost',
+                titulo: 'Clase 9: Introducción a Fuentes Conmutadas (Switching): Convertidores Buck y Boost',
+                desc: 'Principios de conversión conmutada de alta eficiencia, conmutación por PWM y topologías Buck (reductora) y Boost (elevadora).',
+                duration: '22:31',
+                duracion: '22:31',
+                videoId: 'J8ZDi02wqnA',
+                videoUrl: 'https://www.youtube.com/embed/J8ZDi02wqnA'
+              },
+              {
+                id: 'c2_l10',
+                lessonNumber: 10,
+                title: 'Clase 10: Convertidor Buck Step-Down: Conmutación, Lazo de Control y PWM en LTspice',
+                titulo: 'Clase 10: Convertidor Buck Step-Down: Conmutación, Lazo de Control y PWM en LTspice',
+                desc: 'Análisis del convertidor reductor Buck en modo continuo (CCM), conmutación con MOSFET, lazo de realimentación y simulación dinámica en LTspice.',
+                duration: '18:37',
+                duracion: '18:37',
+                videoId: 'F8wp4wQSp-g',
+                videoUrl: 'https://www.youtube.com/embed/F8wp4wQSp-g'
+              }
             ]
           }
         ]
