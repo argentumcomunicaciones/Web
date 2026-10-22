@@ -110,6 +110,8 @@
       priceUSD: 50,
       origUSD: 70,
       driveFolder: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
+      recursosUrl: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
+      materialDescargable: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
       youtubePreview: 'https://www.youtube.com/embed/8RVmRnfEvhQ',
       features: [
         'Ley de Ohm (V = I * R), analogía hidráulica y mediciones con multímetro (Guía 1)',
@@ -242,7 +244,9 @@
       origARS: 70000,
       priceUSD: 50,
       origUSD: 70,
-      driveFolder: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
+      driveFolder: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=sharing',
+      recursosUrl: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=sharing',
+      materialDescargable: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=sharing',
       youtubePreview: 'https://www.youtube.com/embed/oEIF7iT-68o',
       features: [
         'Conexión de diodos en serie y paralelo: cálculo de resistencias limitadoras',

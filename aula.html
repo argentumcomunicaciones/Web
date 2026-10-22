@@ -607,6 +607,8 @@
         image: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=800&q=80',
         videoUrl: 'https://www.youtube.com/embed/8RVmRnfEvhQ',
         driveFolder: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
+        recursosUrl: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
+        materialDescargable: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
         modules: [
           {
             name: '',
@@ -634,7 +636,9 @@
         duration: '10 Clases · +20 Horas de video HD',
         image: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80',
         videoUrl: 'https://www.youtube.com/embed/oEIF7iT-68o',
-        driveFolder: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
+        driveFolder: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=sharing',
+        recursosUrl: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=sharing',
+        materialDescargable: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=sharing',
         modules: [
           {
             name: '',
@@ -973,7 +977,7 @@
                   <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                   <span>Entrar al Aula y Ver Clases</span>
                 </button>
-                <a href="${course.driveFolder || '#'}" target="_blank" rel="noopener noreferrer" class="w-full bg-slate-950 hover:bg-slate-800 border border-slate-700 hover:border-cyan-500/50 text-cyan-300 font-bold py-2 rounded-xl transition-all flex items-center justify-center gap-2 text-xs">
+                <a href="${course.driveFolder || course.recursosUrl || course.materialDescargable || '#'}" target="_blank" rel="noopener noreferrer" class="w-full bg-slate-950 hover:bg-slate-800 border border-slate-700 hover:border-cyan-500/50 text-cyan-300 font-bold py-2 rounded-xl transition-all flex items-center justify-center gap-2 text-xs">
                   <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
                   <span>Carpeta en Google Drive</span>
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
@@ -1121,7 +1125,7 @@
 
       // Si tiene acceso habilitado:
       if (lockedOverlay) lockedOverlay.classList.add('hidden');
-      setDriveLinksState(true, currentCourse.driveFolder || '#');
+      setDriveLinksState(true, currentCourse.driveFolder || currentCourse.recursosUrl || currentCourse.materialDescargable || '#');
 
       // Buscar la lección objetivo o la primera del curso
       let targetLesson = null;
@@ -1211,6 +1215,9 @@
       }
 
       updateLessonCompleteButton();
+      const courseDriveUrl = (currentCourse && (currentCourse.driveFolder || currentCourse.recursosUrl || currentCourse.materialDescargable)) || '#';
+      const lessonDriveUrl = lesson.driveFolder || lesson.driveUrl || lesson.recursosUrl || lesson.materialDescargable || courseDriveUrl;
+      setDriveLinksState(true, lessonDriveUrl);
       renderClassroomSyllabus(true);
     }
 
