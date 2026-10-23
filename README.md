@@ -72,7 +72,7 @@ Al iniciar el sistema por primera vez, se configuran dos cuentas automáticas:
 * Redirección inteligente: los administradores son dirigidos a `admin.html` y los alumnos a `aula.html`.
 
 ### 4. Tienda Pública y Landing Page ([`index.html`](file:///C:/Users/dbarr/.gemini/antigravity/scratch/electrolab-web/index.html))
-* **WhatsApp Oficial:** Vinculado a `+54 9 11 2306-5347` (`5491123065347`) en botones de compra, soporte y consultas.
+* **WhatsApp Oficial:** Vinculado a `+54 9 11 7610-6965` (`5491176106965`) en botones de compra, soporte y consultas.
 * Simulador interactivo con **osciloscopio digital en vivo**, formas de onda (PWM/555, Senoidal, RC), potenciómetro y monitor serie.
 * Catálogo de cursos con conmutador de moneda (**ARS $** y **USD $**).
 * Carrito de compras con cupón `ELECTRO2026`.

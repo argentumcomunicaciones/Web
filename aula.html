@@ -539,7 +539,7 @@
           </div>
           <div>
             <span class="text-[10px] font-mono font-bold tracking-wider text-amber-400 uppercase block">EVALUACIÓN ACADÉMICA OFICIAL</span>
-            <h2 class="text-base sm:text-lg font-heading font-extrabold text-white leading-tight">Examen Final: Curso 1</h2>
+            <h2 id="modal-exam-course-title" class="text-base sm:text-lg font-heading font-extrabold text-white leading-tight">Examen Final Oficial</h2>
           </div>
         </div>
 
@@ -966,7 +966,7 @@
               </div>
 
               <div class="p-6 pt-0 space-y-2.5">
-                ${(course.id === 'curso-1' || isComplete) ? `
+                ${(course.id === 'curso-1' || course.id === 'curso-2' || isComplete) ? `
                   <button type="button" onclick="openExamModal('${course.id}')" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 text-xs sm:text-sm border-2 border-amber-300 cursor-pointer ${isComplete ? 'ring-4 ring-amber-400/50 ring-offset-2 ring-offset-slate-900 animate-pulse' : ''}">
                     <span class="text-base">📝</span>
                     <span>Rendir Examen Final</span>
@@ -1045,7 +1045,7 @@
               Si compraste por Mercado Pago, Transferencia Bancaria (ICBC) o PayPal, envíanos tu comprobante junto con el correo <strong>${user.email}</strong> para que el administrador te active el acceso inmediatamente.
             </p>
             <div class="pt-2">
-              <a href="https://wa.me/5491123065347?text=Hola!%20Acabo%20de%20registrarme%20con%20el%20correo%20${encodeURIComponent(user.email)}.%20Quiero%20solicitar%20el%20alta%20de%20mi%20curso." target="_blank" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition-all shadow-md">
+              <a href="https://wa.me/5491176106965?text=Hola!%20Acabo%20de%20registrarme%20con%20el%20correo%20${encodeURIComponent(user.email)}.%20Quiero%20solicitar%20el%20alta%20de%20mi%20curso." target="_blank" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition-all shadow-md">
                 <span>Avisar por WhatsApp</span>
               </a>
             </div>
@@ -1280,7 +1280,7 @@
       // Activar Banner Principal de Examen cuando el progreso sea del 100%
       const mainCta = document.getElementById('classroom-exam-main-cta');
       if (mainCta) {
-        if (isComplete && currentCourse.id === 'curso-1') {
+        if (isComplete && (currentCourse.id === 'curso-1' || currentCourse.id === 'curso-2')) {
           mainCta.classList.remove('hidden');
         } else {
           mainCta.classList.add('hidden');
@@ -1290,7 +1290,7 @@
       // Activar Banner Superior en el Sidebar del Temario cuando el progreso sea del 100%
       const sidebarCta = document.getElementById('classroom-exam-sidebar-cta');
       if (sidebarCta) {
-        if (isComplete && currentCourse.id === 'curso-1') {
+        if (isComplete && (currentCourse.id === 'curso-1' || currentCourse.id === 'curso-2')) {
           sidebarCta.classList.remove('hidden');
           sidebarCta.innerHTML = `
             <div class="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/25 via-orange-500/20 to-amber-500/10 border-2 border-amber-400 shadow-xl shadow-amber-500/25 space-y-2.5">
@@ -1302,7 +1302,7 @@
                 <span class="text-[10px] font-mono text-amber-300 font-bold">10 Preguntas</span>
               </div>
               <p class="text-[11px] text-white font-medium leading-snug">
-                ¡Felicitaciones! Has completado las 11 clases. Ya puedes rendir tu Examen Final Oficial.
+                ¡Felicitaciones! Has completado todas las clases. Ya puedes rendir tu Examen Final Oficial.
               </p>
               <button type="button" onclick="openExamModal('${currentCourse.id}')" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold py-3 px-3 rounded-xl transition-all shadow-lg text-xs flex items-center justify-center gap-2 border border-amber-300 cursor-pointer">
                 <span class="text-sm">📝</span>
@@ -1374,8 +1374,8 @@
       }).join('');
 
       // Botón destacado de Examen Final al final del temario de lecciones
-      if (currentCourse.id === 'curso-1') {
-        const uGrades = (user && user.grades && user.grades['curso-1']) || {};
+      if (currentCourse.id === 'curso-1' || currentCourse.id === 'curso-2') {
+        const uGrades = (user && user.grades && user.grades[currentCourse.id]) || {};
         const attUsed = parseInt(uGrades.attemptsUsed || uGrades.attempts_used || 0, 10);
         const stat = uGrades.status || '';
         const fGrade = uGrades.finalGrade || uGrades.final_grade || '';
@@ -1397,7 +1397,7 @@
               <p class="text-[11px] text-slate-300 leading-snug">
                 10 Preguntas técnicas · ${attUsed >= 2 ? `2/2 Intentos utilizados (${fGrade || stat})` : `Intento ${attUsed + 1} de 2 disponibles`}
               </p>
-              <button type="button" onclick="openExamModal('curso-1')" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 text-xs sm:text-sm border-2 border-amber-300 cursor-pointer ${isComplete ? 'ring-2 ring-amber-400 animate-pulse' : ''}">
+              <button type="button" onclick="openExamModal('${currentCourse.id}')" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 text-xs sm:text-sm border-2 border-amber-300 cursor-pointer ${isComplete ? 'ring-2 ring-amber-400 animate-pulse' : ''}">
                 <span class="text-base">📝</span>
                 <span class="tracking-wide">Rendir Examen Final</span>
               </button>
@@ -1419,7 +1419,7 @@
     function askQuestionWhatsApp() {
       if (!currentLesson) return;
       const msg = `Hola ElectroLab! Soy ${user.name} (${user.email}). Tengo una consulta sobre la lección: "${currentLesson.title}".`;
-      window.open(`https://wa.me/5491123065347?text=${encodeURIComponent(msg)}`, '_blank');
+      window.open(`https://wa.me/5491176106965?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     // ================= SISTEMA DE BOLETÍN DE CALIFICACIONES & CERTIFICACIONES =================
@@ -1516,8 +1516,8 @@
                 </h4>
               </div>
               <div class="shrink-0 flex items-center gap-2">
-                ${course.id === 'curso-1' && isEnrolled ? `
-                  <button type="button" onclick="openExamModal('curso-1')" class="px-3 py-1.5 rounded-xl ${attemptsUsed >= 2 ? 'bg-slate-800 text-slate-400 border border-slate-700 font-semibold' : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold shadow-md shadow-amber-500/20'} text-xs flex items-center gap-1.5 transition-all">
+                ${(course.id === 'curso-1' || course.id === 'curso-2') && isEnrolled ? `
+                  <button type="button" onclick="openExamModal('${course.id}')" class="px-3 py-1.5 rounded-xl ${attemptsUsed >= 2 ? 'bg-slate-800 text-slate-400 border border-slate-700 font-semibold' : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold shadow-md shadow-amber-500/20'} text-xs flex items-center gap-1.5 transition-all">
                     <span>${attemptsUsed >= 2 ? '🔒 2/2 Intentos (Ver Nota)' : `📝 Rendir Examen (Intento ${attemptsUsed + 1} de 2)`}</span>
                   </button>
                 ` : ''}
@@ -1707,6 +1707,95 @@
       }
     ];
 
+    // ================= BANCO OFICIAL DE PREGUNTAS Y EXAMEN DEL CURSO 2 =================
+    const examenCurso2 = window.examenCurso2 || [
+      {
+        pregunta: "En una conexión serie de un diodo de silicio (0.7V) y un LED rojo (1.8V) alimentados con 12V a través de un resistor R, ¿cuál es la caída de tensión sobre el resistor?",
+        opciones: ["12.0 V", "10.2 V", "9.5 V", "7.5 V"],
+        correcta: 2
+      },
+      {
+        pregunta: "Para que un diodo Zener opere en su zona de disrupción y cumpla la función de regulador, la tensión suministrada por la fuente (Vs) debe ser:",
+        opciones: [
+          "Menor que la tensión nominal del Zener (Vz)",
+          "Mayor que la tensión nominal del Zener (Vz)",
+          "Exactamente igual a 0.7 V en directa",
+          "Alterna pura sin componente de continua"
+        ],
+        correcta: 1
+      },
+      {
+        pregunta: "Al simular un transformador con acoplamiento K=1 en LTspice, si se desea una relación de transformación Np/Ns = 10 a 1, la inductancia del primario (L1) respecto a la del secundario (L2) debe ser:",
+        opciones: [
+          "10 veces mayor (relación lineal)",
+          "100 veces mayor (proporcional al cuadrado de las espiras)",
+          "Igual a la raíz cuadrada de 10",
+          "Exactamente el doble"
+        ],
+        correcta: 1
+      },
+      {
+        pregunta: "En un rectificador de media onda alimentado por una señal senoidal con una frecuencia de red de 50 Hz, ¿cuál es la frecuencia fundamental del rizado a la salida?",
+        opciones: ["25 Hz", "50 Hz", "100 Hz", "0 Hz"],
+        correcta: 1
+      },
+      {
+        pregunta: "¿Qué factor influye en la reducción del porcentaje de rizado (ripple) en una fuente con filtro capacitivo?",
+        opciones: [
+          "Aumentar el valor de la capacitancia del filtro",
+          "Aumentar drásticamente la corriente consumida por la carga",
+          "Reducir la frecuencia de la señal de entrada",
+          "Disminuir la resistencia de carga a casi cero"
+        ],
+        correcta: 0
+      },
+      {
+        pregunta: "En una red eléctrica de 220V RMS, la tensión de pico que ingresa al primario del transformador es aproximadamente:",
+        opciones: ["220 V", "240 V", "311 V", "440 V"],
+        correcta: 2
+      },
+      {
+        pregunta: "En una fuente simétrica con transformador de punto medio y puente rectificador, la caída de tensión introducida por los diodos en cada rama respecto de masa equivale a:",
+        opciones: [
+          "La caída de un solo diodo (0.7 V)",
+          "La caída de dos diodos en serie (1.4 V)",
+          "Cero voltios por efecto de la cancelación simétrica",
+          "Cuatro caídas de diodo simultáneas"
+        ],
+        correcta: 0
+      },
+      {
+        pregunta: "¿Cuál es la principal ventaja de un regulador serie con transistor de paso respecto a un regulador paralelo?",
+        opciones: [
+          "Menor rendimiento energético global",
+          "Mayor eficiencia energética y menor disipación térmica cuando la carga consume poca corriente",
+          "No requiere conexión a la tensión de referencia Zener",
+          "No disipa potencia en ninguna condición de trabajo"
+        ],
+        correcta: 1
+      },
+      {
+        pregunta: "En un convertidor conmutado reductor (Buck / Step-Down), la tensión continua de salida regulada es:",
+        opciones: [
+          "Siempre mayor que la tensión de entrada",
+          "Siempre menor o igual que la tensión de entrada, proporcional al ciclo de trabajo (D)",
+          "Completamente independiente del ancho de pulso PWM",
+          "Una señal senoidal pura de alta potencia"
+        ],
+        correcta: 1
+      },
+      {
+        pregunta: "¿Cuál es la función del diodo volante (flywheel diode) en una topología Buck cuando el interruptor conmutador pasa al estado OFF?",
+        opciones: [
+          "Proporcionar un camino de descarga para que la energía almacenada en el campo magnético del inductor continúe circulando hacia la carga",
+          "Cortocircuitar la fuente de alimentación para proteger el fusible",
+          "Invertir la polaridad del capacitor de salida",
+          "Aumentar la frecuencia de conmutación del oscilador"
+        ],
+        correcta: 0
+      }
+    ];
+
     function openExamModal(courseId = 'curso-1') {
       user = window.ElectroLabAuth.getCurrentUser();
       if (!user) {
@@ -1718,7 +1807,16 @@
       const body = document.getElementById('exam-modal-body');
       if (!modal || !body) return;
 
-      const uGrades = (user.grades && user.grades['curso-1']) || {};
+      const courseTitle = courseId === 'curso-2'
+        ? 'Curso 2: Diodos, Fuentes Lineales Reguladas y Fuentes Conmutadas (DC-DC)'
+        : 'Curso 1: Introducción a la Electrónica, Análisis de Circuitos en CC';
+
+      const titleEl = document.getElementById('modal-exam-course-title');
+      if (titleEl) {
+        titleEl.textContent = courseId === 'curso-2' ? 'Examen Final: Curso 2' : 'Examen Final: Curso 1';
+      }
+
+      const uGrades = (user.grades && user.grades[courseId]) || {};
       const attemptsUsed = parseInt(uGrades.attemptsUsed || uGrades.attempts_used || 0, 10);
       const finalGrade = uGrades.finalGrade || uGrades.final_grade || '';
       const status = uGrades.status || 'Pendiente';
@@ -1737,12 +1835,16 @@
                 Has completado los 2 intentos reglamentarios
               </h3>
               <p class="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
-                Dispones únicamente de un máximo de 2 intentos en total. Has alcanzado el cupo permitido para este examen.
+                Dispones únicamente de un máximo de 2 intentos en total para rendir esta evaluación. Has alcanzado el cupo permitido para este examen.
               </p>
             </div>
 
             <!-- Ficha de Calificación Final Obtenida -->
             <div class="max-w-md mx-auto p-5 bg-slate-950/80 rounded-2xl border border-slate-800 space-y-3 text-left">
+              <div class="flex justify-between items-center text-xs pb-2 border-b border-slate-800">
+                <span class="text-slate-400">Curso:</span>
+                <span class="font-bold text-white">${courseTitle}</span>
+              </div>
               <div class="flex justify-between items-center text-xs pb-2 border-b border-slate-800">
                 <span class="text-slate-400">Estudiante:</span>
                 <span class="font-bold text-white">${user.name}</span>
@@ -1763,7 +1865,7 @@
 
             <div class="pt-2 flex flex-wrap items-center justify-center gap-3">
               ${status === 'Aprobado' ? `
-                <button onclick="closeExamModal(); openCertificateModal('curso-1');" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-bold px-5 py-2.5 rounded-xl text-xs transition-all shadow-lg flex items-center gap-2">
+                <button onclick="closeExamModal(); openCertificateModal('${courseId}');" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-bold px-5 py-2.5 rounded-xl text-xs transition-all shadow-lg flex items-center gap-2">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                   <span>Ver Certificado Oficial</span>
                 </button>
@@ -1791,17 +1893,17 @@
                 ADVERTENCIA ACADÉMICA OFICIAL
               </div>
               <p class="text-xs sm:text-sm font-semibold text-amber-100 leading-relaxed">
-                Dispones únicamente de un máximo de 2 intentos en total.
+                Dispones únicamente de un máximo de 2 intentos en total para rendir esta evaluación.
               </p>
               <p class="text-[11px] text-amber-200/80 leading-normal">
-                Al enviar tus respuestas, se asentará formalmente el <strong>Intento número ${nextAttempt} de 2</strong> y tu calificación se transmitirá directamente al sistema y a la cátedra docente.
+                Al enviar tus respuestas, se asentará formalmente el <strong>Intento número ${nextAttempt} de 2</strong> y tu calificación se transmitirá directamente al sistema y a la cátedra docente vía Formspree.
               </p>
             </div>
           </div>
 
           <!-- Protocolo del Examen -->
           <div class="bg-slate-950/70 rounded-2xl border border-slate-800 p-5 space-y-4">
-            <h4 class="font-heading font-bold text-white text-sm">Estructura de la Evaluación</h4>
+            <h4 class="font-heading font-bold text-white text-sm">Estructura de la Evaluación · ${courseTitle}</h4>
             
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
               <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
@@ -1846,7 +1948,7 @@
               Cancelar y Repasar Clases
             </button>
 
-            <button type="button" onclick="startExamQuestions(${nextAttempt})" class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold px-6 py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 text-xs sm:text-sm flex items-center justify-center gap-2">
+            <button type="button" onclick="startExamQuestions(${nextAttempt}, '${courseId}')" class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold px-6 py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 text-xs sm:text-sm flex items-center justify-center gap-2">
               <span>Comenzar Examen Oficial (Intento ${nextAttempt} de 2)</span>
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
             </button>
@@ -1863,12 +1965,20 @@
       if (modal) modal.classList.add('hidden');
     }
 
-    function startExamQuestions(attemptNumber = 1) {
+    function startExamQuestions(attemptNumber = 1, courseId = 'curso-1') {
       const body = document.getElementById('exam-modal-body');
       if (!body) return;
 
+      const questionsBank = courseId === 'curso-2'
+        ? (window.examenCurso2 || examenCurso2)
+        : (window.examenCurso1 || examenCurso1);
+
+      const courseTitle = courseId === 'curso-2'
+        ? 'Curso 2: Diodos, Fuentes Lineales Reguladas y Fuentes Conmutadas (DC-DC)'
+        : 'Curso 1: Introducción a la Electrónica, Análisis de Circuitos en CC';
+
       body.innerHTML = `
-        <form id="form-exam-course1" onsubmit="handleExamSubmit(event, ${attemptNumber})" class="space-y-6">
+        <form id="form-exam-${courseId}" onsubmit="handleExamSubmit(event, ${attemptNumber}, '${courseId}')" class="space-y-6">
           
           <!-- Top Bar con Indicador de Intento -->
           <div class="p-3 bg-slate-950/80 rounded-2xl border border-slate-800 flex items-center justify-between text-xs font-mono">
@@ -1883,7 +1993,7 @@
 
           <!-- Lista de las 10 Preguntas Oficiales -->
           <div class="space-y-6">
-            ${examenCurso1.map((q, idx) => `
+            ${questionsBank.map((q, idx) => `
               <div class="p-5 bg-slate-950/70 rounded-2xl border border-slate-800/90 space-y-3.5 hover:border-slate-700 transition-colors">
                 
                 <div class="flex items-start gap-3">
@@ -1924,7 +2034,7 @@
       `;
     }
 
-    async function handleExamSubmit(event, attemptNumber = 1) {
+    async function handleExamSubmit(event, attemptNumber = 1, courseId = 'curso-1') {
       event.preventDefault();
       user = window.ElectroLabAuth.getCurrentUser();
       if (!user) return;
@@ -1935,9 +2045,17 @@
         btn.innerHTML = `<span class="animate-pulse">Calificando y registrando formalmente...</span>`;
       }
 
+      const questionsBank = courseId === 'curso-2'
+        ? (window.examenCurso2 || examenCurso2)
+        : (window.examenCurso1 || examenCurso1);
+
+      const courseTitle = courseId === 'curso-2'
+        ? 'Curso 2: Diodos, Fuentes Lineales Reguladas y Fuentes Conmutadas (DC-DC)'
+        : 'Curso 1: Introducción a la Electrónica, Análisis de Circuitos en CC';
+
       // 1. Calificación automática de las 10 preguntas
       let nota = 0;
-      examenCurso1.forEach((q, idx) => {
+      questionsBank.forEach((q, idx) => {
         const selected = document.querySelector(`input[name="pregunta_${idx}"]:checked`);
         if (selected && parseInt(selected.value, 10) === q.correcta) {
           nota++;
@@ -1952,7 +2070,7 @@
       const formspreePayload = {
         "nombre_alumno": user.name,
         "email_alumno": user.email,
-        "curso": "Curso 1: Introducción a la Electrónica, Análisis de Circuitos en CC",
+        "curso": courseTitle,
         "intento_numero": attemptNumber,
         "nota_final": `${nota}/10`,
         "porcentaje": porcentaje,
@@ -1974,7 +2092,7 @@
       }
 
       // 3. Persistencia permanente del resultado e intento en base de datos
-      await window.ElectroLabAuth.recordStudentExamResult('curso-1', {
+      await window.ElectroLabAuth.recordStudentExamResult(courseId, {
         finalGrade: `${nota}/10`,
         status: estado,
         attemptsUsed: attemptNumber,
@@ -2014,6 +2132,10 @@
 
               <div class="text-xs text-slate-400 font-mono space-y-1.5 pt-3 border-t border-slate-800 text-left">
                 <div class="flex justify-between">
+                  <span>Curso Evaluado:</span>
+                  <span class="font-bold text-white truncate max-w-[200px]">${courseTitle}</span>
+                </div>
+                <div class="flex justify-between">
                   <span>Intento Registrado:</span>
                   <span class="font-bold text-amber-400">${attemptNumber} de 2</span>
                 </div>
@@ -2031,13 +2153,13 @@
             <!-- Orientación Pedagógica -->
             <div class="max-w-md mx-auto text-xs text-slate-300 leading-relaxed">
               ${nota >= 6 ? `
-                <p class="text-emerald-300 font-semibold mb-2">¡Felicitaciones! Has acreditado con éxito el Curso 1.</p>
+                <p class="text-emerald-300 font-semibold mb-2">¡Felicitaciones! Has acreditado con éxito el ${courseTitle}.</p>
                 <p class="text-slate-400 text-[11px]">Tu Certificado Digital Oficial ha sido emitido y ya puedes visualizarlo o imprimirlo.</p>
               ` : `
                 <p class="text-amber-300 font-semibold mb-2">Has obtenido una calificación inferior a 6/10.</p>
                 <p class="text-slate-400 text-[11px]">
                   ${attemptNumber < 2 
-                    ? 'Dispones de 1 intento restante. Te sugerimos repasar los videos y simulaciones en LTspice antes de volver a rendir.' 
+                    ? 'Dispones de 1 intento restante. Te sugerimos repasar las clases y simulaciones en LTspice antes de volver a rendir.' 
                     : 'Has alcanzado los 2 intentos reglamentarios. Los datos han quedado asentados en tu legajo digital.'}
                 </p>
               `}
@@ -2046,7 +2168,7 @@
             <!-- Acciones Finales -->
             <div class="pt-2 flex flex-wrap items-center justify-center gap-3">
               ${nota >= 6 ? `
-                <button onclick="closeExamModal(); openCertificateModal('curso-1');" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold px-5 py-2.5 rounded-xl text-xs transition-all shadow-lg flex items-center gap-2">
+                <button onclick="closeExamModal(); openCertificateModal('${courseId}');" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold px-5 py-2.5 rounded-xl text-xs transition-all shadow-lg flex items-center gap-2">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                   <span>Ver Certificado Oficial</span>
                 </button>

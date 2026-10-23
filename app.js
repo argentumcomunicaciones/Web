@@ -9,7 +9,7 @@
 
   // Configuración base de la tienda
   const CONFIG = {
-    whatsappNumber: '5491123065347', // WhatsApp oficial de ElectroLab
+    whatsappNumber: '5491176106965', // WhatsApp oficial de ElectroLab
     defaultCurrency: 'ARS', // 'ARS' o 'USD'
     couponCode: 'ELECTRO2026',
     couponDiscount: 0.10, // 10% off
@@ -91,6 +91,97 @@
   ];
 
   window.examenCurso1 = examenCurso1;
+
+  // BANCO OFICIAL DE PREGUNTAS: Examen Final del Curso 2 (10 Preguntas)
+  const examenCurso2 = [
+    {
+      pregunta: "En una conexión serie de un diodo de silicio (0.7V) y un LED rojo (1.8V) alimentados con 12V a través de un resistor R, ¿cuál es la caída de tensión sobre el resistor?",
+      opciones: ["12.0 V", "10.2 V", "9.5 V", "7.5 V"],
+      correcta: 2
+    },
+    {
+      pregunta: "Para que un diodo Zener opere en su zona de disrupción y cumpla la función de regulador, la tensión suministrada por la fuente (Vs) debe ser:",
+      opciones: [
+        "Menor que la tensión nominal del Zener (Vz)",
+        "Mayor que la tensión nominal del Zener (Vz)",
+        "Exactamente igual a 0.7 V en directa",
+        "Alterna pura sin componente de continua"
+      ],
+      correcta: 1
+    },
+    {
+      pregunta: "Al simular un transformador con acoplamiento K=1 en LTspice, si se desea una relación de transformación Np/Ns = 10 a 1, la inductancia del primario (L1) respecto a la del secundario (L2) debe ser:",
+      opciones: [
+        "10 veces mayor (relación lineal)",
+        "100 veces mayor (proporcional al cuadrado de las espiras)",
+        "Igual a la raíz cuadrada de 10",
+        "Exactamente el doble"
+      ],
+      correcta: 1
+    },
+    {
+      pregunta: "En un rectificador de media onda alimentado por una señal senoidal con una frecuencia de red de 50 Hz, ¿cuál es la frecuencia fundamental del rizado a la salida?",
+      opciones: ["25 Hz", "50 Hz", "100 Hz", "0 Hz"],
+      correcta: 1
+    },
+    {
+      pregunta: "¿Qué factor influye en la reducción del porcentaje de rizado (ripple) en una fuente con filtro capacitivo?",
+      opciones: [
+        "Aumentar el valor de la capacitancia del filtro",
+        "Aumentar drásticamente la corriente consumida por la carga",
+        "Reducir la frecuencia de la señal de entrada",
+        "Disminuir la resistencia de carga a casi cero"
+      ],
+      correcta: 0
+    },
+    {
+      pregunta: "En una red eléctrica de 220V RMS, la tensión de pico que ingresa al primario del transformador es aproximadamente:",
+      opciones: ["220 V", "240 V", "311 V", "440 V"],
+      correcta: 2
+    },
+    {
+      pregunta: "En una fuente simétrica con transformador de punto medio y puente rectificador, la caída de tensión introducida por los diodos en cada rama respecto de masa equivale a:",
+      opciones: [
+        "La caída de un solo diodo (0.7 V)",
+        "La caída de dos diodos en serie (1.4 V)",
+        "Cero voltios por efecto de la cancelación simétrica",
+        "Cuatro caídas de diodo simultáneas"
+      ],
+      correcta: 0
+    },
+    {
+      pregunta: "¿Cuál es la principal ventaja de un regulador serie con transistor de paso respecto a un regulador paralelo?",
+      opciones: [
+        "Menor rendimiento energético global",
+        "Mayor eficiencia energética y menor disipación térmica cuando la carga consume poca corriente",
+        "No requiere conexión a la tensión de referencia Zener",
+        "No disipa potencia en ninguna condición de trabajo"
+      ],
+      correcta: 1
+    },
+    {
+      pregunta: "En un convertidor conmutado reductor (Buck / Step-Down), la tensión continua de salida regulada es:",
+      opciones: [
+        "Siempre mayor que la tensión de entrada",
+        "Siempre menor o igual que la tensión de entrada, proporcional al ciclo de trabajo (D)",
+        "Completamente independiente del ancho de pulso PWM",
+        "Una señal senoidal pura de alta potencia"
+      ],
+      correcta: 1
+    },
+    {
+      pregunta: "¿Cuál es la función del diodo volante (flywheel diode) en una topología Buck cuando el interruptor conmutador pasa al estado OFF?",
+      opciones: [
+        "Proporcionar un camino de descarga para que la energía almacenada en el campo magnético del inductor continúe circulando hacia la carga",
+        "Cortocircuitar la fuente de alimentación para proteger el fusible",
+        "Invertir la polaridad del capacitor de salida",
+        "Aumentar la frecuencia de conmutación del oscilador"
+      ],
+      correcta: 0
+    }
+  ];
+
+  window.examenCurso2 = examenCurso2;
 
   // Base de datos de los 5 Cursos Oficiales y Recursos
   const COURSES = [
@@ -1290,7 +1381,7 @@
 
           <div class="text-[11px] text-slate-400 pt-2">
             ¿Ya realizaste el pago por transferencia o Mercado Pago?
-            <a href="https://wa.me/5491123065347?text=Hola!%20Ya%20realic%C3%A9%20el%20pago%20para%20el%20curso%20${encodeURIComponent(course.title)}.%20Quiero%20habilitar%20mi%20cuenta." target="_blank" class="text-emerald-400 hover:underline font-bold block sm:inline ml-1">
+            <a href="https://wa.me/5491176106965?text=Hola!%20Ya%20realic%C3%A9%20el%20pago%20para%20el%20curso%20${encodeURIComponent(course.title)}.%20Quiero%20habilitar%20mi%20cuenta." target="_blank" class="text-emerald-400 hover:underline font-bold block sm:inline ml-1">
               Enviar comprobante por WhatsApp
             </a>
           </div>
@@ -1455,7 +1546,7 @@
     const curr = (method === 'paypal') ? 'USD' : 'ARS';
     const totals = calculateCartTotals(curr);
 
-    const whatsappComprobanteUrl = 'https://wa.me/5491123065347?text=Hola%20Daniel%2C%20adjunto%20comprobante%20de%20pago%20para%20habilitar%20mi%20curso%20en%20ElectroLab%20Educativa';
+    const whatsappComprobanteUrl = 'https://wa.me/5491176106965?text=Hola%20Daniel%2C%20adjunto%20comprobante%20de%20pago%20para%20habilitar%20mi%20curso%20en%20ElectroLab%20Educativa';
 
     let title = '';
     let detailsHtml = '';
@@ -2100,7 +2191,8 @@
     switchWaitlistTab,
     submitWaitlistLogin,
     submitWaitlistRegister,
-    examenCurso1
+    examenCurso1,
+    examenCurso2
   };
 
   if (document.readyState === 'loading') {
