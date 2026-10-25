@@ -9,7 +9,7 @@
 
   // Configuración base de la tienda
   const CONFIG = {
-    whatsappNumber: '5491176106965', // WhatsApp oficial de ElectroLab
+    whatsappNumber: '5491123065347', // WhatsApp oficial de ElectroLab (+54 9 11 2306-5347)
     defaultCurrency: 'ARS', // 'ARS' o 'USD'
     couponCode: 'ELECTRO2026',
     couponDiscount: 0.10, // 10% off
@@ -329,7 +329,7 @@
       level: 'Principiante a Intermedio',
       duration: '10 Clases · +20 Horas de video HD',
       projectsCount: '10 Clases Prácticas',
-      image: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1583199873815-b58ce30591ea?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'blue',
       priceARS: 50000,
       origARS: 70000,
@@ -1381,8 +1381,8 @@
 
           <div class="text-[11px] text-slate-400 pt-2">
             ¿Ya realizaste el pago por transferencia o Mercado Pago?
-            <a href="https://wa.me/5491176106965?text=Hola!%20Ya%20realic%C3%A9%20el%20pago%20para%20el%20curso%20${encodeURIComponent(course.title)}.%20Quiero%20habilitar%20mi%20cuenta." target="_blank" class="text-emerald-400 hover:underline font-bold block sm:inline ml-1">
-              Enviar comprobante por WhatsApp
+            <a href="https://wa.me/5491123065347?text=Hola!%20Ya%20realic%C3%A9%20el%20pago%20para%20el%20curso%20${encodeURIComponent(course.title)}.%20Quiero%20habilitar%20mi%20cuenta." target="_blank" class="text-emerald-400 hover:underline font-bold block sm:inline ml-1">
+              Enviar comprobante por WhatsApp (+54 9 11 2306-5347)
             </a>
           </div>
         </div>
@@ -1546,7 +1546,7 @@
     const curr = (method === 'paypal') ? 'USD' : 'ARS';
     const totals = calculateCartTotals(curr);
 
-    const whatsappComprobanteUrl = 'https://wa.me/5491176106965?text=Hola%20Daniel%2C%20adjunto%20comprobante%20de%20pago%20para%20habilitar%20mi%20curso%20en%20ElectroLab%20Educativa';
+    const whatsappComprobanteUrl = 'https://wa.me/5491123065347?text=Hola%20Daniel%2C%20adjunto%20comprobante%20de%20pago%20para%20habilitar%20mi%20curso%20en%20ElectroLab%20Educativa';
 
     let title = '';
     let detailsHtml = '';
@@ -1636,11 +1636,11 @@
             </div>
           </div>
 
-          <p class="text-xs text-slate-400 text-center">Una vez realizada la transferencia, envía el comprobante para darte de alta al instante:</p>
+          <p class="text-xs text-slate-400 text-center">Una vez realizada la transferencia, envía el comprobante por WhatsApp al <strong class="text-emerald-400">+54 9 11 2306-5347</strong> para darte de alta al instante:</p>
 
           <a href="${whatsappComprobanteUrl}" target="_blank" rel="noopener noreferrer" onclick="window.ElectroLab.closePaymentModal()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 text-xs sm:text-sm">
             <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-            <span>Enviar Comprobante por WhatsApp</span>
+            <span>Enviar Comprobante por WhatsApp (+54 9 11 2306-5347)</span>
           </a>
         </div>
       `;
@@ -1721,11 +1721,11 @@
             </div>
           </div>
 
-          <p class="text-xs text-slate-400 text-center">Transfiere dinero en cuenta desde tu app de Mercado Pago o cualquier banco con el CVU o Alias. Luego envía tu comprobante:</p>
+          <p class="text-xs text-slate-400 text-center">Transfiere dinero en cuenta desde tu app de Mercado Pago o cualquier banco con el CVU o Alias. Luego envía tu comprobante por WhatsApp al <strong class="text-emerald-400">+54 9 11 2306-5347</strong>:</p>
 
           <a href="${whatsappComprobanteUrl}" target="_blank" rel="noopener noreferrer" onclick="window.ElectroLab.closePaymentModal()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 text-xs sm:text-sm">
             <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-            <span>Enviar Comprobante por WhatsApp</span>
+            <span>Enviar Comprobante por WhatsApp (+54 9 11 2306-5347)</span>
           </a>
         </div>
       `;
@@ -1795,11 +1795,11 @@
             </a>
           </div>
 
-          <p class="text-xs text-slate-400 text-center">Una vez realizado el envío por PayPal, envía tu comprobante para darte de alta al instante:</p>
+          <p class="text-xs text-slate-400 text-center">Una vez realizado el envío por PayPal, envía tu comprobante por WhatsApp al <strong class="text-emerald-400">+54 9 11 2306-5347</strong> para darte de alta al instante:</p>
 
           <a href="${whatsappComprobanteUrl}" target="_blank" rel="noopener noreferrer" onclick="window.ElectroLab.closePaymentModal()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 text-xs sm:text-sm">
             <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-            <span>Enviar Comprobante por WhatsApp</span>
+            <span>Enviar Comprobante por WhatsApp (+54 9 11 2306-5347)</span>
           </a>
         </div>
       `;

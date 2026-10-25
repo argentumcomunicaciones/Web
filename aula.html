@@ -365,7 +365,7 @@
           <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
             <span>¿Tienes dudas técnicas con este circuito?</span>
             <button onclick="askQuestionWhatsApp()" class="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1">
-              <span>Consultar al Profesor por WhatsApp</span>
+              <span>Consultar al Profesor por WhatsApp (+54 9 11 2306-5347)</span>
               <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.08L2.1 21.9l4.98-1.25A9.95 9.95 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
             </button>
           </div>
@@ -634,7 +634,7 @@
         tag: 'CURSO 2 · DIODOS & FUENTES LINEALES/CONMUTADAS',
         subtitle: 'Diseño, dimensionamiento y simulación en LTspice de fuentes de alimentación: diodos, zener, transformadores, rectificación, fuentes simétricas y convertidores DC-DC.',
         duration: '10 Clases · +20 Horas de video HD',
-        image: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80',
+        image: 'https://images.unsplash.com/photo-1583199873815-b58ce30591ea?auto=format&fit=crop&w=800&q=80',
         videoUrl: 'https://www.youtube.com/embed/oEIF7iT-68o',
         driveFolder: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=sharing',
         recursosUrl: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=sharing',
@@ -1045,8 +1045,8 @@
               Si compraste por Mercado Pago, Transferencia Bancaria (ICBC) o PayPal, envíanos tu comprobante junto con el correo <strong>${user.email}</strong> para que el administrador te active el acceso inmediatamente.
             </p>
             <div class="pt-2">
-              <a href="https://wa.me/5491176106965?text=Hola!%20Acabo%20de%20registrarme%20con%20el%20correo%20${encodeURIComponent(user.email)}.%20Quiero%20solicitar%20el%20alta%20de%20mi%20curso." target="_blank" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition-all shadow-md">
-                <span>Avisar por WhatsApp</span>
+              <a href="https://wa.me/5491123065347?text=Hola!%20Acabo%20de%20registrarme%20con%20el%20correo%20${encodeURIComponent(user.email)}.%20Quiero%20solicitar%20el%20alta%20de%20mi%20curso." target="_blank" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition-all shadow-md">
+                <span>Avisar por WhatsApp (+54 9 11 2306-5347)</span>
               </a>
             </div>
           </div>
@@ -1419,7 +1419,7 @@
     function askQuestionWhatsApp() {
       if (!currentLesson) return;
       const msg = `Hola ElectroLab! Soy ${user.name} (${user.email}). Tengo una consulta sobre la lección: "${currentLesson.title}".`;
-      window.open(`https://wa.me/5491176106965?text=${encodeURIComponent(msg)}`, '_blank');
+      window.open(`https://wa.me/5491123065347?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     // ================= SISTEMA DE BOLETÍN DE CALIFICACIONES & CERTIFICACIONES =================
