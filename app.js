@@ -34,8 +34,6 @@
   const CONFIG = {
     formspreeEndpoint: 'https://formspree.io/f/xbgdqedy',
     defaultCurrency: 'ARS', // 'ARS' o 'USD'
-    couponCode: 'ELECTRO2026',
-    couponDiscount: 0.10, // 10% off
     // Medios de Pago Oficiales Universales
     payment: {
       mercadopago: {
@@ -699,8 +697,7 @@
   let state = {
     currency: localStorage.getItem('electrolab_currency') || CONFIG.defaultCurrency,
     cart: JSON.parse(localStorage.getItem('electrolab_cart') || '[]'),
-    activeFilter: 'all',
-    appliedCoupon: null // Sin bonus automático por defecto ($50.000 ARS / 50 USD)
+    activeFilter: 'all'
   };
   try { localStorage.removeItem('electrolab_coupon'); } catch (e) {}
 
@@ -708,11 +705,6 @@
   function saveState() {
     localStorage.setItem('electrolab_currency', state.currency);
     localStorage.setItem('electrolab_cart', JSON.stringify(state.cart));
-    if (state.appliedCoupon) {
-      localStorage.setItem('electrolab_coupon', state.appliedCoupon);
-    } else {
-      localStorage.removeItem('electrolab_coupon');
-    }
   }
 
   // Formateador de moneda
@@ -734,7 +726,7 @@
 
   // Descuentos automáticos por volumen desactivados (cálculo lineal unitario: $50.000 ARS / 50 USD)
 
-  // Cálculo en tiempo real de subtotales, descuentos y total a transferir
+  // Cálculo en tiempo real de subtotales y total a transferir
   function calculateCartTotals(currency = state.currency) {
     const cartCourses = [...new Set(state.cart)].map(id => COURSES.find(c => c.id === id)).filter(Boolean);
     const count = cartCourses.length;
@@ -747,43 +739,29 @@
         discountPct: 0,
         badge: '',
         saving: 0,
-        couponDiscount: 0,
         total: 0,
         currency
       };
     }
 
-    // Cálculo puramente lineal sin descuentos automáticos por volumen
+    // Cálculo puramente lineal sin descuentos
     const unitPrice = currency === 'ARS' ? 50000 : 50;
     const subtotal = count * unitPrice;
-    const volumeDiscount = 0;
-    const discountPct = 0;
-    const badge = '';
-    const saving = 0;
-
-    let couponDiscount = 0;
-    let finalTotal = subtotal;
-    if (state.appliedCoupon) {
-      couponDiscount = Math.round(subtotal * CONFIG.couponDiscount);
-      finalTotal = subtotal - couponDiscount;
-    }
 
     return {
       count,
       subtotal,
-      volumeDiscount,
-      discountPct,
-      badge,
-      saving,
-      couponDiscount,
-      total: finalTotal,
+      volumeDiscount: 0,
+      discountPct: 0,
+      badge: '',
+      saving: 0,
+      total: subtotal,
       currency
     };
   }
 
   // Inicializar UI
   function initApp() {
-    state.appliedCoupon = null;
     try { localStorage.removeItem('electrolab_coupon'); } catch (e) {}
     // Mantener en carrito únicamente cursos habilitados para compra inmediata (Curso 1 y Curso 2)
     state.cart = (state.cart || []).filter(id => id === 'curso-1' || id === 'curso-2');
@@ -1023,7 +1001,6 @@
 
   function clearCart() {
     state.cart = [];
-    state.appliedCoupon = null;
     saveState();
     renderCourses();
     updateCartUI();
@@ -1034,15 +1011,6 @@
     const cartCountDrawer = document.getElementById('cart-drawer-count');
     const cartItemsContainer = document.getElementById('cart-items-container');
     const cartSubtotalEl = document.getElementById('cart-subtotal');
-    const cartVolumeDiscountRow = document.getElementById('cart-volume-discount-row');
-    const cartVolumeBadge = document.getElementById('cart-volume-badge');
-    const cartVolumeDiscountEl = document.getElementById('cart-volume-discount');
-    const cartSavingHintRow = document.getElementById('cart-saving-hint-row');
-    const cartSavingAmountEl = document.getElementById('cart-saving-amount');
-    const cartVolumeTip = document.getElementById('cart-volume-tip');
-    const cartVolumeTipText = document.getElementById('cart-volume-tip-text');
-    const cartDiscountEl = document.getElementById('cart-discount');
-    const cartDiscountRow = document.getElementById('cart-discount-row');
     const cartTotalEl = document.getElementById('cart-total');
     const emptyState = document.getElementById('cart-empty-state');
     const filledState = document.getElementById('cart-filled-state');
@@ -1089,16 +1057,6 @@
       cartSubtotalEl.textContent = formatMoney(totals.subtotal);
     }
 
-    // Descuento adicional por Cupón (solo visible si el usuario ingresó manualmente un cupón válido)
-    if (cartDiscountRow) {
-      if (state.appliedCoupon && totals.couponDiscount > 0) {
-        cartDiscountRow.style.display = 'flex';
-        if (cartDiscountEl) cartDiscountEl.textContent = `- ${formatMoney(totals.couponDiscount)}`;
-      } else {
-        cartDiscountRow.style.display = 'none';
-      }
-    }
-
     // Total Final
     if (cartTotalEl) {
       cartTotalEl.textContent = formatMoney(totals.total);
@@ -1108,7 +1066,7 @@
     renderCartCheckoutAction(totals);
   }
 
-  // Renderizar botón de checkout universal del carrito
+  // Renderizar botón de checkout universal del carrito inmediatamente debajo del Total Final
   function renderCartCheckoutAction(totals) {
     const checkoutActionsEl = document.getElementById('cart-checkout-actions');
     if (!checkoutActionsEl) return;
@@ -1117,46 +1075,23 @@
     const isArs = (state.currency === 'ARS');
 
     if (isArs) {
-      const arsFormatted = formatMoney(currentTotals.total, 'ARS').replace('$ ', '$');
+      const arsFormatted = `$${currentTotals.total.toLocaleString('es-AR')} ARS`;
       checkoutActionsEl.innerHTML = `
-        <a id="btn-cart-checkout" href="https://mpago.la/2kmrdT1" class="w-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer border border-sky-400/30 select-none">
+        <a id="btn-cart-checkout" href="https://mpago.la/2kmrdT1" target="_blank" rel="noopener noreferrer" class="btn-checkout-mp w-full bg-[#009ee3] hover:bg-[#0086c2] text-white font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer select-none">
           <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M21 4H3c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h18c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H3V6h18v12zm-9-7h7v2h-7zm0 4h4v2h-4zm-6-4h4v6H6z"/></svg>
           <span id="btn-cart-checkout-text">Pagar con Mercado Pago (${arsFormatted})</span>
         </a>
       `;
     } else {
-      const usdFormatted = formatMoney(currentTotals.total, 'USD');
+      const usdFormatted = `US$ ${currentTotals.total.toLocaleString('en-US')}`;
       checkoutActionsEl.innerHTML = `
-        <a id="btn-cart-checkout" href="https://paypal.me/electronicadbarrio/50USD" target="_blank" rel="noopener noreferrer" class="w-full bg-[#0070ba] hover:bg-[#005ea6] text-white font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-blue-600/30 hover:shadow-[0_0_20px_rgba(0,112,186,0.5)] flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer border border-blue-400/30 select-none">
+        <a id="btn-cart-checkout" href="https://paypal.me/electronicadbarrio/50USD" target="_blank" rel="noopener noreferrer" class="btn-checkout-paypal w-full bg-[#0070ba] hover:bg-[#005ea6] text-white font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-blue-600/30 hover:shadow-[0_0_20px_rgba(0,112,186,0.5)] flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer select-none">
           <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.774.774 0 0 1 .763-.646h7.008c3.15 0 5.467 1.054 5.922 3.864.218 1.344-.067 2.766-.826 3.743-.728.937-1.854 1.488-3.23 1.584l-.19.008h-2.92a.774.774 0 0 0-.764.646l-.999 6.337a.641.641 0 0 1-.632.535z"/></svg>
           <span id="btn-cart-checkout-text">Pagar con PayPal (${usdFormatted})</span>
           <svg class="w-3.5 h-3.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
         </a>
       `;
     }
-  }
-
-  // Cupón de descuento
-  function applyCoupon(code) {
-    if (!code) return;
-    const clean = code.trim().toUpperCase();
-    if (clean === CONFIG.couponCode || clean === 'ELECTROLAB') {
-      state.appliedCoupon = clean;
-      saveState();
-      updateCartUI();
-      renderCartCheckoutAction();
-      showToast('🎉 ¡Cupón aplicado! Descuento activado.', 'success');
-    } else {
-      showToast('❌ Cupón no válido. Intenta con ELECTRO2026', 'error');
-    }
-  }
-
-  function removeCoupon() {
-    state.appliedCoupon = null;
-    saveState();
-    updateCartUI();
-    renderCartCheckoutAction();
-    showToast('Cupón de descuento removido.', 'info');
   }
 
   // Drawers y Modales
@@ -1606,35 +1541,16 @@
 
             <!-- Total a abonar con desglose -->
             <div class="bg-black/60 border border-slate-800 p-3.5 rounded-xl space-y-2">
-              ${totals.volumeDiscount > 0 ? `
-                <div class="flex justify-between items-center text-xs text-slate-400">
-                  <span>Subtotal (${totals.count} ${totals.count === 1 ? 'curso' : 'cursos'}):</span>
-                  <span class="line-through text-slate-500 font-mono">${formatMoney(totals.subtotal, 'ARS')}</span>
-                </div>
-                <div class="flex justify-between items-center text-xs text-emerald-400 font-semibold">
-                  <span class="flex items-center gap-1.5">
-                    <span>Descuento por volumen:</span>
-                    <span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-black px-1.5 py-0.5 rounded border border-emerald-500/30">${totals.badge}</span>
-                  </span>
-                  <span class="font-mono">- ${formatMoney(totals.volumeDiscount, 'ARS')}</span>
-                </div>
-              ` : ''}
-              ${totals.couponDiscount > 0 ? `
-                <div class="flex justify-between items-center text-xs text-emerald-400 font-semibold">
-                  <span>Cupón ${state.appliedCoupon} (10%):</span>
-                  <span class="font-mono">- ${formatMoney(totals.couponDiscount, 'ARS')}</span>
-                </div>
-              ` : ''}
-              <div class="flex items-center justify-between pt-1.5 border-t border-slate-800">
+              <div class="flex items-center justify-between pt-1.5">
                 <span class="text-xs text-slate-200 font-sans font-bold">Total a abonar:</span>
                 <span class="text-xl sm:text-2xl font-bold font-mono text-sky-400">${formatMoney(totals.total, 'ARS')}</span>
               </div>
             </div>
 
             <!-- Botón Oficial de Pago Mercado Pago -->
-            <a href="https://mpago.la/2kmrdT1" class="w-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 text-xs sm:text-sm text-center">
+            <a href="https://mpago.la/2kmrdT1" target="_blank" rel="noopener noreferrer" class="btn-checkout-mp w-full bg-[#009ee3] hover:bg-[#0086c2] text-white font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer select-none">
               <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M21 4H3c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h18c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H3V6h18v12zm-9-7h7v2h-7zm0 4h4v2h-4zm-6-4h4v6H6z"/></svg>
-              <span>Pagar con Mercado Pago ($50.000 ARS)</span>
+              <span>Pagar con Mercado Pago (${formatMoney(totals.total, 'ARS').replace('$ ', '$')})</span>
             </a>
           </div>
 
@@ -1647,7 +1563,7 @@
         </div>
       `;
     } else {
-      title = 'Pagar con PayPal (US$ 50)';
+      title = totals.count > 1 ? `Pagar con PayPal (${formatMoney(totals.total, 'USD')})` : 'Pagar con PayPal (US$ 50)';
       detailsHtml = `
         <div class="space-y-4 text-sm text-slate-300">
           <div class="bg-gradient-to-br from-amber-950/60 to-slate-900 border border-amber-500/30 p-4 sm:p-5 rounded-2xl space-y-3">
@@ -1661,33 +1577,18 @@
 
             <!-- Total a abonar con desglose -->
             <div class="bg-black/60 border border-slate-800 p-3.5 rounded-xl space-y-2">
-              ${totals.volumeDiscount > 0 ? `
-                <div class="flex justify-between items-center text-xs text-slate-400">
-                  <span>Subtotal (${totals.count} ${totals.count === 1 ? 'curso' : 'cursos'}):</span>
-                  <span class="line-through text-slate-500 font-mono">${formatMoney(totals.subtotal, 'USD')}</span>
-                </div>
-                <div class="flex justify-between items-center text-xs text-emerald-400 font-semibold">
-                  <span class="flex items-center gap-1.5">
-                    <span>Descuento por volumen:</span>
-                    <span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-black px-1.5 py-0.5 rounded border border-emerald-500/30">${totals.badge}</span>
-                  </span>
-                  <span class="font-mono">- ${formatMoney(totals.volumeDiscount, 'USD')}</span>
-                </div>
-              ` : ''}
-              ${totals.couponDiscount > 0 ? `
-                <div class="flex justify-between items-center text-xs text-emerald-400 font-semibold">
-                  <span>Cupón ${state.appliedCoupon} (10%):</span>
-                  <span class="font-mono">- ${formatMoney(totals.couponDiscount, 'USD')}</span>
-                </div>
-              ` : ''}
-              <div class="flex items-center justify-between pt-1.5 border-t border-slate-800">
+              <div class="flex items-center justify-between pt-1.5">
                 <span class="text-xs text-slate-200 font-sans font-bold">Total a abonar en USD:</span>
                 <span class="text-xl sm:text-2xl font-bold font-mono text-amber-400">${formatMoney(totals.total, 'USD')}</span>
               </div>
             </div>
 
             <!-- Botón Oficial de Pago PayPal -->
-            <a href="https://paypal.me/electronicadbarrio/50USD" target="_blank" rel="noopener noreferrer" class="w-full bg-[#0070ba] hover:bg-[#005ea6] text-white font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-blue-600/30 hover:shadow-[0_0_20px_rgba(0,112,186,0.5)] flex items-center justify-center gap-2 text-xs sm:text-sm text-center border border-blue-400/30 select-none">
+            <a href="https://paypal.me/electronicadbarrio/50USD" target="_blank" rel="noopener noreferrer" class="btn-checkout-paypal w-full bg-[#0070ba] hover:bg-[#005ea6] text-white font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-blue-600/30 hover:shadow-[0_0_20px_rgba(0,112,186,0.5)] flex items-center justify-center gap-2 text-xs sm:text-sm text-center border border-blue-400/30 select-none cursor-pointer">
+              <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.774.774 0 0 1 .763-.646h7.008c3.15 0 5.467 1.054 5.922 3.864.218 1.344-.067 2.766-.826 3.743-.728.937-1.854 1.488-3.23 1.584l-.19.008h-2.92a.774.774 0 0 0-.764.646l-.999 6.337a.641.641 0 0 1-.632.535z"/></svg>
+              <span>Pagar con PayPal (${formatMoney(totals.total, 'USD')})</span>
+              <svg class="w-3.5 h-3.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
               <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.774.774 0 0 1 .763-.646h7.008c3.15 0 5.467 1.054 5.922 3.864.218 1.344-.067 2.766-.826 3.743-.728.937-1.854 1.488-3.23 1.584l-.19.008h-2.92a.774.774 0 0 0-.764.646l-.999 6.337a.641.641 0 0 1-.632.535z"/></svg>
               <span>Pagar con PayPal (US$ 50)</span>
               <svg class="w-3.5 h-3.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
@@ -2092,22 +1993,6 @@
     if (closeCartBtn) closeCartBtn.addEventListener('click', closeCartDrawer);
     if (overlay) overlay.addEventListener('click', closeCartDrawer);
 
-    // Cupón input
-    const applyCouponBtn = document.getElementById('btn-apply-coupon');
-    const couponInput = document.getElementById('coupon-input');
-    if (applyCouponBtn && couponInput) {
-      applyCouponBtn.addEventListener('click', () => {
-        applyCoupon(couponInput.value);
-        couponInput.value = '';
-      });
-      couponInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          applyCoupon(couponInput.value);
-          couponInput.value = '';
-        }
-      });
-    }
-
     // Mobile Navigation Menu Toggle
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -2357,8 +2242,6 @@
     clearCart,
     openCartDrawer,
     closeCartDrawer,
-    applyCoupon,
-    removeCoupon,
     renderCartCheckoutAction,
     openSyllabus,
     closeSyllabus,
