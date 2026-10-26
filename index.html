@@ -52,7 +52,7 @@
       <div class="hidden sm:flex items-center gap-4 text-slate-300">
         <span class="flex items-center gap-1.5">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          Cupón extra 10%: <strong class="text-cyan-300 font-mono">ELECTRO2026</strong>
+          Acceso Inmediato de por Vida y Certificados Oficiales
         </span>
         <a href="#cursos" class="text-cyan-400 hover:text-cyan-300 font-semibold underline underline-offset-2">Ver Cursos &rarr;</a>
       </div>
@@ -854,96 +854,96 @@
   <!-- ================= SHOPPING CART DRAWER ================= -->
   <div id="cart-overlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
 
-  <div id="cart-drawer" class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-slate-950 border-l border-slate-800 z-50 p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 shadow-2xl text-slate-100">
+  <div id="cart-drawer" class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-slate-950 border-l border-slate-800 z-50 p-4 sm:p-6 flex flex-col h-full overflow-hidden transform translate-x-full transition-transform duration-300 shadow-2xl text-slate-100">
     
-    <div>
-      <!-- Drawer Header -->
-      <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
-        <div class="flex items-center gap-2">
-          <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-          <h3 class="font-heading font-bold text-lg text-white">Carrito de Compras</h3>
-          <span id="cart-drawer-count" class="text-xs text-slate-400 font-mono">(0)</span>
-        </div>
-        <button id="btn-close-cart" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-900 transition-colors">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
+    <!-- Drawer Header -->
+    <div class="flex items-center justify-between pb-3 sm:pb-4 border-b border-slate-800 shrink-0">
+      <div class="flex items-center gap-2">
+        <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+        <h3 class="font-heading font-bold text-lg text-white">Carrito de Compras</h3>
+        <span id="cart-drawer-count" class="text-xs text-slate-400 font-mono">(0)</span>
+      </div>
+      <button id="btn-close-cart" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-900 transition-colors" title="Cerrar carrito">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Empty State -->
+    <div id="cart-empty-state" class="flex-1 flex flex-col items-center justify-center py-16 text-center space-y-4">
+      <div class="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 text-slate-500 mx-auto flex items-center justify-center">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+      </div>
+      <h4 class="font-heading font-bold text-slate-300">Tu carrito está vacío</h4>
+      <p class="text-xs text-slate-500 max-w-xs mx-auto">Elige un curso del catálogo y comienza a aprender hoy mismo.</p>
+      <button onclick="window.ElectroLab.closeCartDrawer()" class="bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 text-xs font-bold px-4 py-2 rounded-xl transition-colors">
+        Ver Cursos Disponibles
+      </button>
+    </div>
+
+    <!-- Filled State: Flex Column with scrollable middle items and fixed bottom checkout -->
+    <div id="cart-filled-state" class="hidden flex-1 flex flex-col justify-between min-h-0 overflow-hidden">
+      <!-- Scrollable Items List Container -->
+      <div id="cart-items-container" class="flex-1 overflow-y-auto space-y-3 py-3 pr-1 min-h-0">
+        <!-- Items will be inserted here -->
       </div>
 
-      <!-- Empty State -->
-      <div id="cart-empty-state" class="py-16 text-center space-y-4">
-        <div class="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 text-slate-500 mx-auto flex items-center justify-center">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-        </div>
-        <h4 class="font-heading font-bold text-slate-300">Tu carrito está vacío</h4>
-        <p class="text-xs text-slate-500 max-w-xs mx-auto">Elige un curso del catálogo y comienza a aprender hoy mismo.</p>
-        <button onclick="window.ElectroLab.closeCartDrawer()" class="bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 text-xs font-bold px-4 py-2 rounded-xl transition-colors">
-          Ver Cursos Disponibles
-        </button>
-      </div>
-
-      <!-- Filled State: Items List -->
-      <div id="cart-filled-state" class="hidden flex flex-col h-[calc(100vh-230px)] justify-between">
-        <div id="cart-items-container" class="space-y-3 overflow-y-auto pr-1">
-          <!-- Items will be inserted here -->
+      <!-- Bottom Summary & Checkout Section (Permanently visible at bottom) -->
+      <div class="pt-3 border-t border-slate-800 space-y-3 shrink-0 bg-slate-950">
+        <!-- Coupon Box -->
+        <div class="flex gap-2">
+          <input id="coupon-input" type="text" placeholder="Cupón de descuento" class="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white uppercase font-mono focus:border-cyan-500 focus:outline-none">
+          <button id="btn-apply-coupon" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-xl text-cyan-300 transition-colors">
+            Aplicar
+          </button>
         </div>
 
-        <!-- Coupon & Summary -->
-        <div class="pt-4 border-t border-slate-800 space-y-4 mt-auto">
-          <!-- Volume Promo Tip Banner -->
-          <div id="cart-volume-tip" class="hidden text-[11px] px-3 py-2 rounded-xl bg-cyan-950/40 border border-cyan-500/30 text-cyan-300 flex items-center gap-2">
-            <span id="cart-volume-tip-text">💡 Agregá más cursos para obtener hasta un 40% OFF.</span>
+        <!-- Totals Card -->
+        <div class="space-y-1.5 text-xs text-slate-400 bg-slate-900/80 p-3.5 rounded-xl border border-slate-800/80">
+          <div class="flex justify-between items-center">
+            <span>Subtotal:</span>
+            <span id="cart-subtotal" class="font-bold text-white font-mono">$ 0</span>
           </div>
 
-          <!-- Coupon Box -->
-          <div class="flex gap-2">
-            <input id="coupon-input" type="text" placeholder="Cupón (ej: ELECTRO2026)" class="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white uppercase font-mono focus:border-cyan-500 focus:outline-none">
-            <button id="btn-apply-coupon" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-xl text-cyan-300 transition-colors">
-              Aplicar
-            </button>
+          <!-- Volume Discount Row (Hidden if inactive) -->
+          <div id="cart-volume-discount-row" class="hidden flex items-center justify-between text-emerald-400 font-semibold">
+            <span class="flex items-center gap-1.5">
+              <span>Descuento por volumen:</span>
+              <span id="cart-volume-badge" class="bg-emerald-500/20 text-emerald-300 text-[10px] font-black px-1.5 py-0.5 rounded border border-emerald-500/30">15% OFF</span>
+            </span>
+            <span id="cart-volume-discount" class="font-bold font-mono text-emerald-400">- $ 0</span>
           </div>
 
-          <!-- Totals -->
-          <div class="space-y-2 text-xs text-slate-400 bg-slate-900/60 p-3.5 rounded-xl border border-slate-800/80">
-            <div class="flex justify-between items-center">
-              <span>Subtotal:</span>
-              <span id="cart-subtotal" class="font-bold text-white font-mono">$ 0</span>
-            </div>
-
-            <!-- Volume Discount Row -->
-            <div id="cart-volume-discount-row" class="hidden flex items-center justify-between text-emerald-400 font-semibold">
-              <span class="flex items-center gap-1.5">
-                <span>Descuento por volumen:</span>
-                <span id="cart-volume-badge" class="bg-emerald-500/20 text-emerald-300 text-[10px] font-black px-1.5 py-0.5 rounded border border-emerald-500/30">15% OFF</span>
-              </span>
-              <span id="cart-volume-discount" class="font-bold font-mono text-emerald-400">- $ 0</span>
-            </div>
-
-            <!-- Savings Hint Row -->
-            <div id="cart-saving-hint-row" class="hidden text-[11px] text-emerald-300 bg-emerald-950/50 border border-emerald-500/25 px-2.5 py-1.5 rounded-lg flex items-center justify-between">
-              <span class="flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                <span>Ahorro en tu compra:</span>
-              </span>
-              <span id="cart-saving-amount" class="font-bold font-mono text-white">$ 0</span>
-            </div>
-
-            <!-- Coupon Discount Row -->
-            <div id="cart-discount-row" class="hidden flex justify-between text-emerald-400">
-              <span>Descuento cupón adicional:</span>
-              <span id="cart-discount" class="font-bold font-mono">- $ 0</span>
-            </div>
-
-            <!-- Total Final Row -->
-            <div class="flex justify-between text-sm font-bold text-white pt-2 border-t border-slate-800">
-              <span>Total Final:</span>
-              <span id="cart-total" class="text-cyan-400 font-mono text-base">$ 0</span>
-            </div>
+          <!-- Savings Hint Row -->
+          <div id="cart-saving-hint-row" class="hidden text-[11px] text-emerald-300 bg-emerald-950/50 border border-emerald-500/25 px-2.5 py-1.5 rounded-lg flex items-center justify-between">
+            <span class="flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span>Ahorro en tu compra:</span>
+            </span>
+            <span id="cart-saving-amount" class="font-bold font-mono text-white">$ 0</span>
           </div>
 
-          <!-- Checkout Buttons Container (Rendered dynamically based on ARS / USD) -->
-          <div id="cart-checkout-actions" class="space-y-2.5 pt-1">
-            <!-- Dynamically injected by updateCartUI() in app.js -->
+          <!-- Coupon Discount Row with Quitar button -->
+          <div id="cart-discount-row" class="hidden flex items-center justify-between text-emerald-400">
+            <div class="flex items-center gap-1.5">
+              <span>Descuento cupón:</span>
+              <button type="button" onclick="window.ElectroLab.removeCoupon()" class="text-[10px] bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-1.5 py-0.5 rounded transition-colors" title="Quitar cupón">✕ Quitar</button>
+            </div>
+            <span id="cart-discount" class="font-bold font-mono text-emerald-400">- $ 0</span>
           </div>
+
+          <!-- Total Final Row -->
+          <div class="flex justify-between text-sm font-bold text-white pt-2 border-t border-slate-800">
+            <span>Total Final:</span>
+            <span id="cart-total" class="text-cyan-400 font-mono text-base sm:text-lg">$ 50.000 ARS</span>
+          </div>
+        </div>
+
+        <!-- Checkout Button Action: Inmediatamente debajo del bloque de Total Final -->
+        <div id="cart-checkout-actions" class="w-full pt-1">
+          <a id="btn-cart-checkout" href="https://mpago.la/2kmrdT1" class="w-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer border border-sky-400/30">
+            <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M21 4H3c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h18c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H3V6h18v12zm-9-7h7v2h-7zm0 4h4v2h-4zm-6-4h4v6H6z"/></svg>
+            <span id="btn-cart-checkout-text">Pagar con Mercado Pago ($50.000 ARS)</span>
+          </a>
         </div>
       </div>
     </div>

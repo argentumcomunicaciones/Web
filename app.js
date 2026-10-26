@@ -700,8 +700,9 @@
     currency: localStorage.getItem('electrolab_currency') || CONFIG.defaultCurrency,
     cart: JSON.parse(localStorage.getItem('electrolab_cart') || '[]'),
     activeFilter: 'all',
-    appliedCoupon: localStorage.getItem('electrolab_coupon') || null
+    appliedCoupon: null // Sin bonus automático por defecto ($50.000 ARS / 50 USD)
   };
+  try { localStorage.removeItem('electrolab_coupon'); } catch (e) {}
 
   // Guardar en Storage
   function saveState() {
@@ -1106,17 +1107,19 @@
     const checkoutActionsEl = document.getElementById('cart-checkout-actions');
     if (checkoutActionsEl) {
       if (state.currency === 'ARS') {
+        const arsFormatted = formatMoney(totals.total, 'ARS').replace('$ ', '$');
         checkoutActionsEl.innerHTML = `
-          <a href="https://mpago.la/2kmrdT1" class="w-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 text-xs sm:text-sm text-center">
+          <a id="btn-cart-checkout" href="https://mpago.la/2kmrdT1" class="w-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer border border-sky-400/30">
             <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M21 4H3c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h18c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H3V6h18v12zm-9-7h7v2h-7zm0 4h4v2h-4zm-6-4h4v6H6z"/></svg>
-            <span>Pagar con Mercado Pago ($50.000 ARS)</span>
+            <span id="btn-cart-checkout-text">Pagar con Mercado Pago (${arsFormatted})</span>
           </a>
         `;
       } else {
+        const usdFormatted = formatMoney(totals.total, 'USD');
         checkoutActionsEl.innerHTML = `
-          <a href="https://paypal.me/electronicadbarrio/50USD" target="_blank" rel="noopener noreferrer" class="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 text-xs sm:text-sm text-center">
+          <a id="btn-cart-checkout" href="https://paypal.me/electronicadbarrio/50USD" target="_blank" rel="noopener noreferrer" class="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer border border-yellow-400/40">
             <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.774.774 0 0 1 .763-.646h7.008c3.15 0 5.467 1.054 5.922 3.864.218 1.344-.067 2.766-.826 3.743-.728.937-1.854 1.488-3.23 1.584l-.19.008h-2.92a.774.774 0 0 0-.764.646l-.999 6.337a.641.641 0 0 1-.632.535z"/></svg>
-            <span>Pagar con PayPal (US$ 50)</span>
+            <span id="btn-cart-checkout-text">Pagar con PayPal (${usdFormatted})</span>
             <svg class="w-3.5 h-3.5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
           </a>
         `;
@@ -1132,14 +1135,22 @@
       state.appliedCoupon = clean;
       saveState();
       updateCartUI();
-      showToast('🎉 ¡Cupón aplicado! 10% de descuento adicional activado.', 'success');
+      showToast('🎉 ¡Cupón aplicado! Descuento activado.', 'success');
     } else {
       showToast('❌ Cupón no válido. Intenta con ELECTRO2026', 'error');
     }
   }
 
+  function removeCoupon() {
+    state.appliedCoupon = null;
+    saveState();
+    updateCartUI();
+    showToast('Cupón de descuento removido.', 'info');
+  }
+
   // Drawers y Modales
   function openCartDrawer() {
+    updateCartUI();
     const drawer = document.getElementById('cart-drawer');
     const overlay = document.getElementById('cart-overlay');
     if (drawer && overlay) {
@@ -2334,6 +2345,8 @@
     clearCart,
     openCartDrawer,
     closeCartDrawer,
+    applyCoupon,
+    removeCoupon,
     openSyllabus,
     closeSyllabus,
     toggleModuleAccordion,
