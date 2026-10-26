@@ -38,7 +38,7 @@
     payment: {
       mercadopago: {
         url: 'https://mpago.la/2kmrdT1',
-        label: 'Pagar con Mercado Pago ($50.000 ARS)'
+        label: 'Pagar con Mercado Pago ($75.000 ARS)'
       },
       paypal: {
         url: 'https://paypal.me/electronicadbarrio/50USD',
@@ -208,8 +208,8 @@
       projectsCount: '11 Clases Prácticas',
       image: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'blue',
-      priceARS: 50000,
-      origARS: 70000,
+      priceARS: 75000,
+      origARS: 100000,
       priceUSD: 50,
       origUSD: 70,
       driveFolder: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
@@ -344,8 +344,8 @@
       projectsCount: '10 Clases Prácticas',
       image: 'https://images.unsplash.com/photo-1583199873815-b58ce30591ea?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'blue',
-      priceARS: 50000,
-      origARS: 70000,
+      priceARS: 75000,
+      origARS: 100000,
       priceUSD: 50,
       origUSD: 70,
       driveFolder: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=sharing',
@@ -499,8 +499,8 @@
       projectsCount: '12 Clases Prácticas',
       image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'cyan',
-      priceARS: 50000,
-      origARS: 70000,
+      priceARS: 75000,
+      origARS: 100000,
       priceUSD: 50,
       origUSD: 70,
       driveFolder: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=drive_link',
@@ -567,8 +567,8 @@
       projectsCount: '19 Clases Prácticas',
       image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'emerald',
-      priceARS: 50000,
-      origARS: 70000,
+      priceARS: 75000,
+      origARS: 100000,
       priceUSD: 50,
       origUSD: 70,
       driveFolder: 'https://drive.google.com/drive/folders/18vYXavKUw_ge42v26zVGgFxHzGsSWV5J?usp=drive_link',
@@ -647,8 +647,8 @@
       projectsCount: '10 Clases Prácticas',
       image: 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'purple',
-      priceARS: 50000,
-      origARS: 70000,
+      priceARS: 75000,
+      origARS: 100000,
       priceUSD: 50,
       origUSD: 70,
       driveFolder: 'https://drive.google.com/drive/folders/1Ria3iinViGHPSRa1VlQIypBTQRrf-IAX?usp=drive_link',
@@ -729,7 +729,7 @@
     return currency === 'ARS' ? course.origARS : course.origUSD;
   }
 
-  // Descuentos automáticos por volumen desactivados (cálculo lineal unitario: $50.000 ARS / 50 USD)
+  // Descuentos automáticos por volumen desactivados (cálculo lineal unitario: $75.000 ARS / 50 USD)
 
   // Cálculo en tiempo real de subtotales y total a transferir
   function calculateCartTotals(currency = state.currency) {
@@ -750,7 +750,7 @@
     }
 
     // Cálculo puramente lineal sin descuentos
-    const unitPrice = currency === 'ARS' ? 50000 : 50;
+    const unitPrice = currency === 'ARS' ? 75000 : 50;
     const subtotal = count * unitPrice;
 
     return {
@@ -849,7 +849,12 @@
 
     // 3. Texto descriptivo asegurado
     if (descEl) {
-      descEl.innerHTML = `Inversión única de acceso de por vida: <strong class="text-emerald-400 font-mono text-sm">$50.000 ARS / 50 USD</strong> por curso. Incluye acceso completo al aula virtual, clases en video HD, esquemas y recursos en Google Drive.`;
+      descEl.innerHTML = `Inversión única de acceso de por vida: <strong class="text-emerald-400 font-mono text-sm">$75.000 ARS / 50 USD</strong> por curso. Incluye acceso completo al aula virtual, clases en video HD, esquemas y recursos en Google Drive.`;
+    }
+
+    const priceArsEl = document.getElementById('catalog-banner-price-ars');
+    if (priceArsEl) {
+      priceArsEl.textContent = '$ 75.000 ARS';
     }
   }
 
@@ -1608,7 +1613,7 @@
     let detailsHtml = '';
 
     if (curr === 'ARS') {
-      title = 'Pagar con Mercado Pago ($50.000 ARS)';
+      title = totals.count > 1 ? `Pagar con Mercado Pago (${formatMoney(totals.total, 'ARS').replace('$ ', '$')})` : 'Pagar con Mercado Pago ($75.000 ARS)';
       detailsHtml = `
         <div class="space-y-4 text-sm text-slate-300">
           <div class="bg-gradient-to-br from-sky-950/60 to-slate-900 border border-sky-500/30 p-4 sm:p-5 rounded-2xl space-y-3">
@@ -1753,8 +1758,8 @@
           <div>
             <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Curso Abonado *</label>
             <select id="transfer-curso" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white transition-colors">
-              <option value="Curso 1: Análisis de Circuitos en CC y CA" ${prefillCourseId === 'curso-1' ? 'selected' : ''}>Curso 1: Análisis de Circuitos en CC y CA ($50.000 ARS / 50 USD)</option>
-              <option value="Curso 2: Diodos, Fuentes Lineales y Conmutadas (DC-DC)" ${prefillCourseId === 'curso-2' ? 'selected' : ''}>Curso 2: Diodos, Fuentes Lineales y Conmutadas DC-DC ($50.000 ARS / 50 USD)</option>
+              <option value="Curso 1: Análisis de Circuitos en CC y CA" ${prefillCourseId === 'curso-1' ? 'selected' : ''}>Curso 1: Análisis de Circuitos en CC y CA ($75.000 ARS / 50 USD)</option>
+              <option value="Curso 2: Diodos, Fuentes Lineales y Conmutadas (DC-DC)" ${prefillCourseId === 'curso-2' ? 'selected' : ''}>Curso 2: Diodos, Fuentes Lineales y Conmutadas DC-DC ($75.000 ARS / 50 USD)</option>
               <option value="Ambos Cursos (Curso 1 + Curso 2)">Ambos Cursos (Curso 1 + Curso 2)</option>
               <option value="Otro / Pack Especial">Otro / Pack Especial</option>
             </select>
