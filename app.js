@@ -792,8 +792,8 @@
 
   // Inicializar UI
   function initApp() {
-    // Mantener en carrito únicamente Curso 1 si hubiera otros
-    state.cart = (state.cart || []).filter(id => id === 'curso-1');
+    // Mantener en carrito únicamente cursos habilitados para compra inmediata (Curso 1 y Curso 2)
+    state.cart = (state.cart || []).filter(id => id === 'curso-1' || id === 'curso-2');
     saveState();
     renderCourses();
     updateCurrencyButtons();
@@ -933,7 +933,7 @@
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     ${inCart ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>' : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>'}
                   </svg>
-                  <span>${inCart ? 'En el Carrito' : 'Inscribirme'}</span>
+                  <span>${inCart ? '✓ En el Carrito' : 'Inscribirme'}</span>
                 </button>
               ` : (window.ElectroLabAuth && window.ElectroLabAuth.isInWaitlist(course.id)) ? `
                 <button disabled class="px-2 py-2.5 rounded-xl text-[11px] sm:text-xs font-bold bg-emerald-950/70 text-emerald-300 border border-emerald-500/40 cursor-default flex items-center justify-center gap-1.5 opacity-90 shadow-sm" title="Ya estás registrado en la lista de espera de este curso">
@@ -980,7 +980,7 @@
 
   // Carrito de Compras
   function toggleCart(courseId) {
-    if (courseId !== 'curso-1') {
+    if (courseId !== 'curso-1' && courseId !== 'curso-2') {
       showToast('Este curso estará disponible próximamente.', 'info');
       return;
     }
@@ -991,10 +991,26 @@
     } else {
       state.cart.push(courseId);
       const course = COURSES.find(c => c.id === courseId);
-      showToast(`¡"${course.title}" agregado al carrito!`, 'success');
+      showToast(`¡"${course ? course.title : courseId}" agregado al carrito!`, 'success');
       // Abrir carrito automáticamente al agregar
       openCartDrawer();
     }
+    saveState();
+    renderCourses();
+    updateCartUI();
+  }
+
+  function agregarAlCarrito(courseId) {
+    if (courseId !== 'curso-1' && courseId !== 'curso-2') {
+      showToast('Este curso estará disponible próximamente.', 'info');
+      return;
+    }
+    if (!state.cart.includes(courseId)) {
+      state.cart.push(courseId);
+      const course = COURSES.find(c => c.id === courseId);
+      showToast(`¡"${course ? course.title : courseId}" agregado al carrito!`, 'success');
+    }
+    openCartDrawer();
     saveState();
     renderCourses();
     updateCartUI();
@@ -1269,13 +1285,13 @@
         <!-- Call to Action Footer -->
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-slate-950 rounded-2xl border border-slate-800">
           <div>
-            <span class="text-xs text-slate-400 block">${course.id === 'curso-1' ? 'Acceso Inmediato y de por vida' : 'Inversión Oficial'}</span>
+            <span class="text-xs text-slate-400 block">${(course.id === 'curso-1' || course.id === 'curso-2') ? 'Acceso Inmediato y de por vida' : 'Inversión Oficial'}</span>
             <div class="text-2xl font-black text-white">
               ${formatMoney(getCoursePrice(course))}
             </div>
           </div>
           <div class="flex items-center gap-3 w-full sm:w-auto">
-            ${course.id === 'curso-1' ? `
+            ${(course.id === 'curso-1' || course.id === 'curso-2') ? `
               <button onclick="window.ElectroLab.toggleCart('${course.id}'); window.ElectroLab.closeSyllabus();" class="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-6 py-3 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                 <span>Inscribirme en este Curso</span>
@@ -1384,7 +1400,7 @@
               <span>${user ? 'Cambiar de Cuenta' : 'Iniciar Sesión'}</span>
             </a>
 
-            ${course.id === 'curso-1' ? `
+            ${(course.id === 'curso-1' || course.id === 'curso-2') ? `
               <button onclick="window.ElectroLab.enrollAndCheckout('${course.id}')" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-heading font-extrabold py-3 px-4 rounded-xl text-xs transition-all shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                 <span>Adquirir Curso</span>
@@ -1428,7 +1444,7 @@
   function enrollAndCheckout(courseId) {
     closeAccessNoticeModal();
     closeSyllabus();
-    if (courseId !== 'curso-1') {
+    if (courseId !== 'curso-1' && courseId !== 'curso-2') {
       showToast('Este curso estará disponible próximamente.', 'info');
       return;
     }
@@ -2437,6 +2453,8 @@
   window.ElectroLab = {
     setCurrency,
     toggleCart,
+    agregarAlCarrito,
+    addToCart: agregarAlCarrito,
     removeFromCart,
     clearCart,
     openCartDrawer,
@@ -2476,6 +2494,8 @@
     firebaseConfig,
     getDb: () => window.db || db
   };
+
+  window.agregarAlCarrito = agregarAlCarrito;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initApp);
