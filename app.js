@@ -199,6 +199,7 @@
     {
       id: 'curso-1',
       category: 'curso-1',
+      status: 'disponible',
       title: 'Curso 1: Introducción a la Electrónica, Análisis de Circuitos en Corriente Continua (CC)',
       subtitle: 'Ley de Ohm, leyes de Kirchhoff, circuitos mixtos, Thévenin, Norton, capacitores, transitorios RC, fundamentos de CA, resonancia RLC e impedancia compleja.',
       tag: '⭐ CURSO 1 · BASE & CIRCUITOS CC/CA',
@@ -334,6 +335,7 @@
     {
       id: 'curso-2',
       category: 'curso-2',
+      status: 'disponible',
       title: 'Curso 2: Diodos, Fuentes Lineales Reguladas y Fuentes Conmutadas (DC-DC)',
       subtitle: 'Diseño, dimensionamiento y simulación en LTspice de fuentes de alimentación: diodos, zener, transformadores, rectificación, fuentes simétricas y convertidores DC-DC.',
       tag: '⚡ CURSO 2 · DIODOS & FUENTES LINEALES/CONMUTADAS',
@@ -488,6 +490,7 @@
     {
       id: 'curso-3',
       category: 'curso-3',
+      status: 'proximamente',
       title: 'Curso 3: Amplificación con Transistores y Electrónica de Potencia',
       subtitle: 'Estructuras BJT NPN/PNP, polarización en CC, excursión simétrica, pequeña señal, respuesta en frecuencia, JFET/MOSFET y fuentes conmutadas.',
       tag: '⚡ CURSO 3 · POTENCIA & BJT/FET',
@@ -555,6 +558,7 @@
     {
       id: 'curso-4',
       category: 'curso-4',
+      status: 'proximamente',
       title: 'Curso 4: Amplificadores Operacionales y Filtros Analógicos',
       subtitle: 'Etapas diferenciales, Op-Amps lineales y no lineales, Schmitt Triggers, temporizador 555, instrumentación, conversores ADC/DAC y filtros activos de orden superior.',
       tag: '🎛️ CURSO 4 · OP-AMPS & FILTROS',
@@ -634,6 +638,7 @@
     {
       id: 'curso-5',
       category: 'curso-5',
+      status: 'proximamente',
       title: 'Curso 5: Microcontroladores, Sensores y Adquisición de Datos',
       subtitle: 'Programación estructurada en C/C++, lógica no bloqueante con millis, multiplexación de 7 segmentos, lecturas analógicas ADC, termostatos y telemetría en tiempo real.',
       tag: '🤖 CURSO 5 · FIRMWARE & SENSORES',
@@ -763,16 +768,89 @@
   // Inicializar UI
   function initApp() {
     try { localStorage.removeItem('electrolab_coupon'); } catch (e) {}
-    // Mantener en carrito únicamente cursos habilitados para compra inmediata (Curso 1 y Curso 2)
-    state.cart = (state.cart || []).filter(id => id === 'curso-1' || id === 'curso-2');
+    // Mantener en carrito únicamente cursos habilitados para compra inmediata
+    state.cart = (state.cart || []).filter(id => {
+      const c = COURSES.find(course => course.id === id);
+      return c && (c.status === 'disponible' || c.status === 'activo' || c.id === 'curso-1' || c.id === 'curso-2');
+    });
     saveState();
     renderCourses();
+    updateCatalogBanner();
     updateCurrencyButtons();
     updateCartUI();
     renderCartCheckoutAction();
     setupEventListeners();
     setupFAQAccordion();
     checkPendingWaitlistOnStartup();
+  }
+
+  // Actualizar dinámicamente el banner superior de estado del catálogo según los cursos
+  function updateCatalogBanner() {
+    const badgeEl = document.getElementById('catalog-badge-proximamente');
+    const titleEl = document.getElementById('catalog-banner-title');
+    const descEl = document.getElementById('catalog-banner-desc');
+
+    const activeNumbers = [];
+    const comingSoonNumbers = [];
+
+    COURSES.forEach(course => {
+      // Extraer número de curso (ej: 'curso-1' -> 1)
+      const numMatch = course.id.match(/\d+/) || (course.title && course.title.match(/Curso\s+(\d+)/i));
+      const courseNum = numMatch ? parseInt(numMatch[0], 10) : course.id;
+
+      const isAvailable = (course.status === 'disponible' || course.status === 'activo' || course.id === 'curso-1' || course.id === 'curso-2');
+
+      if (isAvailable) {
+        activeNumbers.push(courseNum);
+      } else {
+        comingSoonNumbers.push(courseNum);
+      }
+    });
+
+    // Ordenar numéricamente si son números
+    activeNumbers.sort((a, b) => (typeof a === 'number' && typeof b === 'number' ? a - b : 0));
+    comingSoonNumbers.sort((a, b) => (typeof a === 'number' && typeof b === 'number' ? a - b : 0));
+
+    // 1. Título principal del banner
+    if (titleEl && activeNumbers.length > 0) {
+      let activeText = '';
+      if (activeNumbers.length === 1) {
+        activeText = `Curso ${activeNumbers[0]}`;
+      } else if (activeNumbers.length === 2) {
+        activeText = `Cursos ${activeNumbers[0]} y ${activeNumbers[1]}`;
+      } else {
+        activeText = `Cursos ${activeNumbers.slice(0, -1).join(', ')} y ${activeNumbers[activeNumbers.length - 1]}`;
+      }
+      titleEl.textContent = `${activeText} disponibles para ingreso y cursada inmediata`;
+    }
+
+    // 2. Insignia superior de cursos próximos
+    if (badgeEl) {
+      if (comingSoonNumbers.length === 0) {
+        badgeEl.style.display = 'none';
+      } else {
+        badgeEl.style.display = '';
+        let comingText = '';
+        if (comingSoonNumbers.length === 1) {
+          comingText = `Curso ${comingSoonNumbers[0]}`;
+        } else {
+          const min = Math.min(...comingSoonNumbers);
+          const max = Math.max(...comingSoonNumbers);
+          // Si son números consecutivos, usar formato "Cursos X al Y"
+          if (max - min + 1 === comingSoonNumbers.length) {
+            comingText = `Cursos ${min} al ${max}`;
+          } else {
+            comingText = `Cursos ${comingSoonNumbers.slice(0, -1).join(', ')} y ${comingSoonNumbers[comingSoonNumbers.length - 1]}`;
+          }
+        }
+        badgeEl.textContent = `${comingText}: Próximamente`;
+      }
+    }
+
+    // 3. Texto descriptivo asegurado
+    if (descEl) {
+      descEl.innerHTML = `Inversión única de acceso de por vida: <strong class="text-emerald-400 font-mono text-sm">$50.000 ARS / 50 USD</strong> por curso. Incluye acceso completo al aula virtual, clases en video HD, esquemas y recursos en Google Drive.`;
+    }
   }
 
   // Renderizar cursos en la grilla
@@ -791,7 +869,7 @@
       const inCart = state.cart.includes(course.id);
       const discountPercent = Math.round(((origPrice - price) / origPrice) * 100);
 
-      const isAvailable = (course.id === 'curso-1' || course.id === 'curso-2');
+      const isAvailable = (course.status === 'disponible' || course.status === 'activo' || course.id === 'curso-1' || course.id === 'curso-2');
       const isComingSoon = !isAvailable;
       const borderClass = isComingSoon
         ? 'border-2 border-amber-500/40 hover:border-amber-400 shadow-lg shadow-amber-500/5'
@@ -923,6 +1001,8 @@
         </article>
       `;
     }).join('');
+
+    updateCatalogBanner();
   }
 
   // Conmutador de moneda
@@ -977,13 +1057,14 @@
   }
 
   function agregarAlCarrito(courseId) {
-    if (courseId !== 'curso-1' && courseId !== 'curso-2') {
+    const course = COURSES.find(c => c.id === courseId);
+    const isAvailable = course && (course.status === 'disponible' || course.status === 'activo' || course.id === 'curso-1' || course.id === 'curso-2');
+    if (!isAvailable) {
       showToast('Este curso estará disponible próximamente.', 'info');
       return;
     }
     if (!state.cart.includes(courseId)) {
       state.cart.push(courseId);
-      const course = COURSES.find(c => c.id === courseId);
       showToast(`¡"${course ? course.title : courseId}" agregado al carrito!`, 'success');
     }
     openCartDrawer();
@@ -2234,7 +2315,10 @@
 
   // Exponer API a nivel global para llamadas desde el HTML
   window.ElectroLab = {
+    COURSES,
+    courses: COURSES,
     setCurrency,
+    updateCatalogBanner,
     toggleCart,
     agregarAlCarrito,
     addToCart: agregarAlCarrito,
