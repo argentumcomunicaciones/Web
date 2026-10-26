@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mi Aula Virtual | ElectroLab Educativa</title>
   <link rel="icon" href="./logo.jpg">
+  <!-- Firebase Compatibility SDK (Firestore) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="./styles.css">
   <style>
@@ -123,8 +126,8 @@
           <span id="stat-completed-lessons" class="text-xl sm:text-2xl font-black text-cyan-400 font-heading">0</span>
         </div>
         <div>
-          <span class="text-[10px] text-slate-400 uppercase font-mono block">Soporte Técnico</span>
-          <span class="text-xl sm:text-2xl font-black text-emerald-400 font-heading">Activo</span>
+          <span class="text-[10px] text-slate-400 uppercase font-mono block">Soporte Académico</span>
+          <span class="text-sm sm:text-base font-black text-emerald-400 font-heading">Activo vía Formulario</span>
         </div>
         <div>
           <span class="text-[10px] text-slate-400 uppercase font-mono block">Certificación</span>
@@ -361,13 +364,102 @@
             </div>
           </div>
 
-          <!-- Direct WhatsApp Teacher Support -->
+          <!-- Academic Support Bar -->
           <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-            <span>¿Tienes dudas técnicas con este circuito?</span>
-            <button onclick="askQuestionWhatsApp()" class="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1">
-              <span>Consultar al Profesor por WhatsApp (+54 9 11 2306-5347)</span>
-              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.08L2.1 21.9l4.98-1.25A9.95 9.95 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
-            </button>
+            <span class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <strong class="text-slate-300">Soporte Académico:</strong> Activo vía Formulario
+            </span>
+            <div class="flex items-center gap-3">
+              <a href="#lesson-tarea-section" class="text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 transition-colors">
+                <span>📤 Entregar Práctica ↓</span>
+              </a>
+              <span class="text-slate-700">|</span>
+              <a href="#lesson-inquiry-section" class="text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1 transition-colors">
+                <span>💬 Consultar al Docente ↓</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- ================= SECCIÓN DE ENTREGA DE PRÁCTICAS Y TAREAS (FIRESTORE) ================= -->
+          <div id="lesson-tarea-section" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 glass-panel space-y-4">
+            <div class="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-slate-800/80">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center text-lg shrink-0">
+                  📤
+                </div>
+                <div>
+                  <h3 class="text-base sm:text-lg font-heading font-extrabold text-white">Entrega de Práctica / Simulación</h3>
+                  <p class="text-xs text-slate-400">Subí tu evidencia de simulación en LTspice o circuito para la revisión oficial del docente.</p>
+                </div>
+              </div>
+
+              <!-- Real-time Course Task Progress Indicator (Requirement 5) -->
+              <div id="tarea-course-progress-badge" class="px-3.5 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono flex items-center gap-2 shadow-inner">
+                <span id="tarea-progress-dot" class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                <span class="text-slate-400">Prácticas aprobadas:</span>
+                <span id="tarea-approved-counter" class="font-bold text-cyan-300">0 de 10</span>
+              </div>
+            </div>
+
+            <!-- Dynamic Task State Container (Managed by Firestore onSnapshot) -->
+            <div id="tarea-state-container">
+              <div class="p-6 text-center text-xs text-slate-500 font-mono animate-pulse">
+                Conectando con Firestore y cargando estado de la práctica...
+              </div>
+            </div>
+          </div>
+
+          <!-- ================= SECCIÓN DE PREGUNTAS TÉCNICAS POR LECCIÓN ================= -->
+          <div id="lesson-inquiry-section" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 glass-panel space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-lg shrink-0">
+                💬
+              </div>
+              <div>
+                <h3 class="text-base sm:text-lg font-heading font-extrabold text-white">Consultas al Docente sobre esta Clase</h3>
+                <p class="text-xs text-slate-400">¿Tenés dudas con los cálculos, circuitos o la simulación de esta lección? Enviá tu consulta directamente al profesor.</p>
+              </div>
+            </div>
+
+            <form id="form-lesson-inquiry" onsubmit="submitLessonInquiry(event)" class="space-y-4 pt-2">
+              <!-- Hidden course & lesson fields -->
+              <input type="hidden" id="inquiry-course-id" value="">
+              <input type="hidden" id="inquiry-course-title" value="">
+              <input type="hidden" id="inquiry-lesson-title" value="">
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-[11px] font-mono text-slate-400 uppercase font-semibold mb-1">Alumno</label>
+                  <input type="text" id="inquiry-student-name" readonly class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300 font-medium cursor-not-allowed select-none">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-mono text-slate-400 uppercase font-semibold mb-1">Email del Alumno</label>
+                  <input type="email" id="inquiry-student-email" readonly class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300 font-medium cursor-not-allowed select-none">
+                </div>
+              </div>
+
+              <!-- Lesson context pill -->
+              <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 flex items-center gap-2 text-xs">
+                <span class="text-slate-400 font-mono">Lección vinculada:</span>
+                <span id="inquiry-lesson-badge" class="font-bold text-cyan-300 truncate">Clase</span>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-mono text-slate-400 uppercase font-semibold mb-1">Tu Consulta Técnica *</label>
+                <textarea id="inquiry-message" rows="4" required placeholder="Escribí tu consulta técnica detallada aquí..." class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-600 resize-none transition-colors"></textarea>
+              </div>
+
+              <!-- Status Feedback Box -->
+              <div id="inquiry-feedback" class="hidden"></div>
+
+              <div class="flex items-center justify-end">
+                <button type="submit" id="inquiry-submit-btn" class="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-heading font-extrabold py-3 px-6 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] flex items-center justify-center gap-2 text-xs sm:text-sm cursor-pointer">
+                  <span>Enviar Consulta al Profesor</span>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </button>
+              </div>
+            </form>
           </div>
 
           <!-- Celebratory Exam Banner when Progress is 100% -->
@@ -416,6 +508,26 @@
     </div>
 
   </main>
+
+  <!-- ================= AULA FOOTER ================= -->
+  <footer class="bg-black/90 text-slate-400 border-t border-slate-900 py-10 mt-16 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-xl bg-slate-900 border border-slate-800 overflow-hidden">
+          <img src="./logo.jpg" alt="Logo" class="w-full h-full object-cover">
+        </div>
+        <div>
+          <span class="text-white font-heading font-extrabold text-sm block">ElectroLab Educativa</span>
+          <span class="text-slate-500 font-mono text-[11px]">Soporte Académico: <strong class="text-emerald-400 font-semibold">Activo vía Formulario</strong></span>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-4 sm:gap-6 text-xs">
+        <button type="button" onclick="window.ElectroLab.openTransferNoticeModal()" class="text-slate-300 hover:text-cyan-400 transition-colors font-medium">Informar Pago de Transferencia</button>
+        <button type="button" onclick="window.ElectroLab.openContactModal()" class="text-slate-300 hover:text-cyan-400 transition-colors font-medium">Contacto / Soporte</button>
+        <a href="./index.html" class="text-slate-300 hover:text-white transition-colors">Volver al Inicio</a>
+      </div>
+    </div>
+  </footer>
 
   <!-- ================= MODAL: CERTIFICADO DIGITAL OFICIAL ================= -->
   <div id="modal-certificate" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
@@ -583,6 +695,9 @@
       if (user.role === 'admin') {
         document.getElementById('admin-shortcut').classList.remove('hidden');
       }
+
+      // Iniciar listener de tareas aprobadas para desbloqueo dinámico de exámenes
+      initStudentApprovedTasksListener();
 
       // Comprobar parámetros de la URL para acceso directo a cursos/lecciones
       const urlParams = new URLSearchParams(window.location.search);
@@ -966,13 +1081,32 @@
               </div>
 
               <div class="p-6 pt-0 space-y-2.5">
-                ${(course.id === 'curso-1' || course.id === 'curso-2' || isComplete) ? `
-                  <button type="button" onclick="openExamModal('${course.id}')" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 text-xs sm:text-sm border-2 border-amber-300 cursor-pointer ${isComplete ? 'ring-4 ring-amber-400/50 ring-offset-2 ring-offset-slate-900 animate-pulse' : ''}">
-                    <span class="text-base">📝</span>
-                    <span>Rendir Examen Final</span>
-                    ${isComplete ? '<span class="text-[10px] bg-slate-950 text-amber-300 px-2 py-0.5 rounded-full font-mono uppercase font-black tracking-wider">100% Listo</span>' : ''}
+                ${(course.id === 'curso-1' || course.id === 'curso-2') ? (() => {
+                  const totalLessons = getCourseTotalLessons(course.id);
+                  const approvedCount = (window.approvedTasksMap && window.approvedTasksMap[course.id]) || 0;
+                  const isExamUnlocked = (user && user.role === 'admin') || approvedCount >= totalLessons;
+                  if (isExamUnlocked) {
+                    return `
+                      <button type="button" onclick="openExamModal('${course.id}')" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 text-xs sm:text-sm border-2 border-amber-300 cursor-pointer ring-2 ring-amber-400 animate-pulse">
+                        <span class="text-base">📝</span>
+                        <span>Rendir Examen Final</span>
+                        <span class="text-[10px] bg-slate-950 text-amber-300 px-2 py-0.5 rounded-full font-mono uppercase font-black tracking-wider">Habilitado</span>
+                      </button>
+                    `;
+                  } else {
+                    return `
+                      <button type="button" onclick="openExamModal('${course.id}')" class="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 border border-slate-800 hover:border-amber-500/40 py-3.5 px-4 rounded-xl transition-all flex items-center justify-center gap-2 text-xs sm:text-sm cursor-pointer group">
+                        <span class="text-base">🔒</span>
+                        <span class="group-hover:text-amber-300 transition-colors">Examen Bloqueado</span>
+                        <span class="text-[10px] bg-slate-900 border border-slate-700 text-amber-400 px-2 py-0.5 rounded-full font-mono font-bold">${approvedCount}/${totalLessons}</span>
+                      </button>
+                    `;
+                  }
+                })() : (isComplete ? `
+                  <button type="button" onclick="openExamModal('${course.id}')" class="w-full bg-slate-800 text-slate-400 font-heading font-extrabold py-3.5 px-4 rounded-xl text-xs sm:text-sm border border-slate-700 cursor-pointer">
+                    <span>Evaluación Próximamente</span>
                   </button>
-                ` : ''}
+                ` : '')}
                 <button onclick="enterClassroom('${course.id}')" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-heading font-bold py-2.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-xs">
                   <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                   <span>Entrar al Aula y Ver Clases</span>
@@ -986,7 +1120,7 @@
             </div>
           `;
         } else {
-          const isComingSoon = course.id !== 'curso-1';
+          const isComingSoon = (course.id !== 'curso-1' && course.id !== 'curso-2');
           lockedHtml += `
             <div class="bg-slate-950/60 border border-slate-800/80 rounded-3xl overflow-hidden opacity-75 hover:opacity-100 transition-all flex flex-col justify-between">
               <div>
@@ -1044,10 +1178,14 @@
             <p class="text-xs text-slate-400 max-w-md mx-auto">
               Si compraste por Mercado Pago, Transferencia Bancaria (ICBC) o PayPal, envíanos tu comprobante junto con el correo <strong>${user.email}</strong> para que el administrador te active el acceso inmediatamente.
             </p>
-            <div class="pt-2">
-              <a href="https://wa.me/5491123065347?text=Hola!%20Acabo%20de%20registrarme%20con%20el%20correo%20${encodeURIComponent(user.email)}.%20Quiero%20solicitar%20el%20alta%20de%20mi%20curso." target="_blank" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition-all shadow-md">
-                <span>Avisar por WhatsApp (+54 9 11 2306-5347)</span>
-              </a>
+            <div class="pt-2 flex flex-wrap items-center justify-center gap-3">
+              <button type="button" onclick="window.ElectroLab.openTransferNoticeModal()" class="inline-flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition-all shadow-md cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span>Informar Pago de Transferencia</span>
+              </button>
+              <button type="button" onclick="window.ElectroLab.openContactModal()" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-4 py-2.5 rounded-xl text-xs transition-all border border-slate-700 cursor-pointer">
+                <span>Contactar a Soporte</span>
+              </button>
             </div>
           </div>
         `;
@@ -1127,6 +1265,9 @@
       if (lockedOverlay) lockedOverlay.classList.add('hidden');
       setDriveLinksState(true, currentCourse.driveFolder || currentCourse.recursosUrl || currentCourse.materialDescargable || '#');
 
+      // Escuchar prácticas aprobadas de este curso para habilitar el examen en tiempo real
+      listenToCourseApprovedTasks(currentCourse.id);
+
       // Buscar la lección objetivo o la primera del curso
       let targetLesson = null;
       let targetModuleName = '';
@@ -1156,6 +1297,15 @@
     }
 
     function exitClassroom() {
+      if (currentTareaDocUnsub) {
+        currentTareaDocUnsub();
+        currentTareaDocUnsub = null;
+      }
+      if (currentApprovedTasksUnsub) {
+        currentApprovedTasksUnsub();
+        currentApprovedTasksUnsub = null;
+      }
+
       const iframe = document.getElementById('classroom-iframe');
       if (iframe) iframe.src = '';
       const lockedOverlay = document.getElementById('classroom-locked-overlay');
@@ -1219,6 +1369,25 @@
       const lessonDriveUrl = lesson.driveFolder || lesson.driveUrl || lesson.recursosUrl || lesson.materialDescargable || courseDriveUrl;
       setDriveLinksState(true, lessonDriveUrl);
       renderClassroomSyllabus(true);
+
+      // Actualizar campos de consulta técnica al docente
+      const inqCourseId = document.getElementById('inquiry-course-id');
+      const inqCourseTitle = document.getElementById('inquiry-course-title');
+      const inqLessonTitle = document.getElementById('inquiry-lesson-title');
+      const inqLessonBadge = document.getElementById('inquiry-lesson-badge');
+      const inqStudentName = document.getElementById('inquiry-student-name');
+      const inqStudentEmail = document.getElementById('inquiry-student-email');
+      const inqFeedback = document.getElementById('inquiry-feedback');
+      if (inqFeedback) inqFeedback.classList.add('hidden');
+      if (inqCourseId) inqCourseId.value = currentCourse.id;
+      if (inqCourseTitle) inqCourseTitle.value = currentCourse.title;
+      if (inqLessonTitle) inqLessonTitle.value = lesson.title || lesson.titulo;
+      if (inqLessonBadge) inqLessonBadge.textContent = `${currentCourse.tag} · ${lesson.title || lesson.titulo}`;
+      if (inqStudentName && user) inqStudentName.value = user.name;
+      if (inqStudentEmail && user) inqStudentEmail.value = user.email;
+
+      // Escuchar y renderizar en tiempo real el estado de entrega de práctica de la lección activa (Firestore)
+      setupTareaLessonListener(currentCourse.id, lesson.id);
     }
 
     function setDriveLinksState(isEnabled, driveUrl) {
@@ -1379,28 +1548,41 @@
         const attUsed = parseInt(uGrades.attemptsUsed || uGrades.attempts_used || 0, 10);
         const stat = uGrades.status || '';
         const fGrade = uGrades.finalGrade || uGrades.final_grade || '';
+        const totalLessons = getCourseTotalLessons(currentCourse.id);
+        const approvedTasks = (window.approvedTasksMap && window.approvedTasksMap[currentCourse.id]) || 0;
+        const isExamUnlocked = (user && user.role === 'admin') || approvedTasks >= totalLessons;
 
         container.innerHTML += `
           <div class="pt-4 border-t border-slate-800">
-            <div class="p-4 rounded-2xl bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-slate-950 border-2 ${isComplete ? 'border-amber-400 shadow-xl shadow-amber-500/25 ring-2 ring-amber-400/40' : 'border-amber-500/40'} space-y-3">
+            <div class="p-4 rounded-2xl bg-gradient-to-br ${isExamUnlocked ? 'from-amber-500/20 via-orange-500/10 to-slate-950 border-2 border-amber-400 shadow-xl shadow-amber-500/25 ring-2 ring-amber-400/40 animate-pulse' : 'from-slate-950 via-slate-900 to-slate-950 border border-slate-800'} space-y-3">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <span class="text-lg">🎓</span>
+                  <span class="text-lg">${isExamUnlocked ? '🎓' : '🔒'}</span>
                   <span class="text-xs font-heading font-extrabold text-white">Evaluación Final Oficial</span>
                 </div>
-                ${isComplete ? `
+                ${isExamUnlocked ? `
                   <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full font-mono font-bold">100% Listo</span>
                 ` : `
-                  <span class="text-[10px] text-amber-300 font-mono">${percent}% completado</span>
+                  <span class="text-[10px] text-amber-400 font-mono font-bold">${approvedTasks}/${totalLessons} prácticas</span>
                 `}
               </div>
               <p class="text-[11px] text-slate-300 leading-snug">
-                10 Preguntas técnicas · ${attUsed >= 2 ? `2/2 Intentos utilizados (${fGrade || stat})` : `Intento ${attUsed + 1} de 2 disponibles`}
+                ${isExamUnlocked 
+                  ? `10 Preguntas técnicas · ${attUsed >= 2 ? `2/2 Intentos utilizados (${fGrade || stat})` : `Intento ${attUsed + 1} de 2 disponibles`}`
+                  : `Prácticas aprobadas: <strong class="text-amber-400 font-mono">${approvedTasks} de ${totalLessons}</strong>. Completá y aprobá todas las simulaciones para habilitar tu evaluación final.`
+                }
               </p>
-              <button type="button" onclick="openExamModal('${currentCourse.id}')" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 text-xs sm:text-sm border-2 border-amber-300 cursor-pointer ${isComplete ? 'ring-2 ring-amber-400 animate-pulse' : ''}">
-                <span class="text-base">📝</span>
-                <span class="tracking-wide">Rendir Examen Final</span>
-              </button>
+              ${isExamUnlocked ? `
+                <button type="button" onclick="openExamModal('${currentCourse.id}')" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 text-xs sm:text-sm border-2 border-amber-300 cursor-pointer">
+                  <span class="text-base">📝</span>
+                  <span class="tracking-wide">Rendir Examen Final</span>
+                </button>
+              ` : `
+                <button type="button" onclick="openExamModal('${currentCourse.id}')" class="w-full bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 py-3.5 px-4 rounded-xl transition-all flex items-center justify-center gap-2 text-xs cursor-pointer">
+                  <span class="text-sm">🔒</span>
+                  <span class="font-bold">Examen Bloqueado (${approvedTasks}/${totalLessons})</span>
+                </button>
+              `}
             </div>
           </div>
         `;
@@ -1416,10 +1598,801 @@
       }
     }
 
-    function askQuestionWhatsApp() {
-      if (!currentLesson) return;
-      const msg = `Hola ElectroLab! Soy ${user.name} (${user.email}). Tengo una consulta sobre la lección: "${currentLesson.title}".`;
-      window.open(`https://wa.me/5491123065347?text=${encodeURIComponent(msg)}`, '_blank');
+    async function submitLessonInquiry(e) {
+      if (e) e.preventDefault();
+      const textarea = document.getElementById('inquiry-message');
+      const btn = document.getElementById('inquiry-submit-btn');
+      const feedback = document.getElementById('inquiry-feedback');
+      if (!textarea || !textarea.value.trim()) {
+        alert('Por favor escribe tu consulta técnica detallada antes de enviar.');
+        return;
+      }
+      const u = (window.ElectroLabAuth && window.ElectroLabAuth.getCurrentUser) ? window.ElectroLabAuth.getCurrentUser() : user;
+      const courseTitle = currentCourse ? currentCourse.title : (document.getElementById('inquiry-course-title').value || 'Curso Oficial');
+      const lessonTitle = currentLesson ? (currentLesson.title || currentLesson.titulo) : (document.getElementById('inquiry-lesson-title').value || 'Lección');
+
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<span class="inline-block animate-spin mr-2">⏳</span> Enviando consulta...`;
+      if (feedback) feedback.classList.add('hidden');
+
+      try {
+        const payload = {
+          tipo_evento: "Consulta de Lección",
+          curso: courseTitle,
+          leccion: lessonTitle,
+          alumno_nombre: u ? u.name : 'Alumno ElectroLab',
+          alumno_email: u ? u.email : 'sin-correo@electrolab.com',
+          consulta: textarea.value.trim(),
+          fecha: new Date().toLocaleString()
+        };
+
+        const res = await fetch('https://formspree.io/f/xbgdqedy', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          textarea.value = '';
+          if (feedback) {
+            feedback.className = 'p-3.5 bg-emerald-950/80 border border-emerald-500/50 rounded-xl text-emerald-300 text-xs font-semibold leading-relaxed block';
+            feedback.innerHTML = '✓ Tu consulta sobre esta clase fue enviada correctamente. El profesor te responderá a tu correo electrónico.';
+          }
+        } else {
+          throw new Error('No se pudo enviar la consulta');
+        }
+      } catch (err) {
+        if (feedback) {
+          feedback.className = 'p-3.5 bg-red-950/80 border border-red-500/50 rounded-xl text-red-300 text-xs font-semibold leading-relaxed block';
+          feedback.innerHTML = '⚠️ Ocurrió un error al enviar tu consulta. Por favor, reintenta en unos instantes.';
+        }
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
+    }
+
+    // =========================================================================
+    // SISTEMA OFICIAL DE ENTREGAS DE TAREAS Y FEEDBACK EN TIEMPO REAL (FIRESTORE)
+    // Colección: 'entregas_tareas'
+    // =========================================================================
+
+    let currentTareaDocUnsub = null;
+    let currentApprovedTasksUnsub = null;
+    let globalApprovedTasksUnsub = null;
+    window.approvedTasksMap = {};
+    let currentTareaFileBase64 = '';
+    let currentTareaFileName = '';
+
+    function getCourseTotalLessons(courseId) {
+      const course = COURSES_DATA.find(c => c.id === courseId);
+      if (!course || !course.modules) {
+        return courseId === 'curso-1' ? 11 : 10;
+      }
+      let count = 0;
+      course.modules.forEach(m => {
+        if (m.lessons) count += m.lessons.length;
+      });
+      return count > 0 ? count : (courseId === 'curso-1' ? 11 : 10);
+    }
+
+    function getTareaDocId(email, courseId, lessonId) {
+      const safeEmail = (email || '').toLowerCase().replace(/[^a-z0-9]/g, '_');
+      const safeCourse = (courseId || '').replace(/[^a-z0-9_-]/gi, '_');
+      const safeLesson = (lessonId || '').replace(/[^a-z0-9_-]/gi, '_');
+      return `${safeEmail}___${safeCourse}___${safeLesson}`;
+    }
+
+    function getFirestoreDb() {
+      if (window.db) return window.db;
+      if (window.ElectroLab && window.ElectroLab.getDb) {
+        window.db = window.ElectroLab.getDb();
+        if (window.db) return window.db;
+      }
+      if (typeof firebase !== 'undefined') {
+        try {
+          if (!firebase.apps || !firebase.apps.length) {
+            if (window.ElectroLab && window.ElectroLab.firebaseConfig) {
+              firebase.initializeApp(window.ElectroLab.firebaseConfig);
+            }
+          }
+          window.db = firebase.firestore();
+          return window.db;
+        } catch (e) {
+          console.warn("Inicialización de Firestore:", e);
+        }
+      }
+      return null;
+    }
+
+    // Listener global para calcular prácticas aprobadas del estudiante en todos los cursos
+    function initStudentApprovedTasksListener() {
+      user = window.ElectroLabAuth.getCurrentUser();
+      if (!user) return;
+
+      const db = getFirestoreDb();
+      if (db) {
+        if (globalApprovedTasksUnsub) {
+          globalApprovedTasksUnsub();
+          globalApprovedTasksUnsub = null;
+        }
+
+        try {
+          globalApprovedTasksUnsub = db.collection('entregas_tareas')
+            .where('alumnoEmail', '==', user.email.toLowerCase())
+            .onSnapshot((querySnap) => {
+              const counts = { 'curso-1': 0, 'curso-2': 0, 'curso-3': 0, 'curso-4': 0, 'curso-5': 0 };
+              const cached = JSON.parse(localStorage.getItem('electrolab_tareas_cache') || '{}');
+
+              querySnap.forEach(docSnap => {
+                const data = docSnap.data();
+                cached[docSnap.id] = data;
+                if (data.estado === 'aprobado' && data.cursoId) {
+                  counts[data.cursoId] = (counts[data.cursoId] || 0) + 1;
+                }
+              });
+
+              localStorage.setItem('electrolab_tareas_cache', JSON.stringify(cached));
+              window.approvedTasksMap = counts;
+
+              if (currentCourse) {
+                updateExamUnlockUI(currentCourse.id, counts[currentCourse.id] || 0);
+              }
+
+              // Si el dashboard está activo, actualizar tarjetas de cursos
+              const dashboardView = document.getElementById('dashboard-view');
+              if (dashboardView && !dashboardView.classList.contains('hidden')) {
+                renderDashboard();
+              }
+            }, (err) => {
+              console.warn("Listener global de tareas Firestore, fallback a cache local:", err);
+              syncTasksFromLocalCache();
+            });
+        } catch (e) {
+          console.warn("Error suscribiendo tareas Firestore:", e);
+          syncTasksFromLocalCache();
+        }
+      } else {
+        syncTasksFromLocalCache();
+      }
+    }
+
+    function syncTasksFromLocalCache() {
+      if (!user) return;
+      const cached = JSON.parse(localStorage.getItem('electrolab_tareas_cache') || '{}');
+      const counts = { 'curso-1': 0, 'curso-2': 0, 'curso-3': 0, 'curso-4': 0, 'curso-5': 0 };
+      Object.keys(cached).forEach(id => {
+        const item = cached[id];
+        if (item.alumnoEmail === user.email.toLowerCase() && item.estado === 'aprobado' && item.cursoId) {
+          counts[item.cursoId] = (counts[item.cursoId] || 0) + 1;
+        }
+      });
+      window.approvedTasksMap = counts;
+      if (currentCourse) {
+        updateExamUnlockUI(currentCourse.id, counts[currentCourse.id] || 0);
+      }
+    }
+
+    // Listener enfocado en el curso activo dentro del aula
+    function listenToCourseApprovedTasks(courseId) {
+      if (!user || !courseId) return;
+
+      if (currentApprovedTasksUnsub) {
+        currentApprovedTasksUnsub();
+        currentApprovedTasksUnsub = null;
+      }
+
+      const totalLessons = getCourseTotalLessons(courseId);
+      const currentCount = (window.approvedTasksMap && window.approvedTasksMap[courseId]) || 0;
+      updateExamUnlockUI(courseId, currentCount);
+
+      const db = getFirestoreDb();
+      if (db) {
+        try {
+          currentApprovedTasksUnsub = db.collection('entregas_tareas')
+            .where('alumnoEmail', '==', user.email.toLowerCase())
+            .where('cursoId', '==', courseId)
+            .onSnapshot((querySnap) => {
+              let count = 0;
+              const cached = JSON.parse(localStorage.getItem('electrolab_tareas_cache') || '{}');
+              querySnap.forEach(docSnap => {
+                const data = docSnap.data();
+                cached[docSnap.id] = data;
+                if (data.estado === 'aprobado') {
+                  count++;
+                }
+              });
+              localStorage.setItem('electrolab_tareas_cache', JSON.stringify(cached));
+              window.approvedTasksMap[courseId] = count;
+              updateExamUnlockUI(courseId, count);
+            }, (err) => {
+              console.warn("Listener de curso Firestore:", err);
+            });
+        } catch(e) {}
+      }
+    }
+
+    // Actualizador visual de desbloqueo de examen en tiempo real (Requisito 5)
+    function updateExamUnlockUI(courseId, approvedCount) {
+      const totalLessons = getCourseTotalLessons(courseId);
+      const isUnlocked = (user && user.role === 'admin') || approvedCount >= totalLessons;
+
+      // 1. Contador de la sección de prácticas
+      const counterEl = document.getElementById('tarea-approved-counter');
+      if (counterEl) {
+        counterEl.textContent = `${approvedCount} de ${totalLessons}`;
+        counterEl.className = isUnlocked ? 'font-bold text-emerald-400' : 'font-bold text-cyan-300';
+      }
+
+      const dotEl = document.getElementById('tarea-progress-dot');
+      if (dotEl) {
+        dotEl.className = isUnlocked ? 'w-2 h-2 rounded-full bg-emerald-400' : 'w-2 h-2 rounded-full bg-cyan-400 animate-pulse';
+      }
+
+      // 2. Banner principal bajo el reproductor / consultas
+      const mainCta = document.getElementById('classroom-exam-main-cta');
+      if (mainCta && (courseId === 'curso-1' || courseId === 'curso-2')) {
+        mainCta.classList.remove('hidden');
+        if (isUnlocked) {
+          mainCta.className = 'p-5 bg-gradient-to-r from-emerald-950/70 via-slate-900 to-slate-950 border-2 border-emerald-500/70 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-emerald-500/15 animate-pulse';
+          mainCta.innerHTML = `
+            <div class="flex items-center gap-3.5">
+              <div class="w-11 h-11 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center text-2xl shrink-0">
+                🎉
+              </div>
+              <div>
+                <div class="text-sm font-heading font-extrabold text-white">¡Prácticas 100% Aprobadas (${approvedCount}/${totalLessons})!</div>
+                <div class="text-xs text-emerald-300/90 font-mono">Excelente labor técnica. Tu Examen Final de Acreditación Oficial está habilitado.</div>
+              </div>
+            </div>
+            <button onclick="openExamModal('${courseId}')" class="w-full sm:w-auto bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold py-3 px-6 rounded-xl transition-all shadow-lg shadow-amber-500/25 text-xs sm:text-sm shrink-0 flex items-center justify-center gap-2 cursor-pointer">
+              <span>📝 Rendir Examen Final</span>
+            </button>
+          `;
+        } else {
+          mainCta.className = 'p-5 bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-950 border border-amber-500/40 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg';
+          mainCta.innerHTML = `
+            <div class="flex items-center gap-3.5">
+              <div class="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center text-xl shrink-0">
+                🔒
+              </div>
+              <div>
+                <div class="text-sm font-heading font-extrabold text-white">Examen Final: Prácticas en Curso</div>
+                <div class="text-xs text-slate-300">
+                  Prácticas aprobadas: <strong class="text-amber-400 font-mono">${approvedCount} de ${totalLessons}</strong>. Completá y aprobá todas las simulaciones para habilitar tu evaluación final.
+                </div>
+              </div>
+            </div>
+            <button onclick="openExamModal('${courseId}')" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-3 px-5 rounded-xl transition-all text-xs font-bold shrink-0 flex items-center justify-center gap-2 cursor-pointer">
+              <span>🔒 Examen Bloqueado (${approvedCount}/${totalLessons})</span>
+            </button>
+          `;
+        }
+      }
+
+      // 3. Banner superior en el sidebar del temario
+      const sidebarCta = document.getElementById('classroom-exam-sidebar-cta');
+      if (sidebarCta && (courseId === 'curso-1' || courseId === 'curso-2')) {
+        sidebarCta.classList.remove('hidden');
+        if (isUnlocked) {
+          sidebarCta.innerHTML = `
+            <div class="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/20 via-slate-900 to-slate-950 border-2 border-emerald-400 shadow-xl space-y-2.5 animate-pulse">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono font-black uppercase text-emerald-300 bg-slate-950/80 px-2 py-0.5 rounded-lg border border-emerald-500/40 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                  🎉 100% PRÁCTICAS APROBADAS
+                </span>
+                <span class="text-[10px] font-mono text-emerald-300 font-bold">Habilitado</span>
+              </div>
+              <p class="text-[11px] text-white font-medium leading-snug">
+                ¡Felicitaciones! Has completado y aprobado todas las simulaciones (${approvedCount}/${totalLessons}).
+              </p>
+              <button type="button" onclick="openExamModal('${courseId}')" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold py-3 px-3 rounded-xl transition-all shadow-lg text-xs flex items-center justify-center gap-2 border border-amber-300 cursor-pointer">
+                <span class="text-sm">📝</span>
+                <span class="tracking-wide">Rendir Examen Final</span>
+              </button>
+            </div>
+          `;
+        } else {
+          sidebarCta.innerHTML = `
+            <div class="p-3.5 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-amber-400 font-bold flex items-center gap-1.5">
+                  <span>🔒</span> EVALUACIÓN BLOQUEADA
+                </span>
+                <span class="text-[10px] font-mono text-slate-400">${approvedCount}/${totalLessons}</span>
+              </div>
+              <p class="text-[11px] text-slate-400 leading-snug">
+                Prácticas aprobadas: <strong class="text-amber-300 font-mono">${approvedCount} de ${totalLessons}</strong>. Aprobá todas para rendir el examen.
+              </p>
+              <button type="button" onclick="openExamModal('${courseId}')" class="w-full bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800 py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors">
+                <span>🔒 Examen Bloqueado</span>
+              </button>
+            </div>
+          `;
+        }
+      }
+    }
+
+    // Listener en tiempo real de la entrega para la lección activa
+    function setupTareaLessonListener(courseId, lessonId) {
+      user = window.ElectroLabAuth.getCurrentUser();
+      if (!user || !courseId || !lessonId) return;
+
+      if (currentTareaDocUnsub) {
+        currentTareaDocUnsub();
+        currentTareaDocUnsub = null;
+      }
+
+      removeTareaSelectedFile();
+
+      const docId = getTareaDocId(user.email, courseId, lessonId);
+      const container = document.getElementById('tarea-state-container');
+      if (!container) return;
+
+      container.innerHTML = `
+        <div class="p-6 text-center text-xs text-slate-500 font-mono animate-pulse">
+          Conectando con Firestore y cargando estado de la práctica...
+        </div>
+      `;
+
+      const db = getFirestoreDb();
+      if (db) {
+        try {
+          currentTareaDocUnsub = db.collection('entregas_tareas').doc(docId).onSnapshot((docSnap) => {
+            if (docSnap.exists) {
+              const data = docSnap.data();
+              const cached = JSON.parse(localStorage.getItem('electrolab_tareas_cache') || '{}');
+              cached[docId] = data;
+              localStorage.setItem('electrolab_tareas_cache', JSON.stringify(cached));
+              renderTareaCard(data, docId);
+            } else {
+              renderTareaSubmissionForm(docId);
+            }
+          }, (err) => {
+            console.warn("Error leyendo entrega en Firestore:", err);
+            renderTareaFromCache(docId);
+          });
+        } catch(e) {
+          renderTareaFromCache(docId);
+        }
+      } else {
+        renderTareaFromCache(docId);
+      }
+    }
+
+    function renderTareaFromCache(docId) {
+      const cached = JSON.parse(localStorage.getItem('electrolab_tareas_cache') || '{}');
+      if (cached[docId]) {
+        renderTareaCard(cached[docId], docId);
+      } else {
+        renderTareaSubmissionForm(docId);
+      }
+    }
+
+    // Renderizar Formulario de Entrega
+    function renderTareaSubmissionForm(docId, existingData = null) {
+      const container = document.getElementById('tarea-state-container');
+      if (!container || !currentLesson) return;
+
+      const defaultComment = existingData ? (existingData.comentarioAlumno || '') : '';
+      const defaultUrl = (existingData && existingData.archivoUrl && !existingData.archivoUrl.startsWith('data:image/')) ? existingData.archivoUrl : '';
+
+      container.innerHTML = `
+        <form id="form-tarea-entrega" onsubmit="handleTareaSubmit(event, '${docId}')" class="space-y-4 pt-1">
+          <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 sm:p-5 space-y-4">
+            
+            <div class="flex items-center justify-between text-xs pb-3 border-b border-slate-800">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                <span class="text-slate-400 font-mono">Lección:</span>
+                <span class="font-bold text-white">${currentLesson.title || currentLesson.titulo}</span>
+              </div>
+              <span class="text-[11px] font-mono text-cyan-400 font-semibold">Nueva Entrega</span>
+            </div>
+
+            <!-- Upload Options -->
+            <div class="space-y-2.5">
+              <label class="block text-xs font-heading font-bold text-slate-300">
+                Evidencia de Simulación (Captura de pantalla de LTspice, osciloscopio, circuito o diagrama) *
+              </label>
+
+              <!-- Drag & Drop Zone -->
+              <div id="tarea-dropzone" class="border-2 border-dashed border-slate-700 hover:border-cyan-500/60 rounded-2xl p-4 sm:p-6 text-center bg-slate-900/60 transition-all cursor-pointer relative" onclick="document.getElementById('tarea-file-input').click()">
+                <input type="file" id="tarea-file-input" accept="image/*,application/pdf" class="hidden" onchange="handleTareaFileSelected(event)">
+                
+                <div id="tarea-file-prompt" class="space-y-2">
+                  <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 mx-auto flex items-center justify-center text-xl">
+                    📷
+                  </div>
+                  <div class="text-xs font-bold text-slate-200">
+                    Hacé clic para seleccionar una imagen o arrastrá el archivo aquí
+                  </div>
+                  <p class="text-[11px] text-slate-400">Formatos: PNG, JPG, JPEG o PDF (se procesa y optimiza automáticamente)</p>
+                </div>
+
+                <div id="tarea-file-preview-wrap" class="hidden space-y-3">
+                  <div class="relative max-w-xs mx-auto rounded-xl overflow-hidden border border-slate-700 bg-slate-950">
+                    <img id="tarea-file-preview-img" src="" alt="Vista previa" class="w-full max-h-48 object-contain">
+                  </div>
+                  <div class="flex items-center justify-center gap-2">
+                    <span id="tarea-file-name" class="text-xs font-mono text-cyan-300 truncate max-w-xs">archivo.png</span>
+                    <button type="button" onclick="event.stopPropagation(); removeTareaSelectedFile()" class="p-1 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800 transition-colors" title="Quitar archivo">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Enlace opcional / URL -->
+              <div class="flex items-center gap-2 pt-1">
+                <span class="text-xs text-slate-500 font-mono whitespace-nowrap">O enlace público:</span>
+                <input type="url" id="tarea-url-input" value="${defaultUrl}" placeholder="https://drive.google.com/... o enlace a imagen externa" class="flex-1 px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 text-xs text-white placeholder-slate-600 transition-colors">
+              </div>
+            </div>
+
+            <!-- Comentario del Alumno -->
+            <div class="space-y-1.5">
+              <label class="block text-xs font-heading font-bold text-slate-300">
+                Comentarios sobre tu Simulación (Opcional)
+              </label>
+              <textarea id="tarea-comentario-input" rows="3" placeholder="Contale al profesor qué valores utilizaste, cómo configuraste la simulación en LTspice o si observaste algún comportamiento particular..." class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs text-white placeholder-slate-600 resize-none transition-colors">${defaultComment}</textarea>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="flex items-center justify-end gap-3 pt-2">
+              ${existingData ? `
+                <button type="button" onclick="renderTareaCardFromCache('${docId}')" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-900 transition-colors">
+                  Cancelar
+                </button>
+              ` : ''}
+              <button type="submit" id="btn-submit-tarea" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold px-6 py-2.5 rounded-xl text-xs transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2 cursor-pointer">
+                <span>📤 Enviar Práctica al Docente</span>
+              </button>
+            </div>
+
+          </div>
+        </form>
+      `;
+    }
+
+    function renderTareaReEntregaForm(docId) {
+      const cached = JSON.parse(localStorage.getItem('electrolab_tareas_cache') || '{}');
+      const data = cached[docId] || null;
+      renderTareaSubmissionForm(docId, data);
+    }
+
+    function renderTareaCardFromCache(docId) {
+      const cached = JSON.parse(localStorage.getItem('electrolab_tareas_cache') || '{}');
+      if (cached[docId]) {
+        renderTareaCard(cached[docId], docId);
+      } else {
+        renderTareaSubmissionForm(docId);
+      }
+    }
+
+    // Renderizar Tarjeta de Estado de la Entrega (Ámbar, Rojo, Verde)
+    function renderTareaCard(tarea, docId) {
+      const container = document.getElementById('tarea-state-container');
+      if (!container) return;
+
+      const estado = tarea.estado || 'pendiente';
+      const fEntrega = tarea.fechaEntrega ? new Date(tarea.fechaEntrega).toLocaleString() : 'Reciente';
+      const fFeedback = tarea.fechaFeedback ? new Date(tarea.fechaFeedback).toLocaleString() : 'Reciente';
+      const previewHtml = renderEvidencePreview(tarea.archivoUrl);
+
+      // Estado 1: PENDIENTE (Ámbar)
+      if (estado === 'pendiente') {
+        container.innerHTML = `
+          <div class="bg-amber-950/20 border border-amber-500/40 rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-amber-500/20">
+              <div class="flex items-center gap-2.5">
+                <span class="w-3 h-3 rounded-full bg-amber-400 animate-pulse"></span>
+                <span class="font-heading font-bold text-sm text-amber-300 uppercase tracking-wide">
+                  En revisión por el profesor
+                </span>
+              </div>
+              <span class="text-[11px] font-mono text-slate-400">
+                Enviado: ${fEntrega}
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+              <div>
+                <div class="text-[11px] font-mono uppercase text-slate-400 mb-1.5">Tu Evidencia Entregada:</div>
+                ${previewHtml}
+              </div>
+              <div class="space-y-3">
+                <div>
+                  <div class="text-[11px] font-mono uppercase text-slate-400 mb-1">Tus Comentarios:</div>
+                  <p class="text-xs text-slate-300 italic bg-slate-950/70 p-3 rounded-xl border border-slate-800">
+                    "${tarea.comentarioAlumno || 'Sin comentarios adicionales.'}"
+                  </p>
+                </div>
+                <div class="text-[11px] text-amber-200/90 bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20 flex items-center gap-2">
+                  <span>⏳</span>
+                  <span>El profesor corregirá tu simulación y te enviará su devolución oficial a la brevedad.</span>
+                </div>
+                <div>
+                  <button type="button" onclick="renderTareaReEntregaForm('${docId}')" class="text-xs text-slate-400 hover:text-white underline inline-flex items-center gap-1 cursor-pointer">
+                    <span>¿Querés corregir o reenviar una nueva evidencia?</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // Estado 2: REQUIERE CORRECCIÓN (Rojo)
+      if (estado === 'requiere_correccion') {
+        container.innerHTML = `
+          <div class="bg-red-950/25 border-2 border-red-500/50 rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-red-500/20">
+              <div class="flex items-center gap-2.5">
+                <div class="w-6 h-6 rounded-lg bg-red-500/20 border border-red-500/40 text-red-400 flex items-center justify-center text-xs">
+                  ⚠️
+                </div>
+                <span class="font-heading font-bold text-sm text-red-400 uppercase tracking-wide">
+                  Requiere Correcciones
+                </span>
+              </div>
+              <span class="text-[11px] font-mono text-slate-400">
+                Revisado: ${fFeedback}
+              </span>
+            </div>
+
+            <!-- Feedback del Profesor -->
+            <div class="p-4 bg-slate-950/90 rounded-xl border-l-4 border-red-500 border-t border-r border-b border-slate-800 space-y-1.5">
+              <div class="flex items-center gap-2 text-xs font-bold text-red-300">
+                <span>👨‍🏫 Devolución y Correcciones del Docente:</span>
+              </div>
+              <p class="text-xs text-slate-200 leading-relaxed font-sans whitespace-pre-line">
+                ${tarea.feedbackDocente || 'Por favor revisá los cálculos, parámetros o puntos de prueba según las indicaciones de la clase y volvé a subir tu simulación.'}
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-1">
+              <div>
+                <div class="text-[11px] font-mono uppercase text-slate-400 mb-1.5">Evidencia Entregada Anteriormente:</div>
+                ${previewHtml}
+              </div>
+              <div class="flex flex-col items-center sm:items-start justify-center gap-3">
+                <p class="text-xs text-slate-300">
+                  Modificá tu circuito o simulación en LTspice y reenviá tu entrega para obtener la aprobación del docente.
+                </p>
+                <button type="button" onclick="renderTareaReEntregaForm('${docId}')" class="w-full sm:w-auto bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-400 hover:to-orange-400 text-white font-heading font-extrabold px-6 py-3 rounded-xl text-xs transition-all shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 cursor-pointer">
+                  <span>🔄 Reenviar Práctica Corregida</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // Estado 3: APROBADO (Verde)
+      if (estado === 'aprobado') {
+        container.innerHTML = `
+          <div class="bg-emerald-950/25 border-2 border-emerald-500/50 rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-emerald-500/20">
+              <div class="flex items-center gap-2.5">
+                <div class="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center text-xs">
+                  ✓
+                </div>
+                <span class="font-heading font-bold text-sm text-emerald-400 uppercase tracking-wide">
+                  ✓ Práctica Aprobada
+                </span>
+              </div>
+              <span class="text-[11px] font-mono text-emerald-400 font-bold">
+                Aprobado: ${fFeedback}
+              </span>
+            </div>
+
+            ${tarea.feedbackDocente ? `
+              <div class="p-4 bg-slate-950/90 rounded-xl border-l-4 border-emerald-500 border-t border-r border-b border-slate-800 space-y-1.5">
+                <div class="flex items-center gap-2 text-xs font-bold text-emerald-300">
+                  <span>👨‍🏫 Devolución del Docente:</span>
+                </div>
+                <p class="text-xs text-slate-200 leading-relaxed font-sans whitespace-pre-line">
+                  ${tarea.feedbackDocente}
+                </p>
+              </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start pt-1">
+              <div>
+                <div class="text-[11px] font-mono uppercase text-slate-400 mb-1.5">Evidencia Aprobada:</div>
+                ${previewHtml}
+              </div>
+              <div class="space-y-3">
+                <div>
+                  <div class="text-[11px] font-mono uppercase text-slate-400 mb-1">Tus Comentarios:</div>
+                  <p class="text-xs text-slate-300 italic bg-slate-950/70 p-3 rounded-xl border border-slate-800">
+                    "${tarea.comentarioAlumno || 'Sin comentarios adicionales.'}"
+                  </p>
+                </div>
+                <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold flex items-center gap-2.5">
+                  <span class="text-base">✨</span>
+                  <span>¡Excelente! Esta práctica ya computa para la habilitación de tu Examen Final Oficial.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+    }
+
+    // Helper para previsualizar evidencias (Base64 / Enlaces)
+    function renderEvidencePreview(url) {
+      if (!url) return '<span class="text-xs text-slate-500 italic">Sin evidencia adjunta</span>';
+      if (url.startsWith('data:image/') || url.match(/\.(jpeg|jpg|png|webp|gif)($|\?)/i) || url.includes('images.unsplash.com')) {
+        return `
+          <div class="relative group max-w-xs rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
+            <img src="${url}" alt="Evidencia" class="w-full max-h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity" onclick="window.open('${url}', '_blank')">
+            <div class="p-1.5 text-center bg-slate-900/90 text-[10px] text-slate-400 font-mono">
+              Clic para ampliar en pestaña nueva ↗
+            </div>
+          </div>
+        `;
+      }
+      return `
+        <a href="${url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-cyan-500/30 text-cyan-300 text-xs font-bold transition-all">
+          <span>📎 Ver Archivo / Enlace de Simulación</span>
+          <span class="text-xs">↗</span>
+        </a>
+      `;
+    }
+
+    // Procesamiento y compresión de imagen en Canvas
+    function handleTareaFileSelected(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      currentTareaFileName = file.name;
+
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            const maxDim = 1200;
+
+            if (width > maxDim || height > maxDim) {
+              if (width > height) {
+                height = Math.round((height * maxDim) / width);
+                width = maxDim;
+              } else {
+                width = Math.round((width * maxDim) / height);
+                height = maxDim;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            currentTareaFileBase64 = canvas.toDataURL('image/jpeg', 0.82);
+
+            const prompt = document.getElementById('tarea-file-prompt');
+            const previewWrap = document.getElementById('tarea-file-preview-wrap');
+            const previewImg = document.getElementById('tarea-file-preview-img');
+            const nameEl = document.getElementById('tarea-file-name');
+
+            if (prompt) prompt.classList.add('hidden');
+            if (previewWrap) previewWrap.classList.remove('hidden');
+            if (previewImg) previewImg.src = currentTareaFileBase64;
+            if (nameEl) nameEl.textContent = file.name;
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      } else if (file.type === 'application/pdf') {
+        if (file.size > 800000) {
+          showAulaToast('El archivo PDF supera 800 KB. Por favor subí una captura de imagen o utilizá un enlace a Google Drive.', 'error');
+          event.target.value = '';
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          currentTareaFileBase64 = e.target.result;
+          const prompt = document.getElementById('tarea-file-prompt');
+          const previewWrap = document.getElementById('tarea-file-preview-wrap');
+          const previewImg = document.getElementById('tarea-file-preview-img');
+          const nameEl = document.getElementById('tarea-file-name');
+
+          if (previewImg) previewImg.src = 'https://cdn-icons-png.flaticon.com/512/337/337946.png';
+          if (prompt) prompt.classList.add('hidden');
+          if (previewWrap) previewWrap.classList.remove('hidden');
+          if (nameEl) nameEl.textContent = file.name;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        showAulaToast('Por favor seleccioná una imagen (PNG, JPG) o PDF de tu simulación.', 'error');
+        event.target.value = '';
+      }
+    }
+
+    function removeTareaSelectedFile() {
+      currentTareaFileBase64 = '';
+      currentTareaFileName = '';
+      const fileInput = document.getElementById('tarea-file-input');
+      if (fileInput) fileInput.value = '';
+      const prompt = document.getElementById('tarea-file-prompt');
+      const previewWrap = document.getElementById('tarea-file-preview-wrap');
+      if (prompt) prompt.classList.remove('hidden');
+      if (previewWrap) previewWrap.classList.add('hidden');
+    }
+
+    // Envío oficial de la entrega a Firestore
+    async function handleTareaSubmit(e, docId) {
+      if (e) e.preventDefault();
+      user = window.ElectroLabAuth.getCurrentUser();
+      if (!user || !currentCourse || !currentLesson) {
+        showAulaToast('Sesión no válida o curso no seleccionado', 'error');
+        return;
+      }
+
+      const urlInput = document.getElementById('tarea-url-input');
+      const commentInput = document.getElementById('tarea-comentario-input');
+      const finalUrl = currentTareaFileBase64 || (urlInput ? urlInput.value.trim() : '');
+      const comentario = commentInput ? commentInput.value.trim() : '';
+
+      if (!finalUrl && !comentario) {
+        showAulaToast('Por favor adjuntá una captura de pantalla o enlace a tu simulación antes de enviar.', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit-tarea');
+      const origHtml = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<span class="inline-block animate-spin mr-2">⏳</span> Enviando a Firestore...`;
+      }
+
+      const payload = {
+        alumnoEmail: user.email.toLowerCase(),
+        alumnoNombre: user.name,
+        cursoId: currentCourse.id,
+        claseId: currentLesson.id,
+        claseTitulo: currentLesson.title || currentLesson.titulo,
+        archivoUrl: finalUrl,
+        comentarioAlumno: comentario,
+        estado: 'pendiente',
+        feedbackDocente: '',
+        fechaEntrega: new Date().toISOString(),
+        fechaFeedback: ''
+      };
+
+      try {
+        const db = getFirestoreDb();
+        if (db) {
+          await db.collection('entregas_tareas').doc(docId).set(payload, { merge: true });
+        }
+
+        const cached = JSON.parse(localStorage.getItem('electrolab_tareas_cache') || '{}');
+        cached[docId] = payload;
+        localStorage.setItem('electrolab_tareas_cache', JSON.stringify(cached));
+
+        showAulaToast('✓ Práctica enviada al docente con éxito. Estado: En revisión.');
+      } catch (err) {
+        console.error("Error guardando entrega en Firestore:", err);
+        showAulaToast('Error al enviar la práctica: ' + err.message, 'error');
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = origHtml;
+        }
+      }
     }
 
     // ================= SISTEMA DE BOLETÍN DE CALIFICACIONES & CERTIFICACIONES =================
@@ -1516,11 +2489,30 @@
                 </h4>
               </div>
               <div class="shrink-0 flex items-center gap-2">
-                ${(course.id === 'curso-1' || course.id === 'curso-2') && isEnrolled ? `
-                  <button type="button" onclick="openExamModal('${course.id}')" class="px-3 py-1.5 rounded-xl ${attemptsUsed >= 2 ? 'bg-slate-800 text-slate-400 border border-slate-700 font-semibold' : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold shadow-md shadow-amber-500/20'} text-xs flex items-center gap-1.5 transition-all">
-                    <span>${attemptsUsed >= 2 ? '🔒 2/2 Intentos (Ver Nota)' : `📝 Rendir Examen (Intento ${attemptsUsed + 1} de 2)`}</span>
-                  </button>
-                ` : ''}
+                ${(course.id === 'curso-1' || course.id === 'curso-2') && isEnrolled ? (() => {
+                  const totalLessons = getCourseTotalLessons(course.id);
+                  const approvedTasks = (window.approvedTasksMap && window.approvedTasksMap[course.id]) || 0;
+                  const isExamUnlocked = (user && user.role === 'admin') || approvedTasks >= totalLessons;
+                  if (attemptsUsed >= 2) {
+                    return `
+                      <button type="button" onclick="openExamModal('${course.id}')" class="px-3 py-1.5 rounded-xl bg-slate-800 text-slate-400 border border-slate-700 font-semibold text-xs flex items-center gap-1.5 transition-all">
+                        <span>🔒 2/2 Intentos (Ver Nota)</span>
+                      </button>
+                    `;
+                  } else if (isExamUnlocked) {
+                    return `
+                      <button type="button" onclick="openExamModal('${course.id}')" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-heading font-extrabold shadow-md shadow-amber-500/20 text-xs flex items-center gap-1.5 transition-all cursor-pointer">
+                        <span>📝 Rendir Examen (Intento ${attemptsUsed + 1} de 2)</span>
+                      </button>
+                    `;
+                  } else {
+                    return `
+                      <button type="button" onclick="openExamModal('${course.id}')" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800 text-xs flex items-center gap-1.5 transition-all cursor-pointer">
+                        <span>🔒 Examen Bloqueado (${approvedTasks}/${totalLessons})</span>
+                      </button>
+                    `;
+                  }
+                })() : ''}
                 ${statusBadge}
               </div>
             </div>
@@ -1820,6 +2812,62 @@
       const attemptsUsed = parseInt(uGrades.attemptsUsed || uGrades.attempts_used || 0, 10);
       const finalGrade = uGrades.finalGrade || uGrades.final_grade || '';
       const status = uGrades.status || 'Pendiente';
+
+      // CONTROL DE DESBLOQUEO POR PRÁCTICAS APROBADAS EN FIRESTORE (Requisito 5)
+      const totalLessons = getCourseTotalLessons(courseId);
+      const approvedTasks = (window.approvedTasksMap && window.approvedTasksMap[courseId]) || 0;
+      if (user.role !== 'admin' && approvedTasks < totalLessons) {
+        modal.classList.remove('hidden');
+        body.innerHTML = `
+          <div class="text-center space-y-6 py-4">
+            <div class="w-16 h-16 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-amber-400 mx-auto flex items-center justify-center text-3xl shadow-xl shadow-amber-500/10">
+              🔒
+            </div>
+            
+            <div class="space-y-2">
+              <span class="text-xs font-mono font-bold tracking-widest text-amber-400 uppercase">EVALUACIÓN BLOQUEADA POR PRÁCTICAS PENDIENTES</span>
+              <h3 class="text-xl sm:text-2xl font-heading font-extrabold text-white">
+                Completá y aprobá todas las simulaciones
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
+                Prácticas aprobadas: <span class="text-amber-400 font-bold font-mono text-base">${approvedTasks} de ${totalLessons}</span>.<br>
+                Debes tener el 100% de tus prácticas y simulaciones aprobadas por el docente para habilitar tu evaluación final y emitir tu certificación oficial.
+              </p>
+            </div>
+
+            <!-- Card informativa del estado -->
+            <div class="max-w-md mx-auto p-5 bg-slate-950/80 rounded-2xl border border-slate-800 space-y-3 text-left">
+              <div class="flex justify-between items-center text-xs pb-2 border-b border-slate-800">
+                <span class="text-slate-400">Curso:</span>
+                <span class="font-bold text-white">${courseTitle}</span>
+              </div>
+              <div class="flex justify-between items-center text-xs pb-2 border-b border-slate-800">
+                <span class="text-slate-400">Estudiante:</span>
+                <span class="font-bold text-white">${user.name}</span>
+              </div>
+              <div class="flex justify-between items-center text-xs pb-2 border-b border-slate-800">
+                <span class="text-slate-400">Prácticas Aprobadas:</span>
+                <span class="font-bold font-mono text-amber-400">${approvedTasks} de ${totalLessons}</span>
+              </div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-400">Estado de Examen:</span>
+                <span class="font-bold text-amber-400">Bloqueado (Prácticas pendientes de aprobación)</span>
+              </div>
+            </div>
+
+            <p class="text-xs text-slate-400 max-w-md mx-auto">
+              Revisá cada una de las clases del temario y subí tu evidencia de simulación en LTspice o circuito en la sección <strong>"📤 Entrega de Práctica / Simulación"</strong>. En cuanto el docente apruebe la última tarea en Firestore, tu examen se desbloqueará automáticamente.
+            </p>
+
+            <div class="pt-2 flex justify-center">
+              <button onclick="closeExamModal()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition-colors cursor-pointer">
+                Entendido, ir a mis clases
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
 
       // CONTROL DE INTENTOS (MÁXIMO 2): Bloqueo si ya se agotaron los 2 intentos
       if (attemptsUsed >= 2) {

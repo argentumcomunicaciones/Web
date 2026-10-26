@@ -1,15 +1,38 @@
 /**
  * ElectroLab Educativa - Store Engine & Interactive Experience
  * Gestión de cursos, carrito de compras multi-moneda (ARS/USD),
- * temarios interactivos, pasarela WhatsApp / Mercado Pago / Transferencia.
+ * temarios interactivos, pasarelas oficiales de Mercado Pago / Transferencia.
  */
 
 (function () {
   'use strict';
 
+  // Configuración Oficial de Firebase Firestore
+  const firebaseConfig = {
+    apiKey: "AIzaSyDXXsdNO_s18-hko4riY6pc7_RJjBDInA0",
+    authDomain: "electrolab-academia.firebaseapp.com",
+    projectId: "electrolab-academia",
+    storageBucket: "electrolab-academia.firebasestorage.app",
+    messagingSenderId: "1013501407471",
+    appId: "1:1013501407471:web:1de69c347f9a3edf046b1a"
+  };
+
+  let db = null;
+  try {
+    if (typeof firebase !== 'undefined') {
+      if (!firebase.apps || !firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      db = firebase.firestore();
+      window.db = db;
+    }
+  } catch (err) {
+    console.warn("Inicialización de Firebase:", err);
+  }
+
   // Configuración base de la tienda
   const CONFIG = {
-    whatsappNumber: '5491123065347', // WhatsApp oficial de ElectroLab (+54 9 11 2306-5347)
+    formspreeEndpoint: 'https://formspree.io/f/xbgdqedy',
     defaultCurrency: 'ARS', // 'ARS' o 'USD'
     couponCode: 'ELECTRO2026',
     couponDiscount: 0.10, // 10% off
@@ -796,7 +819,7 @@
       const inCart = state.cart.includes(course.id);
       const discountPercent = Math.round(((origPrice - price) / origPrice) * 100);
 
-      const isAvailable = (course.id === 'curso-1');
+      const isAvailable = (course.id === 'curso-1' || course.id === 'curso-2');
       const isComingSoon = !isAvailable;
       const borderClass = isComingSoon
         ? 'border-2 border-amber-500/40 hover:border-amber-400 shadow-lg shadow-amber-500/5'
@@ -1381,9 +1404,9 @@
 
           <div class="text-[11px] text-slate-400 pt-2">
             ¿Ya realizaste el pago por transferencia o Mercado Pago?
-            <a href="https://wa.me/5491123065347?text=Hola!%20Ya%20realic%C3%A9%20el%20pago%20para%20el%20curso%20${encodeURIComponent(course.title)}.%20Quiero%20habilitar%20mi%20cuenta." target="_blank" class="text-emerald-400 hover:underline font-bold block sm:inline ml-1">
-              Enviar comprobante por WhatsApp (+54 9 11 2306-5347)
-            </a>
+            <button type="button" onclick="window.ElectroLab.closeAccessNoticeModal(); window.ElectroLab.openTransferNoticeModal('${course.id}')" class="text-cyan-400 hover:underline font-bold block sm:inline ml-1 cursor-pointer">
+              Informar comprobante de pago aquí
+            </button>
           </div>
         </div>
 
@@ -1426,30 +1449,7 @@
     closeAccessNoticeModal();
   }
 
-  // Pasarelas de Pago
-  function checkoutWhatsApp() {
-    if (state.cart.length === 0) {
-      showToast('Agrega al menos un curso al carrito primero');
-      return;
-    }
-
-    const totals = calculateCartTotals();
-    const cartCourses = [...new Set(state.cart)].map(id => COURSES.find(c => c.id === id)).filter(Boolean);
-    let itemsList = cartCourses.map(c => `• ${c.title}`).join('%0A');
-
-    let msg = `Hola ElectroLab Educativa! Quiero comprar los siguientes cursos en mi moneda (${state.currency}):%0A%0A${itemsList}%0A%0A`;
-    msg += `Subtotal (${totals.count} ${totals.count === 1 ? 'curso' : 'cursos'}): ${formatMoney(totals.subtotal, state.currency)}%0A`;
-    if (totals.volumeDiscount > 0) {
-      msg += `Descuento por volumen (${totals.badge}): -${formatMoney(totals.volumeDiscount, state.currency)}%0A`;
-    }
-    if (totals.couponDiscount > 0) {
-      msg += `Cupón ${state.appliedCoupon}: -${formatMoney(totals.couponDiscount, state.currency)}%0A`;
-    }
-    msg += `*Total Final a abonar: ${formatMoney(totals.total, state.currency)}*%0A%0A¿Me confirman los datos para abonar (Transferencia bancaria / Mercado Pago / PayPal) y darme acceso? Gracias!`;
-
-    const url = `https://wa.me/${CONFIG.whatsappNumber}?text=${msg}`;
-    window.open(url, '_blank');
-  }
+  // Pasarelas de Pago Oficiales
 
   function checkoutMercadoPago() {
     if (state.cart.length === 0) {
@@ -1520,22 +1520,9 @@
     document.body.removeChild(textArea);
   }
 
-  // Envío del comprobante de pago por WhatsApp con los detalles del pedido
-  function sendPaymentReceipt(methodName) {
-    const curr = (methodName === 'PayPal') ? 'USD' : 'ARS';
-    const totals = calculateCartTotals(curr);
-    const cartCourses = [...new Set(state.cart)].map(id => COURSES.find(c => c.id === id)).filter(Boolean);
-
-    let itemsList = cartCourses.map(c => `• ${c.title}`).join('%0A');
-
-    let msg = `Hola ElectroLab Educativa! Acabo de realizar el pago mediante *${methodName}* por un total de *${formatMoney(totals.total, curr)}*:%0A%0ACursos:%0A${itemsList}%0A%0A`;
-    if (totals.volumeDiscount > 0) {
-      msg += `(Incluye Descuento por Volumen: ${totals.badge})%0A`;
-    }
-    msg += `Adjunto el comprobante de la operación para que puedan habilitar mi acceso al aula virtual. Muchas gracias!`;
-
-    const url = `https://wa.me/${CONFIG.whatsappNumber}?text=${msg}`;
-    window.open(url, '_blank');
+  // Aviso de pago y comprobante
+  function sendPaymentReceipt() {
+    openTransferNoticeModal();
   }
 
   function openPaymentModal(method) {
@@ -1545,8 +1532,6 @@
 
     const curr = (method === 'paypal') ? 'USD' : 'ARS';
     const totals = calculateCartTotals(curr);
-
-    const whatsappComprobanteUrl = 'https://wa.me/5491123065347?text=Hola%20Daniel%2C%20adjunto%20comprobante%20de%20pago%20para%20habilitar%20mi%20curso%20en%20ElectroLab%20Educativa';
 
     let title = '';
     let detailsHtml = '';
@@ -1636,12 +1621,12 @@
             </div>
           </div>
 
-          <p class="text-xs text-slate-400 text-center">Una vez realizada la transferencia, envía el comprobante por WhatsApp al <strong class="text-emerald-400">+54 9 11 2306-5347</strong> para darte de alta al instante:</p>
+          <p class="text-xs text-slate-400 text-center">Una vez realizada la transferencia, informa tu comprobante para activar tu acceso al instante:</p>
 
-          <a href="${whatsappComprobanteUrl}" target="_blank" rel="noopener noreferrer" onclick="window.ElectroLab.closePaymentModal()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 text-xs sm:text-sm">
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-            <span>Enviar Comprobante por WhatsApp (+54 9 11 2306-5347)</span>
-          </a>
+          <button type="button" onclick="window.ElectroLab.closePaymentModal(); window.ElectroLab.openTransferNoticeModal();" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] flex items-center justify-center gap-2 text-xs sm:text-sm cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span>Informar Pago de Transferencia</span>
+          </button>
         </div>
       `;
     } else if (method === 'mercadopago') {
@@ -1721,12 +1706,12 @@
             </div>
           </div>
 
-          <p class="text-xs text-slate-400 text-center">Transfiere dinero en cuenta desde tu app de Mercado Pago o cualquier banco con el CVU o Alias. Luego envía tu comprobante por WhatsApp al <strong class="text-emerald-400">+54 9 11 2306-5347</strong>:</p>
+          <p class="text-xs text-slate-400 text-center">Transfiere dinero en cuenta desde tu app de Mercado Pago o cualquier banco con el CVU o Alias. Luego informa tu comprobante:</p>
 
-          <a href="${whatsappComprobanteUrl}" target="_blank" rel="noopener noreferrer" onclick="window.ElectroLab.closePaymentModal()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 text-xs sm:text-sm">
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-            <span>Enviar Comprobante por WhatsApp (+54 9 11 2306-5347)</span>
-          </a>
+          <button type="button" onclick="window.ElectroLab.closePaymentModal(); window.ElectroLab.openTransferNoticeModal();" class="w-full bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(14,165,233,0.4)] flex items-center justify-center gap-2 text-xs sm:text-sm cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span>Informar Pago de Transferencia</span>
+          </button>
         </div>
       `;
     } else {
@@ -1795,12 +1780,12 @@
             </a>
           </div>
 
-          <p class="text-xs text-slate-400 text-center">Una vez realizado el envío por PayPal, envía tu comprobante por WhatsApp al <strong class="text-emerald-400">+54 9 11 2306-5347</strong> para darte de alta al instante:</p>
+          <p class="text-xs text-slate-400 text-center">Una vez realizado el envío por PayPal, informa los datos de la transacción para activar tu acceso al instante:</p>
 
-          <a href="${whatsappComprobanteUrl}" target="_blank" rel="noopener noreferrer" onclick="window.ElectroLab.closePaymentModal()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 text-xs sm:text-sm">
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-            <span>Enviar Comprobante por WhatsApp (+54 9 11 2306-5347)</span>
-          </a>
+          <button type="button" onclick="window.ElectroLab.closePaymentModal(); window.ElectroLab.openTransferNoticeModal();" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(245,158,11,0.4)] flex items-center justify-center gap-2 text-xs sm:text-sm cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span>Informar Pago Realizado</span>
+          </button>
         </div>
       `;
     }
@@ -1824,6 +1809,296 @@
     if (modal) {
       modal.classList.add('hidden');
       document.body.classList.remove('overflow-hidden');
+    }
+  }
+
+  // ================= MODAL: INFORMAR PAGO DE TRANSFERENCIA =================
+  function openTransferNoticeModal(prefillCourseId) {
+    let modal = document.getElementById('modal-transfer-notice');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'modal-transfer-notice';
+      modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto';
+      document.body.appendChild(modal);
+    }
+
+    const u = (window.ElectroLabAuth && window.ElectroLabAuth.getCurrentUser) ? window.ElectroLabAuth.getCurrentUser() : null;
+    const initialName = u ? (u.name || '') : '';
+    const initialEmail = u ? (u.email || '') : '';
+
+    modal.innerHTML = `
+      <div class="relative bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl text-slate-100 my-8">
+        <button type="button" onclick="window.ElectroLab.closeTransferNoticeModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition-colors" title="Cerrar ventana">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-lg shrink-0">
+            📋
+          </div>
+          <div>
+            <h3 class="text-lg font-heading font-bold text-white">Informar Pago de Transferencia</h3>
+            <p class="text-xs text-slate-400">Notifica los datos de tu comprobante para activar tu acceso inmediatamente.</p>
+          </div>
+        </div>
+
+        <form id="form-transfer-notice" onsubmit="window.ElectroLab.handleTransferNoticeSubmit(event)" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Nombre y Apellido *</label>
+              <input type="text" id="transfer-nombre" required value="${initialName}" placeholder="Tu nombre y apellido" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-600 transition-colors">
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Correo Electrónico *</label>
+              <input type="email" id="transfer-email" required value="${initialEmail}" placeholder="tu@email.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-600 transition-colors">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Curso Abonado *</label>
+            <select id="transfer-curso" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white transition-colors">
+              <option value="Curso 1: Análisis de Circuitos en CC y CA" ${prefillCourseId === 'curso-1' ? 'selected' : ''}>Curso 1: Análisis de Circuitos en CC y CA ($50.000 ARS / 50 USD)</option>
+              <option value="Curso 2: Diodos, Fuentes Lineales y Conmutadas (DC-DC)" ${prefillCourseId === 'curso-2' ? 'selected' : ''}>Curso 2: Diodos, Fuentes Lineales y Conmutadas DC-DC ($50.000 ARS / 50 USD)</option>
+              <option value="Ambos Cursos (Curso 1 + Curso 2)">Ambos Cursos (Curso 1 + Curso 2)</option>
+              <option value="Otro / Pack Especial">Otro / Pack Especial</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">N° de Comprobante / Transacción *</label>
+            <input type="text" id="transfer-comprobante" required placeholder="Ej: 89431765 ó código de transferencia" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-600 transition-colors">
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Mensaje / Comentario (opcional)</label>
+            <textarea id="transfer-mensaje" rows="2" placeholder="Opcional: banco de origen, alias o detalle adicional..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-600 resize-none transition-colors"></textarea>
+          </div>
+
+          <!-- Feedback Status Box -->
+          <div id="transfer-feedback" class="hidden"></div>
+
+          <div class="pt-2">
+            <button type="submit" id="transfer-btn-submit" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-heading font-extrabold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] flex items-center justify-center gap-2 text-xs sm:text-sm cursor-pointer">
+              <span>Enviar Aviso de Pago</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    modal.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+  }
+
+  function closeTransferNoticeModal() {
+    const modal = document.getElementById('modal-transfer-notice');
+    if (modal) {
+      modal.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
+  }
+
+  async function handleTransferNoticeSubmit(e) {
+    if (e) e.preventDefault();
+    const btn = document.getElementById('transfer-btn-submit');
+    const feedback = document.getElementById('transfer-feedback');
+    const nombre = document.getElementById('transfer-nombre').value.trim();
+    const email = document.getElementById('transfer-email').value.trim();
+    const curso = document.getElementById('transfer-curso').value;
+    const comprobante = document.getElementById('transfer-comprobante').value.trim();
+    const mensaje = document.getElementById('transfer-mensaje').value.trim();
+
+    if (!nombre || !email || !comprobante) {
+      showToast('Por favor completa todos los campos requeridos', 'error');
+      return;
+    }
+
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="inline-block animate-spin mr-2">⏳</span> Enviando comprobante...`;
+    if (feedback) feedback.classList.add('hidden');
+
+    try {
+      const response = await fetch(CONFIG.formspreeEndpoint || 'https://formspree.io/f/xbgdqedy', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          tipo_evento: "Aviso de Pago por Transferencia",
+          alumno_nombre: nombre,
+          alumno_email: email,
+          curso_abonado: curso,
+          comprobante: comprobante,
+          mensaje: mensaje || 'Sin comentarios adicionales',
+          fecha: new Date().toLocaleString()
+        })
+      });
+
+      if (response.ok) {
+        if (feedback) {
+          feedback.className = "p-3.5 bg-emerald-950/80 border border-emerald-500/50 rounded-xl text-emerald-300 text-xs font-semibold leading-relaxed block";
+          feedback.innerHTML = "¡Comprobante informado con éxito! En breve validaremos la acreditación y habilitaremos tu acceso.";
+        }
+        showToast('¡Comprobante informado con éxito!');
+        document.getElementById('transfer-comprobante').value = '';
+        document.getElementById('transfer-mensaje').value = '';
+        setTimeout(() => {
+          closeTransferNoticeModal();
+        }, 3500);
+      } else {
+        throw new Error('Error en el servidor de Formspree');
+      }
+    } catch (err) {
+      if (feedback) {
+        feedback.className = "p-3.5 bg-red-950/80 border border-red-500/50 rounded-xl text-red-300 text-xs font-semibold leading-relaxed block";
+        feedback.innerHTML = "Ocurrió un error al enviar el comprobante. Por favor intenta de nuevo.";
+      }
+      showToast('Error al enviar el aviso de pago', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  }
+
+  // ================= MODAL: FORMULARIO DE CONTACTO GENERAL =================
+  function openContactModal() {
+    let modal = document.getElementById('modal-general-contact');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'modal-general-contact';
+      modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto';
+      document.body.appendChild(modal);
+    }
+
+    const u = (window.ElectroLabAuth && window.ElectroLabAuth.getCurrentUser) ? window.ElectroLabAuth.getCurrentUser() : null;
+    const initialName = u ? (u.name || '') : '';
+    const initialEmail = u ? (u.email || '') : '';
+
+    modal.innerHTML = `
+      <div class="relative bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl text-slate-100 my-8">
+        <button type="button" onclick="window.ElectroLab.closeContactModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition-colors" title="Cerrar ventana">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-lg shrink-0">
+            ✉️
+          </div>
+          <div>
+            <h3 class="text-lg font-heading font-bold text-white">Contacto & Soporte Académico</h3>
+            <p class="text-xs text-slate-400">Envíanos tu consulta sobre cursos, pagos o certificaciones.</p>
+          </div>
+        </div>
+
+        <form id="form-general-contact" onsubmit="window.ElectroLab.handleContactModalSubmit(event)" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Nombre Completo *</label>
+              <input type="text" id="contact-nombre" required value="${initialName}" placeholder="Tu nombre" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-600 transition-colors">
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Correo Electrónico *</label>
+              <input type="email" id="contact-email" required value="${initialEmail}" placeholder="tu@email.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-600 transition-colors">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Asunto *</label>
+            <input type="text" id="contact-asunto" required placeholder="Ej: Consulta de temario / Formas de pago / Soporte técnico" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-600 transition-colors">
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Mensaje o Consulta *</label>
+            <textarea id="contact-mensaje" rows="4" required placeholder="Escribe aquí tu consulta en detalle..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-600 resize-none transition-colors"></textarea>
+          </div>
+
+          <!-- Feedback Status Box -->
+          <div id="contact-feedback" class="hidden"></div>
+
+          <div class="pt-2">
+            <button type="submit" id="contact-btn-submit" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-heading font-extrabold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] flex items-center justify-center gap-2 text-xs sm:text-sm cursor-pointer">
+              <span>Enviar Consulta</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    modal.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+  }
+
+  function closeContactModal() {
+    const modal = document.getElementById('modal-general-contact');
+    if (modal) {
+      modal.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
+  }
+
+  async function handleContactModalSubmit(e) {
+    if (e) e.preventDefault();
+    const btn = document.getElementById('contact-btn-submit');
+    const feedback = document.getElementById('contact-feedback');
+    const nombre = document.getElementById('contact-nombre').value.trim();
+    const email = document.getElementById('contact-email').value.trim();
+    const asunto = document.getElementById('contact-asunto').value.trim();
+    const mensaje = document.getElementById('contact-mensaje').value.trim();
+
+    if (!nombre || !email || !asunto || !mensaje) {
+      showToast('Por favor completa todos los campos requeridos', 'error');
+      return;
+    }
+
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="inline-block animate-spin mr-2">⏳</span> Enviando consulta...`;
+    if (feedback) feedback.classList.add('hidden');
+
+    try {
+      const response = await fetch(CONFIG.formspreeEndpoint || 'https://formspree.io/f/xbgdqedy', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          tipo_evento: "Consulta General",
+          alumno_nombre: nombre,
+          alumno_email: email,
+          asunto: asunto,
+          mensaje: mensaje,
+          fecha: new Date().toLocaleString()
+        })
+      });
+
+      if (response.ok) {
+        if (feedback) {
+          feedback.className = "p-3.5 bg-emerald-950/80 border border-emerald-500/50 rounded-xl text-emerald-300 text-xs font-semibold leading-relaxed block";
+          feedback.innerHTML = "✓ Tu consulta ha sido enviada con éxito. Te responderemos a la brevedad a tu correo electrónico.";
+        }
+        showToast('✓ Consulta enviada correctamente');
+        document.getElementById('contact-asunto').value = '';
+        document.getElementById('contact-mensaje').value = '';
+        setTimeout(() => {
+          closeContactModal();
+        }, 3500);
+      } else {
+        throw new Error('Error al enviar consulta');
+      }
+    } catch (err) {
+      if (feedback) {
+        feedback.className = "p-3.5 bg-red-950/80 border border-red-500/50 rounded-xl text-red-300 text-xs font-semibold leading-relaxed block";
+        feedback.innerHTML = "Ocurrió un error al enviar tu consulta. Por favor intenta de nuevo.";
+      }
+      showToast('Error al enviar la consulta', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
     }
   }
 
@@ -2175,12 +2450,17 @@
     enrollAndCheckout,
     openDemoVideo,
     closeDemoVideo,
-    checkoutWhatsApp,
     checkoutMercadoPago,
     checkoutTransferencia,
     checkoutPayPal,
     openPaymentModal,
     closePaymentModal,
+    openTransferNoticeModal,
+    closeTransferNoticeModal,
+    handleTransferNoticeSubmit,
+    openContactModal,
+    closeContactModal,
+    handleContactModalSubmit,
     calculateCartTotals,
     copyToClipboard,
     sendPaymentReceipt,
@@ -2192,7 +2472,9 @@
     submitWaitlistLogin,
     submitWaitlistRegister,
     examenCurso1,
-    examenCurso2
+    examenCurso2,
+    firebaseConfig,
+    getDb: () => window.db || db
   };
 
   if (document.readyState === 'loading') {

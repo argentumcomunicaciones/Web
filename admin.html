@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Administración | ElectroLab Educativa</title>
   <link rel="icon" href="./logo.jpg">
+  <!-- Firebase Compatibility SDK (Firestore) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="./styles.css">
 </head>
@@ -103,61 +106,145 @@
 
     </div>
 
-    <!-- User Management Table Section -->
-    <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl glass-panel space-y-6">
-      
-      <!-- Table Header & Actions -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <span class="text-xs font-mono font-bold tracking-wider text-purple-400 uppercase">CONTROL DE ACCESOS</span>
-          <h2 class="text-xl sm:text-2xl font-heading font-extrabold text-white">Alumnos y Cursos Habilitados</h2>
-          <p class="text-xs text-slate-400">Activa o desactiva con un solo clic el acceso a cada curso por alumno.</p>
-        </div>
+    <!-- Admin View Switcher Tabs -->
+    <div class="flex flex-wrap items-center gap-3 border-b border-slate-800 pb-3">
+      <button id="admin-tab-users" onclick="switchAdminTab('users')" class="px-5 py-3 rounded-2xl font-heading font-extrabold text-xs sm:text-sm flex items-center gap-2.5 transition-all bg-purple-600 text-white shadow-lg shadow-purple-600/20 cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        <span>👥 Alumnos y Cursos Habilitados</span>
+      </button>
 
-        <div class="flex items-center gap-3">
-          <!-- Search box -->
-          <div class="relative">
-            <input id="search-users" type="text" placeholder="Buscar alumno por nombre o email..." class="w-64 px-3.5 py-2 pl-9 rounded-xl bg-slate-950 border border-slate-800 focus:border-purple-500 focus:outline-none text-xs text-white placeholder-slate-500 transition-colors">
-            <svg class="w-4 h-4 text-slate-500 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <button id="admin-tab-tareas" onclick="switchAdminTab('tareas')" class="px-5 py-3 rounded-2xl font-heading font-extrabold text-xs sm:text-sm flex items-center gap-2.5 transition-all bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 cursor-pointer">
+        <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+        <span>📥 Bandeja de Tareas y Evidencias</span>
+        <span id="admin-pending-badge" class="bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full text-[10px] font-mono font-black ml-1 hidden">0</span>
+      </button>
+    </div>
+
+    <!-- ================= VISTA: GESTIÓN DE USUARIOS ================= -->
+    <div id="admin-view-users" class="space-y-6">
+      <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl glass-panel space-y-6">
+        
+        <!-- Table Header & Actions -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span class="text-xs font-mono font-bold tracking-wider text-purple-400 uppercase">CONTROL DE ACCESOS</span>
+            <h2 class="text-xl sm:text-2xl font-heading font-extrabold text-white">Alumnos y Cursos Habilitados</h2>
+            <p class="text-xs text-slate-400">Activa o desactiva con un solo clic el acceso a cada curso por alumno.</p>
           </div>
 
-          <!-- Create User Button -->
-          <button onclick="openCreateUserModal()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-2 shrink-0">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-            <span>Registrar Nuevo Alumno</span>
-          </button>
+          <div class="flex items-center gap-3">
+            <!-- Search box -->
+            <div class="relative">
+              <input id="search-users" type="text" placeholder="Buscar alumno por nombre o email..." class="w-64 px-3.5 py-2 pl-9 rounded-xl bg-slate-950 border border-slate-800 focus:border-purple-500 focus:outline-none text-xs text-white placeholder-slate-500 transition-colors">
+              <svg class="w-4 h-4 text-slate-500 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+
+            <!-- Create User Button -->
+            <button onclick="openCreateUserModal()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-2 shrink-0">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <span>Registrar Nuevo Alumno</span>
+            </button>
+          </div>
         </div>
-      </div>
 
-      <!-- Quick Guidance Banner -->
-      <div class="p-3 bg-purple-950/30 border border-purple-500/20 rounded-2xl text-xs text-purple-200 flex items-center gap-3">
-        <svg class="w-5 h-5 text-purple-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        <span>
-          <strong>¿Cómo habilitar un curso cuando un alumno paga?</strong> Si te enviaron el comprobante por WhatsApp o Mercado Pago, busca al usuario en la lista o créalo con el botón de arriba, y simplemente activa el interruptor del curso correspondiente. El alumno tendrá acceso al instante.
-        </span>
-      </div>
+        <!-- Quick Guidance Banner -->
+        <div class="p-3 bg-purple-950/30 border border-purple-500/20 rounded-2xl text-xs text-purple-200 flex items-center gap-3">
+          <svg class="w-5 h-5 text-purple-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span>
+            <strong>¿Cómo habilitar un curso cuando un alumno paga?</strong> Si te enviaron el comprobante por el formulario web o Mercado Pago, busca al usuario en la lista o créalo con el botón de arriba, y simplemente activa el interruptor del curso correspondiente. El alumno tendrá acceso al instante.
+          </span>
+        </div>
 
-      <!-- Table Container -->
-      <div class="overflow-x-auto rounded-2xl border border-slate-800">
-        <table class="w-full text-left text-xs">
-          <thead class="bg-slate-950 text-slate-400 font-mono uppercase text-[10px] tracking-wider border-b border-slate-800">
-            <tr>
-              <th class="p-4">Alumno</th>
-              <th class="p-4">Rol</th>
-              <th class="p-4 text-center">Curso 1: Intro & CC</th>
-              <th class="p-4 text-center">Curso 2: Fundamentos</th>
-              <th class="p-4 text-center">Curso 3: Transistores</th>
-              <th class="p-4 text-center">Curso 4: Operacionales</th>
-              <th class="p-4 text-center">Curso 5: Microcontroladores</th>
-              <th class="p-4 text-right">Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="users-table-body" class="divide-y divide-slate-800/80 bg-slate-900/40">
-            <!-- Populated dynamically by JS -->
-          </tbody>
-        </table>
-      </div>
+        <!-- Table Container -->
+        <div class="overflow-x-auto rounded-2xl border border-slate-800">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-950 text-slate-400 font-mono uppercase text-[10px] tracking-wider border-b border-slate-800">
+              <tr>
+                <th class="p-4">Alumno</th>
+                <th class="p-4">Rol</th>
+                <th class="p-4 text-center">Curso 1: Intro & CC</th>
+                <th class="p-4 text-center">Curso 2: Fundamentos</th>
+                <th class="p-4 text-center">Curso 3: Transistores</th>
+                <th class="p-4 text-center">Curso 4: Operacionales</th>
+                <th class="p-4 text-center">Curso 5: Microcontroladores</th>
+                <th class="p-4 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body" class="divide-y divide-slate-800/80 bg-slate-900/40">
+              <!-- Populated dynamically by JS -->
+            </tbody>
+          </table>
+        </div>
 
+      </div>
+    </div>
+
+    <!-- ================= VISTA: BANDEJA DE TAREAS Y EVIDENCIAS PENDIENTES ================= -->
+    <div id="admin-view-tareas" class="space-y-6 hidden">
+      <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl glass-panel space-y-6">
+        
+        <!-- Header & Action Filters -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+          <div>
+            <span class="text-xs font-mono font-bold tracking-wider text-amber-400 uppercase">EVALUACIÓN CONTINUA & PRÁCTICAS</span>
+            <h2 class="text-xl sm:text-2xl font-heading font-extrabold text-white flex items-center gap-2">
+              <span>Bandeja de Tareas y Evidencias</span>
+              <span id="tareas-badge-total" class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono font-bold border border-slate-700">0</span>
+            </h2>
+            <p class="text-xs text-slate-400">Revisa las capturas de simulación en LTspice y asigna tu devolución técnica en tiempo real.</p>
+          </div>
+
+          <!-- Quick Metric Badges -->
+          <div class="flex flex-wrap items-center gap-2 text-xs font-mono">
+            <div class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+              <span>Pendientes:</span>
+              <strong id="kpi-tareas-pendientes" class="font-bold">0</strong>
+            </div>
+            <div class="px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 flex items-center gap-1.5">
+              <span>Aprobadas:</span>
+              <strong id="kpi-tareas-aprobadas" class="font-bold">0</strong>
+            </div>
+            <div class="px-3 py-1.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 flex items-center gap-1.5">
+              <span>En corrección:</span>
+              <strong id="kpi-tareas-correccion" class="font-bold">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Controls Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-950/60 p-3 rounded-2xl border border-slate-800">
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="setTareasFilterStatus('pendiente', this)" class="admin-tarea-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 shadow transition-all cursor-pointer">
+              ⏳ Pendientes de Revisión
+            </button>
+            <button onclick="setTareasFilterStatus('all', this)" class="admin-tarea-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 transition-all border border-slate-800 cursor-pointer">
+              Todas las Entregas
+            </button>
+            <button onclick="setTareasFilterStatus('aprobado', this)" class="admin-tarea-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 transition-all border border-slate-800 cursor-pointer">
+              ✓ Aprobadas
+            </button>
+            <button onclick="setTareasFilterStatus('requiere_correccion', this)" class="admin-tarea-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 transition-all border border-slate-800 cursor-pointer">
+              ⚠️ Requieren Corrección
+            </button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <!-- Filter by Course -->
+            <select id="admin-tareas-filter-course" onchange="renderAdminTareasList()" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 focus:outline-none focus:border-purple-500 font-mono">
+              <option value="all">Todos los Cursos</option>
+              <option value="curso-1">Curso 1: Intro & CC</option>
+              <option value="curso-2">Curso 2: Diodos & Fuentes DC-DC</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Tareas List Container -->
+        <div id="admin-tareas-list-container" class="space-y-3">
+          <!-- Rendered dynamically by renderAdminTareasList() -->
+        </div>
+
+      </div>
     </div>
 
   </main>
@@ -299,12 +386,37 @@
     </div>
   </div>
 
+  <!-- ================= MODAL: REVISIÓN DOCENTE DE TAREAS ================= -->
+  <div id="modal-admin-tarea-review" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="relative bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl glass-panel text-slate-100 my-8">
+      
+      <button type="button" onclick="closeAdminTareaReviewModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center text-lg shrink-0">
+          🔍
+        </div>
+        <div>
+          <span class="text-[10px] font-mono text-purple-400 uppercase font-bold tracking-wider block">REVISIÓN PEDAGÓGICA Y TÉCNICA</span>
+          <h3 class="text-lg font-heading font-extrabold text-white">Devolución de Práctica</h3>
+        </div>
+      </div>
+
+      <div id="admin-tarea-modal-body" class="space-y-4 text-xs">
+        <!-- Rendered dynamically by openAdminTareaReview(tareaId) -->
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div id="admin-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-xl shadow-2xl text-xs sm:text-sm font-semibold transition-all duration-300 flex items-center gap-2 opacity-0 pointer-events-none translate-y-4">
     <!-- Populated by showToast -->
   </div>
 
   <script src="./auth.js"></script>
+  <script src="./app.js"></script>
   <script>
     let allUsers = [];
 
@@ -327,6 +439,7 @@
 
       await loadUsers();
       setupSearch();
+      initAdminTareasListener();
     });
 
     async function loadUsers() {
@@ -509,8 +622,8 @@
                   <span>Boletín</span>
                 </button>
 
-                <button onclick="notifyStudentWhatsApp('${encodeURIComponent(user.name)}', '${encodeURIComponent(user.email)}')" class="p-1.5 text-emerald-400 hover:text-emerald-300 hover:bg-slate-800 rounded-lg transition-colors" title="Avisar por WhatsApp">
-                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.08L2.1 21.9l4.98-1.25A9.95 9.95 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
+                <button onclick="notifyStudentEmail('${encodeURIComponent(user.name)}', '${encodeURIComponent(user.email)}')" class="p-1.5 text-cyan-400 hover:text-cyan-300 hover:bg-slate-800 rounded-lg transition-colors" title="Enviar aviso de alta por Email / Copiar enlace">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                 </button>
                 ${!isAdm ? `
                   <button onclick="handleDeleteUser('${user.id}', '${user.name}')" class="p-1.5 text-slate-500 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors" title="Eliminar alumno">
@@ -758,11 +871,410 @@
       }
     });
 
-    function notifyStudentWhatsApp(name, email) {
+    // ================= GESTIÓN DE TAREAS Y FEEDBACK (FIRESTORE) =================
+    let allTareas = [];
+    let currentReviewTareaId = null;
+    let currentSelectedDecision = 'aprobado';
+    let currentAdminTareasFilterStatus = 'pendiente';
+
+    function switchAdminTab(tab) {
+      const btnUsers = document.getElementById('admin-tab-users');
+      const btnTareas = document.getElementById('admin-tab-tareas');
+      const viewUsers = document.getElementById('admin-view-users');
+      const viewTareas = document.getElementById('admin-view-tareas');
+
+      if (tab === 'users') {
+        btnUsers.className = 'px-5 py-3 rounded-2xl font-heading font-extrabold text-xs sm:text-sm flex items-center gap-2.5 transition-all bg-purple-600 text-white shadow-lg shadow-purple-600/20 cursor-pointer';
+        btnTareas.className = 'px-5 py-3 rounded-2xl font-heading font-extrabold text-xs sm:text-sm flex items-center gap-2.5 transition-all bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 cursor-pointer';
+        viewUsers.classList.remove('hidden');
+        viewTareas.classList.add('hidden');
+      } else {
+        btnTareas.className = 'px-5 py-3 rounded-2xl font-heading font-extrabold text-xs sm:text-sm flex items-center gap-2.5 transition-all bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20 font-black cursor-pointer';
+        btnUsers.className = 'px-5 py-3 rounded-2xl font-heading font-extrabold text-xs sm:text-sm flex items-center gap-2.5 transition-all bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 cursor-pointer';
+        viewTareas.classList.remove('hidden');
+        viewUsers.classList.add('hidden');
+      }
+    }
+
+    function setTareasFilterStatus(status, btn) {
+      currentAdminTareasFilterStatus = status;
+      document.querySelectorAll('.admin-tarea-filter-btn').forEach(b => {
+        b.className = 'admin-tarea-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 transition-all border border-slate-800 cursor-pointer';
+      });
+      if (btn) {
+        btn.className = 'admin-tarea-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 shadow transition-all cursor-pointer';
+      }
+      renderAdminTareasList();
+    }
+
+    function initAdminTareasListener() {
+      const db = window.db || (window.ElectroLab && window.ElectroLab.getDb && window.ElectroLab.getDb());
+      if (!db && typeof firebase !== 'undefined') {
+        try {
+          if (!firebase.apps.length && window.ElectroLab && window.ElectroLab.firebaseConfig) {
+            firebase.initializeApp(window.ElectroLab.firebaseConfig);
+          }
+          window.db = firebase.firestore();
+        } catch(e) {}
+      }
+
+      if (window.db) {
+        window.db.collection('entregas_tareas').onSnapshot((querySnap) => {
+          allTareas = [];
+          querySnap.forEach(docSnap => {
+            allTareas.push({ id: docSnap.id, ...docSnap.data() });
+          });
+          allTareas.sort((a, b) => new Date(b.fechaEntrega || 0) - new Date(a.fechaEntrega || 0));
+          renderAdminTareasList();
+        }, (err) => {
+          console.error("Error en listener de tareas Firestore:", err);
+          loadLocalTareasCache();
+        });
+      } else {
+        loadLocalTareasCache();
+      }
+    }
+
+    function loadLocalTareasCache() {
+      const cached = localStorage.getItem('electrolab_tareas_cache');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          allTareas = Object.keys(parsed).map(k => ({ id: k, ...parsed[k] }));
+          allTareas.sort((a, b) => new Date(b.fechaEntrega || 0) - new Date(a.fechaEntrega || 0));
+          renderAdminTareasList();
+        } catch(e) {}
+      }
+    }
+
+    function renderAdminTareasList() {
+      const container = document.getElementById('admin-tareas-list-container');
+      const badgeTotal = document.getElementById('tareas-badge-total');
+      const badgePending = document.getElementById('admin-pending-badge');
+      const kpiPending = document.getElementById('kpi-tareas-pendientes');
+      const kpiApproved = document.getElementById('kpi-tareas-aprobadas');
+      const kpiCorrection = document.getElementById('kpi-tareas-correccion');
+
+      const courseFilter = document.getElementById('admin-tareas-filter-course') ? document.getElementById('admin-tareas-filter-course').value : 'all';
+
+      const pendingCount = allTareas.filter(t => t.estado === 'pendiente').length;
+      const approvedCount = allTareas.filter(t => t.estado === 'aprobado').length;
+      const correctionCount = allTareas.filter(t => t.estado === 'requiere_correccion').length;
+
+      if (kpiPending) kpiPending.textContent = pendingCount;
+      if (kpiApproved) kpiApproved.textContent = approvedCount;
+      if (kpiCorrection) kpiCorrection.textContent = correctionCount;
+      if (badgeTotal) badgeTotal.textContent = allTareas.length;
+
+      if (badgePending) {
+        if (pendingCount > 0) {
+          badgePending.textContent = pendingCount;
+          badgePending.classList.remove('hidden');
+        } else {
+          badgePending.classList.add('hidden');
+        }
+      }
+
+      let filtered = allTareas;
+      if (currentAdminTareasFilterStatus !== 'all') {
+        filtered = filtered.filter(t => t.estado === currentAdminTareasFilterStatus);
+      }
+      if (courseFilter !== 'all') {
+        filtered = filtered.filter(t => t.cursoId === courseFilter);
+      }
+
+      if (!container) return;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center bg-slate-950/40 border border-slate-800 rounded-2xl text-slate-500 space-y-2">
+            <span class="text-3xl block">📭</span>
+            <p class="text-xs font-mono">No hay entregas registradas en esta categoría.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(t => {
+        const isPending = t.estado === 'pendiente';
+        const isApproved = t.estado === 'aprobado';
+        const isCorrection = t.estado === 'requiere_correccion';
+
+        const statusBadge = isPending
+          ? `<span class="bg-amber-400 text-slate-950 font-black text-[10px] px-2.5 py-1 rounded-md animate-pulse">⏳ PENDIENTE</span>`
+          : isApproved
+            ? `<span class="bg-emerald-500 text-slate-950 font-black text-[10px] px-2.5 py-1 rounded-md">✓ APROBADA</span>`
+            : `<span class="bg-red-500 text-white font-black text-[10px] px-2.5 py-1 rounded-md">⚠️ EN CORRECCIÓN</span>`;
+
+        const formattedDate = t.fechaEntrega ? new Date(t.fechaEntrega).toLocaleString() : 'Fecha no registrada';
+        const isImg = t.archivoUrl && (t.archivoUrl.startsWith('data:image') || t.archivoUrl.includes('.png') || t.archivoUrl.includes('.jpg') || t.archivoUrl.includes('.jpeg'));
+
+        return `
+          <div class="bg-slate-950/80 border ${isPending ? 'border-amber-500/40 hover:border-amber-400' : 'border-slate-800 hover:border-slate-700'} p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all">
+            <div class="flex items-start gap-4">
+              <!-- Thumbnail preview -->
+              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-black border border-slate-800 overflow-hidden shrink-0 flex items-center justify-center cursor-pointer group" onclick="openAdminTareaReview('${t.id}')">
+                ${isImg ? `
+                  <img src="${t.archivoUrl}" alt="Evidencia" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
+                ` : `
+                  <span class="text-2xl text-slate-500">📄</span>
+                `}
+              </div>
+
+              <!-- Student and Lesson Info -->
+              <div class="space-y-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-heading font-extrabold text-white text-sm sm:text-base">${t.alumnoNombre || 'Alumno'}</span>
+                  <span class="text-slate-400 font-mono text-[11px]">(${t.alumnoEmail || 'sin-correo'})</span>
+                  ${statusBadge}
+                </div>
+
+                <div class="text-xs text-cyan-300 font-medium">
+                  <strong class="font-bold text-white">${t.cursoTitulo || t.cursoId}:</strong> ${t.claseTitulo || t.claseId}
+                </div>
+
+                ${t.comentarioAlumno ? `
+                  <p class="text-xs text-slate-400 line-clamp-1 italic bg-slate-900/60 px-2 py-1 rounded border border-slate-800/80">
+                    "${t.comentarioAlumno}"
+                  </p>
+                ` : ''}
+
+                <div class="text-[10px] text-slate-500 font-mono">
+                  Entregado: ${formattedDate}
+                  ${t.fechaFeedback ? ` · Corregido: ${new Date(t.fechaFeedback).toLocaleString()}` : ''}
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Button -->
+            <div class="shrink-0 flex items-center gap-2">
+              <button onclick="openAdminTareaReview('${t.id}')" class="px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-md cursor-pointer ${
+                isPending
+                  ? 'bg-amber-400 hover:bg-amber-300 text-slate-950 font-black shadow-amber-500/20'
+                  : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
+              }">
+                <span>${isPending ? '⚡ Evaluar Práctica' : '🔍 Ver / Modificar Devolución'}</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openAdminTareaReview(tareaId) {
+      const tarea = allTareas.find(t => t.id === tareaId);
+      if (!tarea) return;
+
+      currentReviewTareaId = tareaId;
+      currentSelectedDecision = tarea.estado === 'requiere_correccion' ? 'requiere_correccion' : 'aprobado';
+
+      const modal = document.getElementById('modal-admin-tarea-review');
+      const body = document.getElementById('admin-tarea-modal-body');
+      if (!modal || !body) return;
+
+      const isImg = tarea.archivoUrl && (tarea.archivoUrl.startsWith('data:image') || tarea.archivoUrl.includes('.png') || tarea.archivoUrl.includes('.jpg') || tarea.archivoUrl.includes('.jpeg'));
+      const formattedDate = tarea.fechaEntrega ? new Date(tarea.fechaEntrega).toLocaleString() : 'Fecha no disponible';
+
+      body.innerHTML = `
+        <!-- Student Info Header -->
+        <div class="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl space-y-1">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <span class="text-sm font-heading font-extrabold text-white">${tarea.alumnoNombre}</span>
+            <span class="font-mono text-cyan-400 text-xs">${tarea.alumnoEmail}</span>
+          </div>
+          <div class="text-xs text-slate-300 font-semibold">
+            ${tarea.cursoTitulo || tarea.cursoId} · <span class="text-amber-300">${tarea.claseTitulo || tarea.claseId}</span>
+          </div>
+          <div class="text-[10px] font-mono text-slate-500">
+            Fecha de Entrega: ${formattedDate}
+          </div>
+        </div>
+
+        <!-- Student comment -->
+        <div>
+          <label class="block text-[11px] font-mono text-slate-400 uppercase font-semibold mb-1">Comentario del Alumno:</label>
+          <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-slate-300 text-xs italic">
+            ${tarea.comentarioAlumno ? `"${tarea.comentarioAlumno}"` : 'Sin comentarios adicionales.'}
+          </div>
+        </div>
+
+        <!-- Evidence Attachment Viewer -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-[11px] font-mono text-slate-400 uppercase font-semibold">Evidencia Adjunta:</label>
+            ${tarea.archivoUrl ? `
+              <a href="${tarea.archivoUrl}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
+                <span>Abrir en Pestaña Completa</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </a>
+            ` : ''}
+          </div>
+
+          <div class="p-3 bg-black/80 rounded-2xl border border-slate-800 flex items-center justify-center overflow-hidden max-h-[340px]">
+            ${isImg ? `
+              <img src="${tarea.archivoUrl}" alt="Evidencia de simulación" class="max-h-[320px] w-auto object-contain rounded-lg shadow-lg">
+            ` : tarea.archivoUrl ? `
+              <div class="text-center py-6 space-y-2">
+                <span class="text-4xl block">📄</span>
+                <p class="text-xs text-slate-300 font-mono">${tarea.archivoNombre || 'Archivo adjunto'}</p>
+                <a href="${tarea.archivoUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold rounded-xl text-xs border border-slate-700">
+                  <span>Descargar / Ver Archivo</span>
+                </a>
+              </div>
+            ` : `
+              <span class="text-slate-500 py-4">No se adjuntó archivo</span>
+            `}
+          </div>
+        </div>
+
+        <!-- Teacher Decision Buttons -->
+        <div class="pt-2">
+          <label class="block text-[11px] font-mono text-slate-400 uppercase font-semibold mb-2">Decisión Pedagógica:</label>
+          <div class="grid grid-cols-2 gap-3">
+            <button type="button" id="btn-decision-aprobado" onclick="setAdminDecision('aprobado')" class="p-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+              currentSelectedDecision === 'aprobado'
+                ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-lg shadow-emerald-500/25 ring-2 ring-emerald-400/50'
+                : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700'
+            }">
+              <span class="text-base">✓</span>
+              <span>Aprobar Práctica</span>
+            </button>
+
+            <button type="button" id="btn-decision-correccion" onclick="setAdminDecision('requiere_correccion')" class="p-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+              currentSelectedDecision === 'requiere_correccion'
+                ? 'bg-red-500 text-white border-red-400 shadow-lg shadow-red-500/25 ring-2 ring-red-400/50'
+                : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700'
+            }">
+              <span class="text-base">⚠️</span>
+              <span>Solicitar Corrección</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Feedback Chips -->
+        <div>
+          <label class="block text-[10px] font-mono text-slate-500 uppercase font-semibold mb-1">Frases de Devolución Rápida:</label>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" onclick="setQuickFeedback('¡Excelente simulación! Forma de onda y cálculos de circuito validados correctamente.')" class="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white rounded-lg text-[10px] transition-colors cursor-pointer">
+              + Excelente simulación
+            </button>
+            <button type="button" onclick="setQuickFeedback('Mediciones analíticas verificadas y valores de tensión/corriente según consigna. Práctica aprobada.')" class="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white rounded-lg text-[10px] transition-colors cursor-pointer">
+              + Mediciones verificadas
+            </button>
+            <button type="button" onclick="setQuickFeedback('Por favor revisa el dimensionamiento de la resistencia limitadora y vuelve a subir la captura.')" class="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white rounded-lg text-[10px] transition-colors cursor-pointer">
+              + Revisar resistencia
+            </button>
+            <button type="button" onclick="setQuickFeedback('El porcentaje de rizado es mayor al esperado. Verifica el capacitor de filtro en la simulación.')" class="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white rounded-lg text-[10px] transition-colors cursor-pointer">
+              + Revisar rizado
+            </button>
+          </div>
+        </div>
+
+        <!-- Feedback Docente Textarea -->
+        <div>
+          <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Devolución / Feedback Técnico para el Alumno *</label>
+          <textarea id="admin-feedback-textarea" rows="3" required placeholder="Escribí aquí tus observaciones, felicitaciones o puntos a corregir..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-purple-500 focus:outline-none text-xs text-white placeholder-slate-600 resize-none transition-colors">${tarea.feedbackDocente || ''}</textarea>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-3">
+          <button type="button" onclick="closeAdminTareaReviewModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition-colors cursor-pointer">
+            Cancelar
+          </button>
+          <button type="button" id="btn-save-tarea-feedback" onclick="saveAdminTareaFeedback()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-heading font-extrabold px-6 py-2.5 rounded-xl text-xs transition-all shadow-lg flex items-center gap-2 cursor-pointer">
+            <span>Guardar Devolución en Firestore</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          </button>
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeAdminTareaReviewModal() {
+      const modal = document.getElementById('modal-admin-tarea-review');
+      if (modal) modal.classList.add('hidden');
+      currentReviewTareaId = null;
+    }
+
+    function setAdminDecision(decision) {
+      currentSelectedDecision = decision;
+      const btnAprobado = document.getElementById('btn-decision-aprobado');
+      const btnCorreccion = document.getElementById('btn-decision-correccion');
+      if (btnAprobado && btnCorreccion) {
+        if (decision === 'aprobado') {
+          btnAprobado.className = 'p-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all bg-emerald-500 text-slate-950 border-emerald-400 shadow-lg shadow-emerald-500/25 ring-2 ring-emerald-400/50 cursor-pointer';
+          btnCorreccion.className = 'p-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700 cursor-pointer';
+        } else {
+          btnCorreccion.className = 'p-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all bg-red-500 text-white border-red-400 shadow-lg shadow-red-500/25 ring-2 ring-red-400/50 cursor-pointer';
+          btnAprobado.className = 'p-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700 cursor-pointer';
+        }
+      }
+    }
+
+    function setQuickFeedback(text) {
+      const textarea = document.getElementById('admin-feedback-textarea');
+      if (textarea) {
+        if (textarea.value.trim().length > 0) {
+          textarea.value += ' ' + text;
+        } else {
+          textarea.value = text;
+        }
+      }
+    }
+
+    async function saveAdminTareaFeedback() {
+      if (!currentReviewTareaId) return;
+      const textarea = document.getElementById('admin-feedback-textarea');
+      const feedbackText = textarea ? textarea.value.trim() : '';
+
+      const btn = document.getElementById('btn-save-tarea-feedback');
+      const origHtml = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<span class="inline-block animate-spin mr-2">⏳</span> Guardando...`;
+      }
+
+      try {
+        if (window.db) {
+          await window.db.collection('entregas_tareas').doc(currentReviewTareaId).update({
+            estado: currentSelectedDecision,
+            feedbackDocente: feedbackText,
+            fechaFeedback: new Date().toISOString()
+          });
+        } else {
+          const cached = JSON.parse(localStorage.getItem('electrolab_tareas_cache') || '{}');
+          if (cached[currentReviewTareaId]) {
+            cached[currentReviewTareaId].estado = currentSelectedDecision;
+            cached[currentReviewTareaId].feedbackDocente = feedbackText;
+            cached[currentReviewTareaId].fechaFeedback = new Date().toISOString();
+            localStorage.setItem('electrolab_tareas_cache', JSON.stringify(cached));
+          }
+        }
+
+        showToast(`✓ Devolución guardada (${currentSelectedDecision === 'aprobado' ? 'Aprobada' : 'Corrección solicitada'})`, 'success');
+        closeAdminTareaReviewModal();
+      } catch (err) {
+        console.error("Error guardando devolución:", err);
+        showToast('Error al guardar devolución: ' + err.message, 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = origHtml;
+        }
+      }
+    }
+
+    function notifyStudentEmail(name, email) {
       const decodedName = decodeURIComponent(name);
       const decodedEmail = decodeURIComponent(email);
-      const msg = `¡Hola ${decodedName}! Ya tienes habilitado el acceso a tus cursos en ElectroLab Educativa con tu cuenta (${decodedEmail}). Puedes ingresar en: https://electrolabeducativa.com.ar/login.html ¡A disfrutar del aprendizaje!`;
-      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+      const subject = `¡Tu acceso en ElectroLab Educativa ya está activo!`;
+      const body = `¡Hola ${decodedName}!\n\nTe confirmamos que ya tienes habilitado el acceso oficial a tus cursos en la plataforma de ElectroLab Educativa con tu cuenta (${decodedEmail}).\n\nPuedes ingresar en:\nhttps://electrolabeducativa.com.ar/login.html\n\n¡Muchos éxitos en tu cursada!\nEquipo Docente ElectroLab`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(body);
+        showToast(`✓ Mensaje copiado al portapapeles para ${decodedEmail}`, 'success');
+      }
+      window.open(`mailto:${encodeURIComponent(decodedEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
     }
 
     function showToast(message, type = 'info') {

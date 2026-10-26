@@ -46,24 +46,24 @@ Al iniciar el sistema por primera vez, se configuran dos cuentas automáticas:
   - *Pack Master Completo* (ON / OFF)
   - *Biblioteca LTspice .ASC* (ON / OFF)
   Al hacer clic en un switch, el permiso se actualiza inmediatamente en la base de datos SQLite.
-* **Alta Manual de Alumnos:** Botón `➕ Registrar Nuevo Alumno` para crear una cuenta en el acto cuando alguien compra por Transferencia Bancaria o WhatsApp, asignándole sus cursos de inmediato.
-* **Aviso por WhatsApp en 1 Clic:** Botón directo para enviar un WhatsApp al alumno confirmándole que sus cursos ya están activos en su cuenta.
+* **Alta Manual de Alumnos:** Botón `➕ Registrar Nuevo Alumno` para crear una cuenta en el acto cuando alguien compra por Transferencia Bancaria o Mercado Pago, asignándole sus cursos de inmediato.
+* **Aviso de Alta en 1 Clic:** Botón directo para enviar un email al alumno confirmándole que sus cursos ya están activos en su cuenta.
 * **Buscador en Vivo:** Filtra al instante por nombre o correo electrónico.
 
 ### 2. Aula Virtual Privada del Alumno ([`aula.html`](file:///C:/Users/dbarr/.gemini/antigravity/scratch/electrolab-web/aula.html))
 * **Cursos Habilitados:** El alumno **SOLO puede ver y acceder** a los cursos que ha comprado o que el administrador le haya activado.
 * **Cursos Disponibles para Desbloquear:** Los cursos no adquiridos aparecen bloqueados con un candado 🔒 y un botón directo para adquirirlos.
 * **Reproductor de Clases Integrado:**
-  - Pantalla de video en alta definición con lista de lecciones agrupadas por módulo.
+  - Pantalla de video en alta definición con lista de lecciones consecutivas.
   - **Descargas y Materiales en Google Drive:** Enlaces directos a las carpetas privadas de Google Drive para descargar los archivos `.asc` de LTspice, sketches `.ino` de Arduino y diagramas esquemáticos en PDF correspondientes a cada curso con `target="_blank"`.
   - **Seguimiento de Progreso:** Botón para marcar cada clase como completada con barra de porcentaje en tiempo real.
-  - **Soporte Directo con el Profesor:** Botón flotante para consultar dudas de la clase por WhatsApp.
+  - **Consultas Técnicas por Lección:** Formulario integrado debajo de cada clase para enviar preguntas técnicas directamente al docente vía Formspree.
 
 ### 📁 Carpetas de Materiales Oficiales (Google Drive)
 * **Curso 1 (Electrónica Desde Cero):** `https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link`
-* **Curso 2 (Arduino & Microcontroladores):** `https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=drive_link`
-* **Curso 3 (Combo Master):** `https://drive.google.com/drive/folders/18vYXavKUw_ge42v26zVGgFxHzGsSWV5J?usp=drive_link`
-* **Curso 4 (Simulaciones LTspice):** `https://drive.google.com/drive/folders/1Ria3iinViGHPSRa1VlQIypBTQRrf-IAX?usp=drive_link`
+* **Curso 2 (Diodos, Fuentes Lineales y Conmutadas):** `https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=sharing`
+* **Curso 3 (Transistores BJT & MOSFET):** `https://drive.google.com/drive/folders/18vYXavKUw_ge42v26zVGgFxHzGsSWV5J?usp=drive_link`
+* **Curso 4 (Operacionales & Filtros):** `https://drive.google.com/drive/folders/1Ria3iinViGHPSRa1VlQIypBTQRrf-IAX?usp=drive_link`
 *(Los enlaces públicos a repositorios de GitHub han sido eliminados por seguridad y sustituidos por estas carpetas).*
 
 ### 3. Pantalla de Acceso ([`login.html`](file:///C:/Users/dbarr/.gemini/antigravity/scratch/electrolab-web/login.html))
@@ -72,7 +72,7 @@ Al iniciar el sistema por primera vez, se configuran dos cuentas automáticas:
 * Redirección inteligente: los administradores son dirigidos a `admin.html` y los alumnos a `aula.html`.
 
 ### 4. Tienda Pública y Landing Page ([`index.html`](file:///C:/Users/dbarr/.gemini/antigravity/scratch/electrolab-web/index.html))
-* **WhatsApp Oficial:** Vinculado a `+54 9 11 2306-5347` (`5491123065347`) en botones de compra, soporte y consultas.
+* **Canal Oficial de Avisos y Soporte:** Integrado con Formspree (`https://formspree.io/f/xbgdqedy`) para avisos de pagos por transferencia y consultas académicas.
 * Simulador interactivo con **osciloscopio digital en vivo**, formas de onda (PWM/555, Senoidal, RC), potenciómetro y monitor serie.
 * Catálogo de cursos con conmutador de moneda (**ARS $** y **USD $**).
 * Carrito de compras con cupón `ELECTRO2026`.
