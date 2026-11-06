@@ -108,3 +108,29 @@ code, pre, .font-mono {
 .scope-frame {
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.9), 0 0 20px rgba(6, 182, 212, 0.15);
 }
+
+/* Biblioteca Técnica y Botones de Compra Digital */
+.btn-gumroad {
+  background-color: #ff90e8;
+  color: #060913;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-gumroad:hover {
+  background-color: #ff7be3;
+  box-shadow: 0 0 25px rgba(255, 144, 232, 0.45);
+  transform: translateY(-1px);
+}
+
+.btn-mercadopago {
+  background-color: #009ee3;
+  color: #ffffff;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-mercadopago:hover {
+  background-color: #0086c2;
+  box-shadow: 0 0 25px rgba(0, 158, 227, 0.45);
+  transform: translateY(-1px);
+}
+

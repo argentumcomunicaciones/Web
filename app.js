@@ -698,6 +698,50 @@
     }
   ];
 
+  // Catálogo de Productos Digitales (Biblioteca Técnica y Apuntes Teóricos)
+  const DIGITAL_GUIDES = [
+    {
+      id: 'master-pack-48',
+      title: 'MASTER PACK: El camino del diseñador (48 Guides)',
+      subtitle: 'Colección integral (Niveles 1, 2 y 3) + Laboratorio virtual con archivos .asc para LTspice.',
+      priceARS: 75000,
+      priceUSD: 50,
+      linkARS: 'https://mpago.la/2kmrdT1',
+      linkUSD: 'https://electrolabeducativa.gumroad.com/l/mnqyqj',
+      featured: true
+    },
+    {
+      id: 'pack-nivel-1',
+      title: 'Nivel 1: Electrónica Básica y Fuentes de Alimentación (16 Guías PDF)',
+      subtitle: 'Diodos, rectificación, filtrado capacitivo y fuentes lineales reguladas.',
+      priceARS: 30000,
+      priceUSD: 20,
+      linkARS: 'https://mpago.la/2kKHD12',
+      linkUSD: 'https://electrolabeducativa.gumroad.com/l/tvmmv',
+      featured: false
+    },
+    {
+      id: 'pack-nivel-2',
+      title: 'Nivel 2: Transistores y Fuentes Conmutadas SMPS (12 Guías PDF)',
+      subtitle: 'BJT, MOSFET en conmutación/amplificación y diseño de fuentes conmutadas SMPS.',
+      priceARS: 30000,
+      priceUSD: 20,
+      linkARS: 'https://mpago.la/2kKHD12',
+      linkUSD: 'https://electrolabeducativa.gumroad.com/l/ypukcl',
+      featured: false
+    },
+    {
+      id: 'pack-nivel-3',
+      title: 'Nivel 3: Operacionales y Filtros de Orden Superior (20 Guías PDF)',
+      subtitle: 'Configuraciones lineales y no lineales, filtros activos Butterworth y Chebyshev.',
+      priceARS: 30000,
+      priceUSD: 20,
+      linkARS: 'https://mpago.la/2kKHD12',
+      linkUSD: 'https://electrolabeducativa.gumroad.com/l/rpbzf',
+      featured: false
+    }
+  ];
+
   // Estado global de la aplicación
   let state = {
     currency: localStorage.getItem('electrolab_currency') || CONFIG.defaultCurrency,
@@ -776,6 +820,7 @@
     saveState();
     renderCourses();
     updateCatalogBanner();
+    renderDigitalGuides();
     updateCurrencyButtons();
     updateCartUI();
     renderCartCheckoutAction();
@@ -1010,12 +1055,167 @@
     updateCatalogBanner();
   }
 
+  // Renderizar Biblioteca Técnica y Apuntes Teóricos (Guías PDF + LTspice)
+  function renderDigitalGuides() {
+    const container = document.getElementById('digital-guides-container');
+    if (!container) return;
+
+    const isArs = state.currency === 'ARS';
+
+    const masterPack = DIGITAL_GUIDES.find(g => g.id === 'master-pack-48') || DIGITAL_GUIDES[0];
+    const levelPacks = DIGITAL_GUIDES.filter(g => g.id !== 'master-pack-48');
+
+    const masterPriceText = isArs ? `$ ${masterPack.priceARS.toLocaleString('es-AR')} ARS` : `US$ ${masterPack.priceUSD}`;
+    const masterBtnText = isArs ? `Pagar con Mercado Pago ($ ${masterPack.priceARS.toLocaleString('es-AR')} ARS)` : `Comprar en Gumroad (US$ ${masterPack.priceUSD})`;
+    const masterLink = isArs ? masterPack.linkARS : masterPack.linkUSD;
+    const masterBtnClass = isArs ? 'btn-mercadopago' : 'btn-gumroad';
+
+    container.innerHTML = `
+      <!-- Tarjeta destacada (MASTER PACK) -->
+      <article class="relative bg-gradient-to-br from-slate-900 via-slate-900 to-cyan-950/40 rounded-3xl p-6 sm:p-8 lg:p-10 border-2 border-cyan-500/70 shadow-[0_0_35px_rgba(6,182,212,0.22)] overflow-hidden">
+        <div class="absolute -right-16 -top-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <div class="lg:col-span-7 space-y-4">
+            <div class="flex flex-wrap items-center gap-3">
+              <span class="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider px-3.5 py-1 rounded-full shadow-md">
+                ⭐ MÁS COMPLETO / RECOMENDADO
+              </span>
+              <span class="text-xs font-mono text-cyan-300 bg-cyan-950/80 border border-cyan-700/60 px-3 py-1 rounded-full font-bold">
+                48 GUÍAS PDF + ARCHIVOS .ASC
+              </span>
+            </div>
+
+            <h3 class="text-2xl sm:text-3xl lg:text-4xl font-heading font-black text-white leading-tight">
+              ${masterPack.title}
+            </h3>
+
+            <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+              ${masterPack.subtitle}
+            </p>
+
+            <!-- Desglose de contenido -->
+            <div class="pt-3 border-t border-slate-800/80 space-y-2.5">
+              <h4 class="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold">
+                Desglose del contenido incluido:
+              </h4>
+              <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-slate-200">
+                <li class="flex items-start gap-2">
+                  <svg class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                  <span><strong>Niveles 1, 2 y 3 completos</strong> (48 Guías PDF)</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <svg class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                  <span><strong>Laboratorio virtual:</strong> archivos .asc para LTspice</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <svg class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                  <span>Fórmulas de diseño y derivaciones analíticas</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <svg class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                  <span>Soporte técnico directo vía email incluido</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 flex flex-col justify-center items-center lg:items-end">
+            <div class="w-full max-w-sm bg-slate-950/90 border border-slate-800 rounded-2xl p-6 text-center space-y-4 shadow-xl">
+              <div>
+                <span class="text-xs uppercase font-mono tracking-wider text-slate-400 block mb-1">Inversión Colección Completa</span>
+                <span class="text-3xl sm:text-4xl font-heading font-black text-white block">
+                  ${masterPriceText}
+                </span>
+                <span class="text-xs text-emerald-400 font-mono block mt-1">Acceso de por vida • Descarga inmediata</span>
+              </div>
+
+              <a href="${masterLink}" target="_blank" rel="noopener noreferrer" class="w-full py-3.5 px-6 rounded-xl font-bold text-sm tracking-wide shadow-lg flex items-center justify-center gap-2 cursor-pointer ${masterBtnClass}">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                <span>${masterBtnText}</span>
+              </a>
+
+              <div class="flex items-center justify-center gap-2 text-[11px] text-slate-400">
+                <svg class="w-3.5 h-3.5 text-cyan-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                <span>Pago 100% seguro • Entrega digital inmediata</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- Tarjetas secundarias (Packs por nivel) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        ${levelPacks.map((pack, idx) => {
+          const priceText = isArs ? `$ ${pack.priceARS.toLocaleString('es-AR')} ARS` : `US$ ${pack.priceUSD}`;
+          const btnText = isArs ? `Pagar con Mercado Pago ($ ${pack.priceARS.toLocaleString('es-AR')} ARS)` : `Comprar en Gumroad (US$ ${pack.priceUSD})`;
+          const link = isArs ? pack.linkARS : pack.linkUSD;
+          const btnClass = isArs ? 'btn-mercadopago' : 'btn-gumroad';
+          const levelNum = idx + 1;
+
+          return `
+            <article class="bg-slate-900/90 border border-slate-800 hover:border-cyan-500/50 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 shadow-lg">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-3">
+                  <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-cyan-400 bg-cyan-950/60 border border-cyan-800/60 px-2.5 py-1 rounded-md">
+                    Nivel ${levelNum}
+                  </span>
+                  <span class="text-xs text-slate-400 font-mono">Guías PDF + .ASC</span>
+                </div>
+
+                <h4 class="text-lg font-heading font-bold text-white mb-2 leading-snug">
+                  ${pack.title}
+                </h4>
+
+                <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-4">
+                  ${pack.subtitle}
+                </p>
+
+                <ul class="space-y-1.5 mb-6 text-xs text-slate-300">
+                  <li class="flex items-center gap-2">
+                    <span class="text-emerald-400 font-bold">✓</span>
+                    <span>Guías técnicas en PDF descargables</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <span class="text-emerald-400 font-bold">✓</span>
+                    <span>Circuitos y archivos .asc para LTspice</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <span class="text-emerald-400 font-bold">✓</span>
+                    <span>Fórmulas de cálculo y diseño analítico</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="pt-4 border-t border-slate-800/80 mt-auto space-y-3">
+                <div class="flex items-baseline justify-between">
+                  <span class="text-xs text-slate-400 font-mono uppercase">Inversión</span>
+                  <span class="text-xl font-heading font-black text-white">
+                    ${priceText}
+                  </span>
+                </div>
+
+                <a href="${link}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 rounded-xl font-bold text-xs tracking-wide shadow-md flex items-center justify-center gap-2 cursor-pointer ${btnClass}">
+                  <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                  <span>${btnText}</span>
+                </a>
+              </div>
+            </article>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
   // Conmutador de moneda
   function setCurrency(curr) {
     state.currency = curr;
     saveState();
     updateCurrencyButtons();
     renderCourses();
+    renderDigitalGuides();
     updateCartUI();
     renderCartCheckoutAction();
     const payModal = document.getElementById('payment-modal');
@@ -2322,6 +2522,9 @@
   window.ElectroLab = {
     COURSES,
     courses: COURSES,
+    DIGITAL_GUIDES,
+    digitalGuides: DIGITAL_GUIDES,
+    renderDigitalGuides,
     setCurrency,
     updateCatalogBanner,
     toggleCart,
