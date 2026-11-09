@@ -36,7 +36,7 @@
   </script>
 
   <!-- Google Fonts & Custom CSS -->
-  <link rel="stylesheet" href="./styles.css?v=4.0">
+  <link rel="stylesheet" href="./styles.css?v=4.1">
 </head>
 <body class="bg-[#060913] text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-950 min-h-screen flex flex-col circuit-grid-bg">
 
@@ -692,18 +692,6 @@
           </button>
 
         </form>
-
-        <!-- Direct Support & Payment Notice Box -->
-        <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
-          <button type="button" onclick="window.ElectroLab.openTransferNoticeModal()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-500/60 text-slate-200 hover:text-white transition-all text-xs font-semibold shadow cursor-pointer">
-            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            <span>Informar Pago de Transferencia</span>
-          </button>
-          <button type="button" onclick="window.ElectroLab.openContactModal()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-500/60 text-slate-200 hover:text-white transition-all text-xs font-semibold shadow cursor-pointer">
-            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-            <span>Escribir a Soporte Académico</span>
-          </button>
-        </div>
       </div>
 
     </div>
@@ -745,8 +733,7 @@
           <ul class="space-y-2 text-xs">
             <li><a href="https://www.youtube.com/@ElectroLabEducativa" target="_blank" rel="noopener noreferrer" class="hover:text-red-400 transition-colors flex items-center gap-1.5"><span>YouTube (@ElectroLabEducativa)</span></a></li>
             <li><a href="./login.html" class="hover:text-cyan-400 transition-colors">Carpetas en Google Drive</a></li>
-            <li><button type="button" onclick="window.ElectroLab.openContactModal()" class="hover:text-cyan-400 text-slate-300 transition-colors flex items-center gap-1.5 text-left"><span class="text-cyan-400 font-semibold">Soporte Académico:</span> <span>Activo vía Formulario</span></button></li>
-            <li><button type="button" onclick="window.ElectroLab.openTransferNoticeModal()" class="hover:text-cyan-400 text-slate-300 transition-colors flex items-center gap-1.5 text-left"><span class="text-emerald-400 font-semibold">Avisos de Pago:</span> <span>Informar Transferencia</span></button></li>
+            <li><a href="#contacto" class="hover:text-cyan-400 transition-colors">Formulario de Contacto</a></li>
           </ul>
         </div>
 
@@ -859,7 +846,7 @@
   <!-- Scripts -->
   <script src="./auth.js"></script>
   <script src="./circuit-sim.js"></script>
-  <script src="app.js?v=4.0"></script>
+  <script src="app.js?v=4.1"></script>
   <!-- Vercel Analytics -->
   <script defer src="/_vercel/insights/script.js"></script>
 </body>

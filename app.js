@@ -1729,13 +1729,6 @@
               </button>
             `}
           </div>
-
-          <div class="text-[11px] text-slate-400 pt-2">
-            ¿Ya realizaste el pago por transferencia o Mercado Pago?
-            <button type="button" onclick="window.ElectroLab.closeAccessNoticeModal(); window.ElectroLab.openTransferNoticeModal('${course.id}')" class="text-cyan-400 hover:underline font-bold block sm:inline ml-1 cursor-pointer">
-              Informar comprobante de pago aquí
-            </button>
-          </div>
         </div>
 
       </div>
@@ -1879,11 +1872,6 @@
     document.body.removeChild(textArea);
   }
 
-  // Aviso de pago y comprobante
-  function sendPaymentReceipt() {
-    openTransferNoticeModal();
-  }
-
   function openPaymentModal(method) {
     const modal = document.getElementById('payment-modal');
     const container = document.getElementById('payment-modal-body');
@@ -1934,13 +1922,6 @@
               <span>Pagar con Mercado Pago (${formatMoney(totals.total, 'ARS').replace('$ ', '$')})</span>
             </button>
           </div>
-
-          <p class="text-xs text-slate-400 text-center">¿Ya realizaste tu pago? Informa tu comprobante para activar tu acceso inmediatamente:</p>
-
-          <button type="button" onclick="window.ElectroLab.closePaymentModal(); window.ElectroLab.openTransferNoticeModal();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-3 rounded-xl transition-all border border-slate-700 flex items-center justify-center gap-2 text-xs cursor-pointer">
-            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            <span>Informar Comprobante de Pago</span>
-          </button>
         </div>
       `;
     } else {
@@ -1970,18 +1951,7 @@
               <span>Pagar con PayPal (${formatMoney(totals.total, 'USD')})</span>
               <svg class="w-3.5 h-3.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
             </a>
-              <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.774.774 0 0 1 .763-.646h7.008c3.15 0 5.467 1.054 5.922 3.864.218 1.344-.067 2.766-.826 3.743-.728.937-1.854 1.488-3.23 1.584l-.19.008h-2.92a.774.774 0 0 0-.764.646l-.999 6.337a.641.641 0 0 1-.632.535z"/></svg>
-              <span>Pagar con PayPal (US$ 50)</span>
-              <svg class="w-3.5 h-3.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-            </a>
           </div>
-
-          <p class="text-xs text-slate-400 text-center">¿Ya realizaste tu pago? Informa tu comprobante para activar tu acceso inmediatamente:</p>
-
-          <button type="button" onclick="window.ElectroLab.closePaymentModal(); window.ElectroLab.openTransferNoticeModal();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-3 rounded-xl transition-all border border-slate-700 flex items-center justify-center gap-2 text-xs cursor-pointer">
-            <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            <span>Informar Comprobante de Pago</span>
-          </button>
         </div>
       `;
     }
@@ -2005,296 +1975,6 @@
     if (modal) {
       modal.classList.add('hidden');
       document.body.classList.remove('overflow-hidden');
-    }
-  }
-
-  // ================= MODAL: INFORMAR PAGO DE TRANSFERENCIA =================
-  function openTransferNoticeModal(prefillCourseId) {
-    let modal = document.getElementById('modal-transfer-notice');
-    if (!modal) {
-      modal = document.createElement('div');
-      modal.id = 'modal-transfer-notice';
-      modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto';
-      document.body.appendChild(modal);
-    }
-
-    const u = (window.ElectroLabAuth && window.ElectroLabAuth.getCurrentUser) ? window.ElectroLabAuth.getCurrentUser() : null;
-    const initialName = u ? (u.name || '') : '';
-    const initialEmail = u ? (u.email || '') : '';
-
-    modal.innerHTML = `
-      <div class="relative bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl text-slate-100 my-8">
-        <button type="button" onclick="window.ElectroLab.closeTransferNoticeModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition-colors" title="Cerrar ventana">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-lg shrink-0">
-            📋
-          </div>
-          <div>
-            <h3 class="text-lg font-heading font-bold text-white">Informar Comprobante de Pago</h3>
-            <p class="text-xs text-slate-400">Notifica los datos de tu comprobante (Mercado Pago o PayPal) para activar tu acceso inmediatamente.</p>
-          </div>
-        </div>
-
-        <form id="form-transfer-notice" onsubmit="window.ElectroLab.handleTransferNoticeSubmit(event)" class="space-y-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Nombre y Apellido *</label>
-              <input type="text" id="transfer-nombre" required value="${initialName}" placeholder="Tu nombre y apellido" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-600 transition-colors">
-            </div>
-            <div>
-              <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Correo Electrónico *</label>
-              <input type="email" id="transfer-email" required value="${initialEmail}" placeholder="tu@email.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-600 transition-colors">
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Curso Abonado *</label>
-            <select id="transfer-curso" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white transition-colors">
-              <option value="Curso 1: Análisis de Circuitos en CC y CA" ${prefillCourseId === 'curso-1' ? 'selected' : ''}>Curso 1: Análisis de Circuitos en CC y CA ($75.000 ARS / 50 USD)</option>
-              <option value="Curso 2: Diodos, Fuentes Lineales y Conmutadas (DC-DC)" ${prefillCourseId === 'curso-2' ? 'selected' : ''}>Curso 2: Diodos, Fuentes Lineales y Conmutadas DC-DC ($75.000 ARS / 50 USD)</option>
-              <option value="Ambos Cursos (Curso 1 + Curso 2)">Ambos Cursos (Curso 1 + Curso 2)</option>
-              <option value="Otro / Pack Especial">Otro / Pack Especial</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">N° de Comprobante / Transacción *</label>
-            <input type="text" id="transfer-comprobante" required placeholder="Ej: Operación Mercado Pago o Transacción PayPal" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-600 transition-colors">
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Mensaje / Comentario (opcional)</label>
-            <textarea id="transfer-mensaje" rows="2" placeholder="Opcional: titular de la cuenta, medio utilizado o detalle adicional..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-600 resize-none transition-colors"></textarea>
-          </div>
-
-          <!-- Feedback Status Box -->
-          <div id="transfer-feedback" class="hidden"></div>
-
-          <div class="pt-2">
-            <button type="submit" id="transfer-btn-submit" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-heading font-extrabold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] flex items-center justify-center gap-2 text-xs sm:text-sm cursor-pointer">
-              <span>Enviar Comprobante de Pago</span>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-            </button>
-          </div>
-        </form>
-      </div>
-    `;
-
-    modal.classList.remove('hidden');
-    document.body.classList.add('overflow-hidden');
-  }
-
-  function closeTransferNoticeModal() {
-    const modal = document.getElementById('modal-transfer-notice');
-    if (modal) {
-      modal.classList.add('hidden');
-      document.body.classList.remove('overflow-hidden');
-    }
-  }
-
-  async function handleTransferNoticeSubmit(e) {
-    if (e) e.preventDefault();
-    const btn = document.getElementById('transfer-btn-submit');
-    const feedback = document.getElementById('transfer-feedback');
-    const nombre = document.getElementById('transfer-nombre').value.trim();
-    const email = document.getElementById('transfer-email').value.trim();
-    const curso = document.getElementById('transfer-curso').value;
-    const comprobante = document.getElementById('transfer-comprobante').value.trim();
-    const mensaje = document.getElementById('transfer-mensaje').value.trim();
-
-    if (!nombre || !email || !comprobante) {
-      showToast('Por favor completa todos los campos requeridos', 'error');
-      return;
-    }
-
-    const originalText = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = `<span class="inline-block animate-spin mr-2">⏳</span> Enviando comprobante...`;
-    if (feedback) feedback.classList.add('hidden');
-
-    try {
-      const response = await fetch(CONFIG.formspreeEndpoint || 'https://formspree.io/f/xbgdqedy', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          tipo_evento: "Aviso de Comprobante de Pago",
-          alumno_nombre: nombre,
-          alumno_email: email,
-          curso_abonado: curso,
-          comprobante: comprobante,
-          mensaje: mensaje || 'Sin comentarios adicionales',
-          fecha: new Date().toLocaleString()
-        })
-      });
-
-      if (response.ok) {
-        if (feedback) {
-          feedback.className = "p-3.5 bg-emerald-950/80 border border-emerald-500/50 rounded-xl text-emerald-300 text-xs font-semibold leading-relaxed block";
-          feedback.innerHTML = "¡Comprobante informado con éxito! En breve validaremos la acreditación y habilitaremos tu acceso.";
-        }
-        showToast('¡Comprobante informado con éxito!');
-        document.getElementById('transfer-comprobante').value = '';
-        document.getElementById('transfer-mensaje').value = '';
-        setTimeout(() => {
-          closeTransferNoticeModal();
-        }, 3500);
-      } else {
-        throw new Error('Error en el servidor de Formspree');
-      }
-    } catch (err) {
-      if (feedback) {
-        feedback.className = "p-3.5 bg-red-950/80 border border-red-500/50 rounded-xl text-red-300 text-xs font-semibold leading-relaxed block";
-        feedback.innerHTML = "Ocurrió un error al enviar el comprobante. Por favor intenta de nuevo.";
-      }
-      showToast('Error al enviar el aviso de pago', 'error');
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = originalText;
-    }
-  }
-
-  // ================= MODAL: FORMULARIO DE CONTACTO GENERAL =================
-  function openContactModal() {
-    let modal = document.getElementById('modal-general-contact');
-    if (!modal) {
-      modal = document.createElement('div');
-      modal.id = 'modal-general-contact';
-      modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto';
-      document.body.appendChild(modal);
-    }
-
-    const u = (window.ElectroLabAuth && window.ElectroLabAuth.getCurrentUser) ? window.ElectroLabAuth.getCurrentUser() : null;
-    const initialName = u ? (u.name || '') : '';
-    const initialEmail = u ? (u.email || '') : '';
-
-    modal.innerHTML = `
-      <div class="relative bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl text-slate-100 my-8">
-        <button type="button" onclick="window.ElectroLab.closeContactModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition-colors" title="Cerrar ventana">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-lg shrink-0">
-            ✉️
-          </div>
-          <div>
-            <h3 class="text-lg font-heading font-bold text-white">Contacto & Soporte Académico</h3>
-            <p class="text-xs text-slate-400">Envíanos tu consulta sobre cursos, pagos o certificaciones.</p>
-          </div>
-        </div>
-
-        <form id="form-general-contact" onsubmit="window.ElectroLab.handleContactModalSubmit(event)" class="space-y-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Nombre Completo *</label>
-              <input type="text" id="contact-nombre" required value="${initialName}" placeholder="Tu nombre" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-600 transition-colors">
-            </div>
-            <div>
-              <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Correo Electrónico *</label>
-              <input type="email" id="contact-email" required value="${initialEmail}" placeholder="tu@email.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-600 transition-colors">
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Asunto *</label>
-            <input type="text" id="contact-asunto" required placeholder="Ej: Consulta de temario / Formas de pago / Soporte técnico" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-600 transition-colors">
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-mono text-slate-300 uppercase font-semibold mb-1">Mensaje o Consulta *</label>
-            <textarea id="contact-mensaje" rows="4" required placeholder="Escribe aquí tu consulta en detalle..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-600 resize-none transition-colors"></textarea>
-          </div>
-
-          <!-- Feedback Status Box -->
-          <div id="contact-feedback" class="hidden"></div>
-
-          <div class="pt-2">
-            <button type="submit" id="contact-btn-submit" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-heading font-extrabold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] flex items-center justify-center gap-2 text-xs sm:text-sm cursor-pointer">
-              <span>Enviar Consulta</span>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-            </button>
-          </div>
-        </form>
-      </div>
-    `;
-
-    modal.classList.remove('hidden');
-    document.body.classList.add('overflow-hidden');
-  }
-
-  function closeContactModal() {
-    const modal = document.getElementById('modal-general-contact');
-    if (modal) {
-      modal.classList.add('hidden');
-      document.body.classList.remove('overflow-hidden');
-    }
-  }
-
-  async function handleContactModalSubmit(e) {
-    if (e) e.preventDefault();
-    const btn = document.getElementById('contact-btn-submit');
-    const feedback = document.getElementById('contact-feedback');
-    const nombre = document.getElementById('contact-nombre').value.trim();
-    const email = document.getElementById('contact-email').value.trim();
-    const asunto = document.getElementById('contact-asunto').value.trim();
-    const mensaje = document.getElementById('contact-mensaje').value.trim();
-
-    if (!nombre || !email || !asunto || !mensaje) {
-      showToast('Por favor completa todos los campos requeridos', 'error');
-      return;
-    }
-
-    const originalText = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = `<span class="inline-block animate-spin mr-2">⏳</span> Enviando consulta...`;
-    if (feedback) feedback.classList.add('hidden');
-
-    try {
-      const response = await fetch(CONFIG.formspreeEndpoint || 'https://formspree.io/f/xbgdqedy', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          tipo_evento: "Consulta General",
-          alumno_nombre: nombre,
-          alumno_email: email,
-          asunto: asunto,
-          mensaje: mensaje,
-          fecha: new Date().toLocaleString()
-        })
-      });
-
-      if (response.ok) {
-        if (feedback) {
-          feedback.className = "p-3.5 bg-emerald-950/80 border border-emerald-500/50 rounded-xl text-emerald-300 text-xs font-semibold leading-relaxed block";
-          feedback.innerHTML = "✓ Tu consulta ha sido enviada con éxito. Te responderemos a la brevedad a tu correo electrónico.";
-        }
-        showToast('✓ Consulta enviada correctamente');
-        document.getElementById('contact-asunto').value = '';
-        document.getElementById('contact-mensaje').value = '';
-        setTimeout(() => {
-          closeContactModal();
-        }, 3500);
-      } else {
-        throw new Error('Error al enviar consulta');
-      }
-    } catch (err) {
-      if (feedback) {
-        feedback.className = "p-3.5 bg-red-950/80 border border-red-500/50 rounded-xl text-red-300 text-xs font-semibold leading-relaxed block";
-        feedback.innerHTML = "Ocurrió un error al enviar tu consulta. Por favor intenta de nuevo.";
-      }
-      showToast('Error al enviar la consulta', 'error');
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = originalText;
     }
   }
 
@@ -2649,15 +2329,8 @@
     checkoutPayPal,
     openPaymentModal,
     closePaymentModal,
-    openTransferNoticeModal,
-    closeTransferNoticeModal,
-    handleTransferNoticeSubmit,
-    openContactModal,
-    closeContactModal,
-    handleContactModalSubmit,
     calculateCartTotals,
     copyToClipboard,
-    sendPaymentReceipt,
     showToast,
     joinWaitlist,
     openWaitlistAuthModal,
