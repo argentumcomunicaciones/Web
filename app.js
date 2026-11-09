@@ -1137,10 +1137,17 @@
                 <span class="text-xs text-emerald-400 font-mono block mt-1">Acceso de por vida • Descarga inmediata</span>
               </div>
 
-              <a href="${masterLink}" target="_blank" rel="noopener noreferrer" class="w-full py-3.5 px-6 rounded-xl font-bold text-sm tracking-wide shadow-lg flex items-center justify-center gap-2 cursor-pointer ${masterBtnClass}">
-                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                <span>${masterBtnText}</span>
-              </a>
+              ${isArs ? `
+                <button type="button" onclick="pagarConMercadoPago('${masterPack.title.replace(/'/g, "\\'")}', ${masterPack.priceARS}, 'guias', event)" class="w-full py-3.5 px-6 rounded-xl font-bold text-sm tracking-wide shadow-lg flex items-center justify-center gap-2 cursor-pointer ${masterBtnClass}">
+                  <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                  <span>${masterBtnText}</span>
+                </button>
+              ` : `
+                <a href="${masterLink}" target="_blank" rel="noopener noreferrer" class="w-full py-3.5 px-6 rounded-xl font-bold text-sm tracking-wide shadow-lg flex items-center justify-center gap-2 cursor-pointer ${masterBtnClass}">
+                  <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                  <span>${masterBtnText}</span>
+                </a>
+              `}
 
               <div class="flex items-center justify-center gap-2 text-[11px] text-slate-400">
                 <svg class="w-3.5 h-3.5 text-cyan-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
@@ -1203,10 +1210,17 @@
                   </span>
                 </div>
 
-                <a href="${link}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 rounded-xl font-bold text-xs tracking-wide shadow-md flex items-center justify-center gap-2 cursor-pointer ${btnClass}">
-                  <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                  <span>${btnText}</span>
-                </a>
+                ${isArs ? `
+                  <button type="button" onclick="pagarConMercadoPago('${pack.title.replace(/'/g, "\\'")}', ${pack.priceARS}, 'guias', event)" class="w-full py-2.5 px-4 rounded-xl font-bold text-xs tracking-wide shadow-md flex items-center justify-center gap-2 cursor-pointer ${btnClass}">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                    <span>${btnText}</span>
+                  </button>
+                ` : `
+                  <a href="${link}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 rounded-xl font-bold text-xs tracking-wide shadow-md flex items-center justify-center gap-2 cursor-pointer ${btnClass}">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                    <span>${btnText}</span>
+                  </a>
+                `}
               </div>
             </article>
           `;
@@ -1225,25 +1239,25 @@
     if (currency === 'ARS') {
       priceEl.textContent = "$ 20.000 ARS / sesión";
       actionsEl.innerHTML = `
-        <a href="${MP_ASESORIA_URL}" target="_blank" rel="noopener noreferrer" class="btn-primary-consulting">
-          Abonar con Mercado Pago ($ 20.000)
-        </a>
-        <a href="${CALENDLY_ASESORIA_URL}" target="_blank" rel="noopener noreferrer" class="btn-secondary-consulting">
-          Ver horarios disponibles en Calendly
-        </a>
+        <button type="button" onclick="pagarConMercadoPago('Asesoría Técnica 1 a 1 | ElectroLab', 20000, 'asesoria', event)" class="btn-primary-consulting w-full sm:w-auto font-bold py-3.5 px-8 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+          <span>Abonar Asesoría ($ 20.000 ARS)</span>
+        </button>
       `;
-      if (noteEl) noteEl.textContent = "Abona con Mercado Pago y elige tu franja horaria directamente en el calendario.";
+      if (noteEl) {
+        noteEl.textContent = "Al acreditarse tu pago, serás redirigido automáticamente a nuestro calendario para elegir día y hora de tu sesión.";
+      }
     } else {
       priceEl.textContent = "US$ 20 / session";
       actionsEl.innerHTML = `
-        <a href="${GUMROAD_ASESORIA_URL}" target="_blank" rel="noopener noreferrer" class="btn-primary-consulting">
-          Book Session with Gumroad (US$ 20)
-        </a>
-        <a href="${CALENDLY_ASESORIA_URL}" target="_blank" rel="noopener noreferrer" class="btn-secondary-consulting">
-          Check available time slots
+        <a href="${GUMROAD_ASESORIA_URL}" target="_blank" rel="noopener noreferrer" class="btn-primary-consulting w-full sm:w-auto font-bold py-3.5 px-8 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          <span>Book Session with Gumroad (US$ 20)</span>
         </a>
       `;
-      if (noteEl) noteEl.textContent = "Instant booking via Google Meet. Pick your preferred date and time zone.";
+      if (noteEl) {
+        noteEl.textContent = "Instant booking via Google Meet. Pick your preferred date and time zone.";
+      }
     }
   }
 
@@ -1402,10 +1416,10 @@
     if (isArs) {
       const arsFormatted = `$${currentTotals.total.toLocaleString('es-AR')} ARS`;
       checkoutActionsEl.innerHTML = `
-        <a id="btn-cart-checkout" href="https://mpago.la/2kmrdT1" target="_blank" rel="noopener noreferrer" class="btn-checkout-mp w-full bg-[#009ee3] hover:bg-[#0086c2] text-white font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer select-none">
+        <button id="btn-cart-checkout" type="button" onclick="window.ElectroLab.checkoutMercadoPago(event)" class="btn-checkout-mp w-full bg-[#009ee3] hover:bg-[#0086c2] text-white font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer select-none">
           <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M21 4H3c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h18c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H3V6h18v12zm-9-7h7v2h-7zm0 4h4v2h-4zm-6-4h4v6H6z"/></svg>
           <span id="btn-cart-checkout-text">Pagar con Mercado Pago (${arsFormatted})</span>
-        </a>
+        </button>
       `;
     } else {
       const usdFormatted = `US$ ${currentTotals.total.toLocaleString('en-US')}`;
@@ -1765,8 +1779,50 @@
 
   // Pasarelas de Pago Oficiales
 
-  function checkoutMercadoPago() {
-    window.location.href = 'https://mpago.la/2kmrdT1';
+  // Integración Oficial Mercado Pago Checkout Pro (Serverless Function en Vercel)
+  async function pagarConMercadoPago(title, price, redirectType, event) {
+    const btn = (event && event.currentTarget) || (typeof window !== 'undefined' && window.event ? window.event.currentTarget : null);
+    const originalText = btn ? btn.innerText : '';
+    try {
+      if (btn) {
+        btn.innerText = "Cargando...";
+        btn.disabled = true;
+      }
+
+      const res = await fetch('/api/create-preference', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, price, redirectType })
+      });
+      const data = await res.json();
+      if (data && data.init_point) {
+        window.location.href = data.init_point;
+      } else {
+        alert("Hubo un inconveniente al generar el cobro. Por favor, reintenta.");
+        if (btn) {
+          btn.innerText = originalText || "Reintentar";
+          btn.disabled = false;
+        }
+      }
+    } catch (error) {
+      console.error("Error al iniciar pago:", error);
+      alert("Error de conexión. Intente nuevamente.");
+      if (btn) {
+        btn.innerText = originalText || "Reintentar";
+        btn.disabled = false;
+      }
+    }
+  }
+
+  function checkoutMercadoPago(event) {
+    const totals = calculateCartTotals();
+    const cartCourseNames = state.cart.map(id => {
+      const c = COURSES.find(item => item.id === id);
+      return c ? c.title : id;
+    }).join(' + ');
+    const title = cartCourseNames ? `Inscripción: ${cartCourseNames}` : 'Curso Oficial ElectroLab';
+    const price = totals.total || 75000;
+    pagarConMercadoPago(title, price, 'curso', event);
   }
 
   function checkoutTransferencia() {
@@ -1873,10 +1929,10 @@
             </div>
 
             <!-- Botón Oficial de Pago Mercado Pago -->
-            <a href="https://mpago.la/2kmrdT1" target="_blank" rel="noopener noreferrer" class="btn-checkout-mp w-full bg-[#009ee3] hover:bg-[#0086c2] text-white font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer select-none">
+            <button type="button" onclick="window.ElectroLab.checkoutMercadoPago(event)" class="btn-checkout-mp w-full bg-[#009ee3] hover:bg-[#0086c2] text-white font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer select-none">
               <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M21 4H3c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h18c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H3V6h18v12zm-9-7h7v2h-7zm0 4h4v2h-4zm-6-4h4v6H6z"/></svg>
               <span>Pagar con Mercado Pago (${formatMoney(totals.total, 'ARS').replace('$ ', '$')})</span>
-            </a>
+            </button>
           </div>
 
           <p class="text-xs text-slate-400 text-center">¿Ya realizaste tu pago? Informa tu comprobante para activar tu acceso inmediatamente:</p>
@@ -2565,6 +2621,7 @@
     digitalGuides: DIGITAL_GUIDES,
     renderDigitalGuides,
     renderConsultingSection,
+    pagarConMercadoPago,
     CALENDLY_ASESORIA_URL,
     MP_ASESORIA_URL,
     GUMROAD_ASESORIA_URL,
@@ -2615,6 +2672,7 @@
   };
 
   window.agregarAlCarrito = agregarAlCarrito;
+  window.pagarConMercadoPago = pagarConMercadoPago;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initApp);

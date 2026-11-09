@@ -36,7 +36,7 @@
   </script>
 
   <!-- Google Fonts & Custom CSS -->
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=4.0">
 </head>
 <body class="bg-[#060913] text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-950 min-h-screen flex flex-col circuit-grid-bg">
 
@@ -502,42 +502,42 @@
   </section>
 
   <!-- ================= ASESORÍA TÉCNICA 1 A 1 ================= -->
-  <section id="asesorias" class="consulting-section">
-    <div class="consulting-card">
-      <div class="consulting-header">
-        <span class="consulting-badge">ATENCIÓN PERSONALIZADA</span>
-        <h2 class="consulting-title">Asesoría Técnica 1 a 1 & Clases Particulares</h2>
-        <p class="consulting-desc">
+  <section id="asesorias" class="consulting-section py-20 px-4 sm:px-6 lg:px-8 bg-slate-950/70 border-t border-slate-800/80 relative overflow-hidden flex justify-center items-center">
+    <div class="consulting-card w-full max-w-4xl mx-auto bg-slate-900/90 border border-sky-400/30 rounded-3xl p-6 sm:p-10 shadow-[0_0_35px_rgba(6,182,212,0.15)] backdrop-blur-xl text-center relative z-10">
+      <div class="consulting-header mb-8">
+        <span class="consulting-badge inline-block font-mono text-xs font-bold tracking-widest text-cyan-400 bg-cyan-950/60 border border-cyan-800/60 px-4 py-1.5 rounded-full uppercase mb-4">ATENCIÓN PERSONALIZADA</span>
+        <h2 class="consulting-title text-2xl sm:text-4xl font-heading font-black text-white tracking-tight mb-3">Asesoría Técnica 1 a 1 &amp; Clases Particulares</h2>
+        <p class="consulting-desc text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
           Sesión intensiva de 60 minutos por Google Meet enfocada en tus proyectos: diseño de circuitos, fuentes conmutadas, microcontroladores o revisión de esquemas en LTspice.
         </p>
       </div>
 
-      <div class="consulting-features-grid">
-        <div class="consulting-feature-item">
-          <span class="feature-check">✓</span>
+      <div class="consulting-features-grid grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-8 text-left">
+        <div class="consulting-feature-item flex items-start gap-3 bg-slate-950/60 border border-slate-800/80 rounded-xl p-3.5 text-xs sm:text-sm text-slate-200">
+          <span class="feature-check inline-flex items-center justify-center w-5 h-5 rounded bg-emerald-500/20 text-emerald-400 font-bold shrink-0 mt-0.5">✓</span>
           <span>60 minutos en vivo e individuales vía Google Meet.</span>
         </div>
-        <div class="consulting-feature-item">
-          <span class="feature-check">✓</span>
+        <div class="consulting-feature-item flex items-start gap-3 bg-slate-950/60 border border-slate-800/80 rounded-xl p-3.5 text-xs sm:text-sm text-slate-200">
+          <span class="feature-check inline-flex items-center justify-center w-5 h-5 rounded bg-emerald-500/20 text-emerald-400 font-bold shrink-0 mt-0.5">✓</span>
           <span>Revisión técnica de esquemas (.asc), diagramas o código.</span>
         </div>
-        <div class="consulting-feature-item">
-          <span class="feature-check">✓</span>
+        <div class="consulting-feature-item flex items-start gap-3 bg-slate-950/60 border border-slate-800/80 rounded-xl p-3.5 text-xs sm:text-sm text-slate-200">
+          <span class="feature-check inline-flex items-center justify-center w-5 h-5 rounded bg-emerald-500/20 text-emerald-400 font-bold shrink-0 mt-0.5">✓</span>
           <span>Grabación completa de la sesión enviada al finalizar.</span>
         </div>
-        <div class="consulting-feature-item">
-          <span class="feature-check">✓</span>
+        <div class="consulting-feature-item flex items-start gap-3 bg-slate-950/60 border border-slate-800/80 rounded-xl p-3.5 text-xs sm:text-sm text-slate-200">
+          <span class="feature-check inline-flex items-center justify-center w-5 h-5 rounded bg-emerald-500/20 text-emerald-400 font-bold shrink-0 mt-0.5">✓</span>
           <span>Selección directa de día y horario en Google Calendar.</span>
         </div>
       </div>
 
-      <div class="consulting-cta-box">
-        <div class="consulting-price" id="consulting-price">$ 20.000 ARS / sesión</div>
-        <div class="consulting-actions" id="consulting-actions">
+      <div class="consulting-cta-box bg-slate-950/80 border border-slate-800 rounded-2xl p-6 max-w-lg mx-auto space-y-4">
+        <div class="consulting-price text-2xl sm:text-3xl font-heading font-black text-emerald-400" id="consulting-price">$ 20.000 ARS / sesión</div>
+        <div class="consulting-actions flex flex-col sm:flex-row items-center justify-center gap-3" id="consulting-actions">
           <!-- Generado dinámicamente por app.js -->
         </div>
-        <p class="consulting-note" id="consulting-note">
-          Acreditado el pago, seleccionas el día y horario disponible directamente en el calendario.
+        <p class="consulting-note text-xs text-slate-400 leading-relaxed" id="consulting-note">
+          Al acreditarse tu pago, serás redirigido automáticamente a nuestro calendario para elegir día y hora de tu sesión.
         </p>
       </div>
     </div>
@@ -859,7 +859,7 @@
   <!-- Scripts -->
   <script src="./auth.js"></script>
   <script src="./circuit-sim.js"></script>
-  <script src="app.js?v=3.2"></script>
+  <script src="app.js?v=4.0"></script>
   <!-- Vercel Analytics -->
   <script defer src="/_vercel/insights/script.js"></script>
 </body>
