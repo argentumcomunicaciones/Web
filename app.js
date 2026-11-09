@@ -742,6 +742,11 @@
     }
   ];
 
+  // Asesoría Técnica 1 a 1 / Clases Particulares
+  const CALENDLY_ASESORIA_URL = "https://calendly.com/dbarrio1970/30min";
+  const MP_ASESORIA_URL = "https://mpago.la/1RfpyP1";
+  const GUMROAD_ASESORIA_URL = "https://electrolabeducativa.gumroad.com/";
+
   // Estado global de la aplicación
   let state = {
     currency: localStorage.getItem('electrolab_currency') || CONFIG.defaultCurrency,
@@ -821,6 +826,7 @@
     renderCourses();
     updateCatalogBanner();
     renderDigitalGuides();
+    renderConsultingSection(state.currency);
     updateCurrencyButtons();
     updateCartUI();
     renderCartCheckoutAction();
@@ -1209,6 +1215,38 @@
     `;
   }
 
+  // Asesoría Técnica 1 a 1 & Clases Particulares
+  function renderConsultingSection(currency = state.currency) {
+    const priceEl = document.getElementById('consulting-price');
+    const actionsEl = document.getElementById('consulting-actions');
+    const noteEl = document.getElementById('consulting-note');
+    if (!priceEl || !actionsEl) return;
+
+    if (currency === 'ARS') {
+      priceEl.textContent = "$ 20.000 ARS / sesión";
+      actionsEl.innerHTML = `
+        <a href="${MP_ASESORIA_URL}" target="_blank" rel="noopener noreferrer" class="btn-primary-consulting">
+          Abonar con Mercado Pago ($ 20.000)
+        </a>
+        <a href="${CALENDLY_ASESORIA_URL}" target="_blank" rel="noopener noreferrer" class="btn-secondary-consulting">
+          Ver horarios disponibles en Calendly
+        </a>
+      `;
+      if (noteEl) noteEl.textContent = "Abona con Mercado Pago y elige tu franja horaria directamente en el calendario.";
+    } else {
+      priceEl.textContent = "US$ 20 / session";
+      actionsEl.innerHTML = `
+        <a href="${GUMROAD_ASESORIA_URL}" target="_blank" rel="noopener noreferrer" class="btn-primary-consulting">
+          Book Session with Gumroad (US$ 20)
+        </a>
+        <a href="${CALENDLY_ASESORIA_URL}" target="_blank" rel="noopener noreferrer" class="btn-secondary-consulting">
+          Check available time slots
+        </a>
+      `;
+      if (noteEl) noteEl.textContent = "Instant booking via Google Meet. Pick your preferred date and time zone.";
+    }
+  }
+
   // Conmutador de moneda
   function setCurrency(curr) {
     state.currency = curr;
@@ -1216,6 +1254,7 @@
     updateCurrencyButtons();
     renderCourses();
     renderDigitalGuides();
+    renderConsultingSection(curr);
     updateCartUI();
     renderCartCheckoutAction();
     const payModal = document.getElementById('payment-modal');
@@ -2525,6 +2564,10 @@
     DIGITAL_GUIDES,
     digitalGuides: DIGITAL_GUIDES,
     renderDigitalGuides,
+    renderConsultingSection,
+    CALENDLY_ASESORIA_URL,
+    MP_ASESORIA_URL,
+    GUMROAD_ASESORIA_URL,
     setCurrency,
     updateCatalogBanner,
     toggleCart,
