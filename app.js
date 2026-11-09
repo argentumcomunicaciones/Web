@@ -703,6 +703,8 @@
     {
       id: 'master-pack-48',
       title: 'MASTER PACK: El camino del diseñador (48 Guides)',
+      mpTitle: 'Megapack Guías PDF',
+      redirectType: 'guia-megapack',
       subtitle: 'Colección integral (Niveles 1, 2 y 3) + Laboratorio virtual con archivos .asc para LTspice.',
       priceARS: 75000,
       priceUSD: 50,
@@ -713,6 +715,8 @@
     {
       id: 'pack-nivel-1',
       title: 'Nivel 1: Electrónica Básica y Fuentes de Alimentación (16 Guías PDF)',
+      mpTitle: 'Guías PDF - Curso 1',
+      redirectType: 'guia-c1',
       subtitle: 'Diodos, rectificación, filtrado capacitivo y fuentes lineales reguladas.',
       priceARS: 30000,
       priceUSD: 20,
@@ -723,6 +727,8 @@
     {
       id: 'pack-nivel-2',
       title: 'Nivel 2: Transistores y Fuentes Conmutadas SMPS (12 Guías PDF)',
+      mpTitle: 'Guías PDF - Curso 2',
+      redirectType: 'guia-c2',
       subtitle: 'BJT, MOSFET en conmutación/amplificación y diseño de fuentes conmutadas SMPS.',
       priceARS: 30000,
       priceUSD: 20,
@@ -733,6 +739,8 @@
     {
       id: 'pack-nivel-3',
       title: 'Nivel 3: Operacionales y Filtros de Orden Superior (20 Guías PDF)',
+      mpTitle: 'Guías PDF - Curso 3',
+      redirectType: 'guia-c3',
       subtitle: 'Configuraciones lineales y no lineales, filtros activos Butterworth y Chebyshev.',
       priceARS: 30000,
       priceUSD: 20,
@@ -1138,7 +1146,7 @@
               </div>
 
               ${isArs ? `
-                <button type="button" onclick="pagarConMercadoPago('${masterPack.title.replace(/'/g, "\\'")}', ${masterPack.priceARS}, 'guias', event)" class="w-full py-3.5 px-6 rounded-xl font-bold text-sm tracking-wide shadow-lg flex items-center justify-center gap-2 cursor-pointer ${masterBtnClass}">
+                <button type="button" onclick="pagarConMercadoPago('${masterPack.mpTitle || 'Megapack Guías PDF'}', ${masterPack.priceARS}, '${masterPack.redirectType || 'guia-megapack'}', event)" class="w-full py-3.5 px-6 rounded-xl font-bold text-sm tracking-wide shadow-lg flex items-center justify-center gap-2 cursor-pointer ${masterBtnClass}">
                   <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                   <span>${masterBtnText}</span>
                 </button>
@@ -1211,7 +1219,7 @@
                 </div>
 
                 ${isArs ? `
-                  <button type="button" onclick="pagarConMercadoPago('${pack.title.replace(/'/g, "\\'")}', ${pack.priceARS}, 'guias', event)" class="w-full py-2.5 px-4 rounded-xl font-bold text-xs tracking-wide shadow-md flex items-center justify-center gap-2 cursor-pointer ${btnClass}">
+                  <button type="button" onclick="pagarConMercadoPago('${pack.mpTitle || ('Guías PDF - Curso ' + levelNum)}', ${pack.priceARS}, '${pack.redirectType || ('guia-c' + levelNum)}', event)" class="w-full py-2.5 px-4 rounded-xl font-bold text-xs tracking-wide shadow-md flex items-center justify-center gap-2 cursor-pointer ${btnClass}">
                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                     <span>${btnText}</span>
                   </button>
@@ -1245,7 +1253,7 @@
         </button>
       `;
       if (noteEl) {
-        noteEl.textContent = "Al acreditarse tu pago, serás redirigido automáticamente a nuestro calendario para elegir día y hora de tu sesión.";
+        noteEl.textContent = "Al acreditarse tu pago, serás redirigido automáticamente al calendario para elegir día y horario de tu sesión.";
       }
     } else {
       priceEl.textContent = "US$ 20 / session";

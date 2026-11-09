@@ -7,12 +7,13 @@ export default async function handler(req, res) {
   const { title, price, redirectType } = body;
   const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN || "APP_USR-8187149980772984-110913-289b1d7b68c5796732c14b56687a80e5-26195356";
 
-  // Definir URL de retorno según el producto
+  // Enrutamiento post-pago individual
   let successUrl = "https://electrolabeducativa.com.ar";
   if (redirectType === 'asesoria') {
     successUrl = "https://calendly.com/dbarrio1970/30min";
-  } else if (redirectType === 'guias') {
-    successUrl = "https://electrolabeducativa.com.ar/gracias-guias.html";
+  } else if (redirectType && redirectType.startsWith('guia-')) {
+    const itemKey = redirectType.replace('guia-', '');
+    successUrl = `https://electrolabeducativa.com.ar/gracias-guias.html?item=${itemKey}`;
   } else if (redirectType === 'curso') {
     successUrl = "https://electrolabeducativa.com.ar/gracias-curso.html";
   }

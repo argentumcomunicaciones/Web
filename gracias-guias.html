@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso a Guías Técnicas | ElectroLab Educativa</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0b1120;
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    .success-card {
+      max-width: 640px;
+      width: 100%;
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.75));
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 20px;
+      padding: 40px 32px;
+      box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.7), 0 0 25px rgba(56, 189, 248, 0.1);
+      backdrop-filter: blur(12px);
+      text-align: center;
+    }
+    .icon-success {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 16px auto;
+      border: 1px solid rgba(74, 222, 128, 0.4);
+    }
+    .badge-status {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: #ffffff;
+    }
+    .subtitle {
+      color: #94a3b8;
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+    .btn-download-main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #009ee3;
+      color: #ffffff !important;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.05rem;
+      padding: 16px 28px;
+      border-radius: 12px;
+      box-shadow: 0 4px 18px rgba(0, 158, 227, 0.4);
+      transition: all 0.25s ease;
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 24px;
+    }
+    .btn-download-main:hover {
+      background: #0087c2;
+      transform: translateY(-2px);
+    }
+    .btn-return {
+      display: inline-block;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+    }
+    .btn-return:hover {
+      color: #94a3b8;
+    }
+    .notice {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.82rem;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <div class="success-card">
+    <div class="icon-success">✓</div>
+    <div><span class="badge-status">PAGO CONFIRMADO</span></div>
+    <h1>¡Gracias por tu compra!</h1>
+    <p class="subtitle" id="download-subtitle">
+      Tu pago se acreditó exitosamente. Haz clic en el siguiente enlace para descargar tu material técnico:
+    </p>
+
+    <div id="download-container">
+      <!-- Inyectado dinámicamente según parámetro URL -->
+    </div>
+
+    <div>
+      <a href="/" class="btn-return">← Volver al sitio principal</a>
+    </div>
+
+    <div class="notice">
+      Recibirás también el comprobante de compra en tu correo electrónico.
+    </div>
+  </div>
+
+  <script>
+    const driveLinks = {
+      c1: {
+        titulo: "Descargar Guías PDF - Curso 1",
+        url: "https://drive.google.com/drive/folders/1S9tJgnheuc7F8xioPg5d_8tTRdZFPWO2?usp=sharing"
+      },
+      c2: {
+        titulo: "Descargar Guías PDF - Curso 2",
+        url: "https://drive.google.com/drive/folders/1fTASrZ1OlEzOHTSYSGoIWF7rvNYjI5EI?usp=sharing"
+      },
+      c3: {
+        titulo: "Descargar Guías PDF - Curso 3",
+        url: "https://drive.google.com/drive/folders/1LPVDVuGNkqCWvmu22iCWPWrfrZUywhMd?usp=sharing"
+      },
+      megapack: {
+        titulo: "Descargar Megapack Completo (Todas las Guías)",
+        url: "https://drive.google.com/drive/folders/1T5HaRAM5NaaZj8uI9ZkTkAukGsbKPuWb?usp=sharing"
+      }
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const itemKey = urlParams.get('item') || 'megapack';
+    const selected = driveLinks[itemKey] || driveLinks.megapack;
+
+    const container = document.getElementById('download-container');
+    if (container) {
+      container.innerHTML = `
+        <a href="${selected.url}" target="_blank" rel="noopener noreferrer" class="btn-download-main">
+          📥 ${selected.titulo}
+        </a>
+      `;
+    }
+  </script>
+</body>
+</html>
