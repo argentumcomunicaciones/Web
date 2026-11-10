@@ -142,7 +142,7 @@
   </style>
 </head>
 <body>
-  <div class="success-card" id="main-card">
+  <div class="success-card">
     <div id="status-icon" class="icon-success">✓</div>
     <div><span id="status-badge" class="badge-status">PAGO CONFIRMADO</span></div>
     <h1 id="main-title">¡Bienvenido a la Formación!</h1>
@@ -154,13 +154,13 @@
       Cargando información del curso...
     </div>
 
-    <!-- BOTÓN DE ACCESO AL AULA (SOLO SE ACTIVA SI HUBO PAGO) -->
+    <!-- BOTÓN DE ACCESO AL MATERIAL/DRIVE DEL CURSO -->
     <a id="btn-aula-virtual" href="#" target="_blank" rel="noopener noreferrer" class="btn-access-main">
-      🎓 Ingresar al Aula Virtual / Clases
+      🎓 Ingresar a las Clases y Material
     </a>
 
     <div class="support-note" id="support-box">
-      💡 <strong>Recomendación:</strong> Guarda el enlace de acceso. Ante cualquier consulta técnica o académica, contáctanos a <strong>dbarrio1970@gmail.com</strong> indicando tu comprobante.
+      💡 <strong>Recomendación:</strong> Guarda el enlace de acceso en tus marcadores. Ante cualquier duda o consulta, puedes escribirnos directamente a <strong>dbarrio1970@gmail.com</strong> indicando tu comprobante de pago.
     </div>
 
     <div>
@@ -173,31 +173,28 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz84SFzFw5nEieoZ8c2tOrccjdbP4a4nj8uILIAWIRlivBIsRUHRpMVLHIFKvJfCNo/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz84SFzFw5nEieoZ8c2tOrccjdbP4a4nj8uILIAWlRIivBIsRUHRpMVLHIFKvJfCNo/exec";
 
     const linksCursos = {
       c1: {
         nombre: "Curso 1: Introducción a la Electrónica, Análisis de Circuitos",
-        aulaUrl: "https://drive.google.com/drive/folders/1S9tJgnheuc7F8xioPg5d_8tTRdZFPWO2?usp=sharing"
+        aulaUrl: "https://drive.google.com/drive/folders/1dvz-xJS93A2SByln0pZeT7SpP65cMGMH?usp=sharing"
       },
       c2: {
         nombre: "Curso 2: Diodos, Fuentes Lineales Reguladas y Fuentes Conmutadas",
-        aulaUrl: "https://drive.google.com/drive/folders/1fTASrZ1OlEzOHTSYSGoIWF7rvNYjI5EI?usp=sharing"
+        aulaUrl: "https://drive.google.com/drive/folders/1-nmzakuao_IyPQBpzmk9y4vBYMMTfa7W?usp=sharing"
       }
     };
 
     const urlParams = new URLSearchParams(window.location.search);
     const cursoParam = urlParams.get('curso') || 'c1';
-    
-    // Parámetros de validación de Mercado Pago Checkout Pro
     const paymentId = urlParams.get('payment_id') || urlParams.get('collection_id');
     const paymentStatus = urlParams.get('status') || urlParams.get('collection_status');
 
-    // SEGURIDAD: Verificar que exista pago válido aprobado
+    // Validación de seguridad de Mercado Pago
     const esValido = (paymentStatus === 'approved') || (paymentId && paymentId.length > 3);
 
     if (!esValido) {
-      // Bloquear acceso no autorizado
       document.getElementById('status-icon').className = 'icon-error';
       document.getElementById('status-icon').innerText = '✕';
       document.getElementById('status-badge').innerText = 'ACCESO NO AUTORIZADO';
@@ -214,24 +211,15 @@
         window.location.href = '/';
       }, 3500);
     } else {
-      // Acceso concedido
       const info = linksCursos[cursoParam] || linksCursos.c1;
       document.getElementById('curso-identificador').innerText = info.nombre;
       
       const btnAula = document.getElementById('btn-aula-virtual');
       btnAula.href = info.aulaUrl;
 
-      // Registro en Google Sheets
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: `Operación MP #${paymentId}`,
-          curso: info.nombre,
-          monto: 75000
-        })
-      }).catch(err => console.error("Error registrando en Sheets:", err));
+      // Registro en Google Sheets mediante GET para máxima compatibilidad con Apps Script
+      const registroUrl = `${SCRIPT_URL}?email=${encodeURIComponent('Operación MP #' + paymentId)}&curso=${encodeURIComponent(info.nombre)}&monto=75000`;
+      fetch(registroUrl, { mode: 'no-cors' }).catch(err => console.error("Error registrando en Sheets:", err));
     }
   </script>
 </body>
