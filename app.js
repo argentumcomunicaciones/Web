@@ -1823,7 +1823,12 @@
     }).join(' + ');
     const title = cartCourseNames ? `Inscripción: ${cartCourseNames}` : 'Curso Oficial ElectroLab';
     const price = totals.total || 75000;
-    pagarConMercadoPago(title, price, 'curso', event);
+    let redirectType = 'curso';
+    if (state.cart.length === 1) {
+      if (state.cart[0] === 'curso-1') redirectType = 'curso-c1';
+      else if (state.cart[0] === 'curso-2') redirectType = 'curso-c2';
+    }
+    pagarConMercadoPago(title, price, redirectType, event);
   }
 
   function checkoutTransferencia() {

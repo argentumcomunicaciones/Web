@@ -14,8 +14,13 @@ export default async function handler(req, res) {
   } else if (redirectType && redirectType.startsWith('guia-')) {
     const itemKey = redirectType.replace('guia-', '');
     successUrl = `https://electrolabeducativa.com.ar/gracias-guias.html?item=${itemKey}`;
-  } else if (redirectType === 'curso') {
-    successUrl = "https://electrolabeducativa.com.ar/gracias-curso.html";
+  } else if (redirectType && redirectType.startsWith('curso')) {
+    if (redirectType.startsWith('curso-')) {
+      const cursoKey = redirectType.replace('curso-', '');
+      successUrl = `https://electrolabeducativa.com.ar/gracias-curso.html?curso=${cursoKey}`;
+    } else {
+      successUrl = "https://electrolabeducativa.com.ar/gracias-curso.html";
+    }
   }
 
   const preferenceData = {
