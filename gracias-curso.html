@@ -41,6 +41,19 @@
       margin: 0 auto 16px auto;
       border: 1px solid rgba(74, 222, 128, 0.4);
     }
+    .icon-error {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 16px auto;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
     .badge-status {
       display: inline-block;
       font-size: 0.75rem;
@@ -77,24 +90,6 @@
       margin-bottom: 24px;
       display: inline-block;
     }
-    .instruction-box {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 18px;
-      margin-bottom: 24px;
-      text-align: left;
-      font-size: 0.92rem;
-      color: #cbd5e1;
-      line-height: 1.6;
-    }
-    .instruction-box ol {
-      margin-left: 20px;
-      padding-top: 8px;
-    }
-    .instruction-box li {
-      margin-bottom: 6px;
-    }
     .btn-access-main {
       display: flex;
       align-items: center;
@@ -117,6 +112,16 @@
       background: #0087c2;
       transform: translateY(-2px);
     }
+    .support-note {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
     .btn-return {
       display: inline-block;
       color: #64748b;
@@ -137,36 +142,32 @@
   </style>
 </head>
 <body>
-  <div class="success-card">
-    <div class="icon-success">✓</div>
-    <div><span class="badge-status">INSCRIPCIÓN REGISTRADA</span></div>
-    <h1>¡Bienvenido a la Formación!</h1>
-    <p class="subtitle">
-      Tu pago se acreditó exitosamente y tu vacante ha quedado registrada en nuestro sistema académico.
+  <div class="success-card" id="main-card">
+    <div id="status-icon" class="icon-success">✓</div>
+    <div><span id="status-badge" class="badge-status">PAGO CONFIRMADO</span></div>
+    <h1 id="main-title">¡Bienvenido a la Formación!</h1>
+    <p class="subtitle" id="main-subtitle">
+      Tu pago se acreditó exitosamente en Mercado Pago y tu vacante ha quedado habilitada.
     </p>
 
     <div id="curso-identificador" class="course-badge">
       Cargando información del curso...
     </div>
 
-    <div class="instruction-box">
-      <strong>Próximos pasos para acceder a tus clases:</strong>
-      <ol>
-        <li>Tu inscripción quedó asentada con tu número de operación de Mercado Pago.</li>
-        <li>Haz clic abajo para contactar a soporte y solicitar tu ingreso formal al aula.</li>
-        <li>Recibirás el enlace directo al material y clases correspondientes.</li>
-      </ol>
-    </div>
-
-    <a id="btn-ingreso" href="mailto:dbarrio1970@gmail.com" class="btn-access-main">
-      🎓 Confirmar Ingreso Académico
+    <!-- BOTÓN DE ACCESO AL AULA (SOLO SE ACTIVA SI HUBO PAGO) -->
+    <a id="btn-aula-virtual" href="#" target="_blank" rel="noopener noreferrer" class="btn-access-main">
+      🎓 Ingresar al Aula Virtual / Clases
     </a>
+
+    <div class="support-note" id="support-box">
+      💡 <strong>Recomendación:</strong> Guarda el enlace de acceso. Ante cualquier consulta técnica o académica, contáctanos a <strong>dbarrio1970@gmail.com</strong> indicando tu comprobante.
+    </div>
 
     <div>
       <a href="/" class="btn-return">← Volver al sitio principal</a>
     </div>
 
-    <div class="notice">
+    <div class="notice" id="notice-box">
       Comprobante oficial emitido por Mercado Pago.
     </div>
   </div>
@@ -174,39 +175,64 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz84SFzFw5nEieoZ8c2tOrccjdbP4a4nj8uILIAWIRlivBIsRUHRpMVLHIFKvJfCNo/exec";
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const cursoParam = urlParams.get('curso') || 'c1';
-    const paymentId = urlParams.get('payment_id') || urlParams.get('collection_id') || 'Venta Web MP';
-
-    const infoCursos = {
+    const linksCursos = {
       c1: {
-        nombre: "Curso Online 1: Fuentes Conmutadas",
-        mailSubject: "Acceso Confirmado - Curso 1: Fuentes Conmutadas"
+        nombre: "Curso 1: Introducción a la Electrónica, Análisis de Circuitos",
+        aulaUrl: "https://drive.google.com/drive/folders/1S9tJgnheuc7F8xioPg5d_8tTRdZFPWO2?usp=sharing"
       },
       c2: {
-        nombre: "Curso Online 2: Simulación y Diseño de Circuitos",
-        mailSubject: "Acceso Confirmado - Curso 2: Simulación y Circuitos"
+        nombre: "Curso 2: Diodos, Fuentes Lineales Reguladas y Fuentes Conmutadas",
+        aulaUrl: "https://drive.google.com/drive/folders/1fTASrZ1OlEzOHTSYSGoIWF7rvNYjI5EI?usp=sharing"
       }
     };
 
-    const seleccionado = infoCursos[cursoParam] || infoCursos.c1;
+    const urlParams = new URLSearchParams(window.location.search);
+    const cursoParam = urlParams.get('curso') || 'c1';
+    
+    // Parámetros de validación de Mercado Pago Checkout Pro
+    const paymentId = urlParams.get('payment_id') || urlParams.get('collection_id');
+    const paymentStatus = urlParams.get('status') || urlParams.get('collection_status');
 
-    // Actualizar elementos visuales
-    document.getElementById('curso-identificador').innerText = seleccionado.nombre;
-    const btnIngreso = document.getElementById('btn-ingreso');
-    btnIngreso.href = `mailto:dbarrio1970@gmail.com?subject=${encodeURIComponent(seleccionado.mailSubject)}&body=${encodeURIComponent("Hola Daniel, acabo de abonar mi inscripción. Mi ID de operación MP es: " + paymentId)}`;
+    // SEGURIDAD: Verificar que exista pago válido aprobado
+    const esValido = (paymentStatus === 'approved') || (paymentId && paymentId.length > 3);
 
-    // Registro automático en segundo plano en Google Sheets
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: `Operación MP #${paymentId}`,
-        curso: seleccionado.nombre,
-        monto: 75000
-      })
-    }).catch(err => console.error("Error registrando en Sheets:", err));
+    if (!esValido) {
+      // Bloquear acceso no autorizado
+      document.getElementById('status-icon').className = 'icon-error';
+      document.getElementById('status-icon').innerText = '✕';
+      document.getElementById('status-badge').innerText = 'ACCESO NO AUTORIZADO';
+      document.getElementById('status-badge').style.color = '#f87171';
+      document.getElementById('status-badge').style.borderColor = 'rgba(239, 68, 68, 0.4)';
+      document.getElementById('status-badge').style.background = 'rgba(239, 68, 68, 0.12)';
+      document.getElementById('main-title').innerText = 'Pago No Detectado';
+      document.getElementById('main-subtitle').innerText = 'No se encontró una confirmación de pago activa para habilitar este material. Serás redirigido al inicio...';
+      document.getElementById('curso-identificador').style.display = 'none';
+      document.getElementById('btn-aula-virtual').style.display = 'none';
+      document.getElementById('support-box').style.display = 'none';
+      
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3500);
+    } else {
+      // Acceso concedido
+      const info = linksCursos[cursoParam] || linksCursos.c1;
+      document.getElementById('curso-identificador').innerText = info.nombre;
+      
+      const btnAula = document.getElementById('btn-aula-virtual');
+      btnAula.href = info.aulaUrl;
+
+      // Registro en Google Sheets
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: `Operación MP #${paymentId}`,
+          curso: info.nombre,
+          monto: 75000
+        })
+      }).catch(err => console.error("Error registrando en Sheets:", err));
+    }
   </script>
 </body>
 </html>
