@@ -178,11 +178,11 @@
     const linksCursos = {
       c1: {
         nombre: "Curso 1: Introducción a la Electrónica, Análisis de Circuitos",
-        aulaUrl: "https://drive.google.com/drive/folders/1dvz-xJS93A2SByln0pZeT7SpP65cMGMH?usp=sharing"
+        aulaUrl: "/aula.html?curso=c1&leccion=1"
       },
       c2: {
         nombre: "Curso 2: Diodos, Fuentes Lineales Reguladas y Fuentes Conmutadas",
-        aulaUrl: "https://drive.google.com/drive/folders/1-nmzakuao_IyPQBpzmk9y4vBYMMTfa7W?usp=sharing"
+        aulaUrl: "/aula.html?curso=c2&leccion=1"
       }
     };
 
@@ -216,6 +216,28 @@
       
       const btnAula = document.getElementById('btn-aula-virtual');
       btnAula.href = info.aulaUrl;
+
+      // Habilitar acceso al curso en sesión local si el estudiante ya tiene cuenta activa
+      try {
+        const u = JSON.parse(localStorage.getItem('electrolab_user') || 'null');
+        if (u) {
+          const courseId = (cursoParam === 'c2' || cursoParam === 'curso-2') ? 'curso-2' : 'curso-1';
+          if (!u.courses) u.courses = [];
+          if (!u.courses.includes(courseId)) {
+            u.courses.push(courseId);
+            localStorage.setItem('electrolab_user', JSON.stringify(u));
+            const allUsers = JSON.parse(localStorage.getItem('electrolab_mock_users_db') || '[]');
+            const idx = allUsers.findIndex(x => x.email === u.email);
+            if (idx !== -1) {
+              if (!allUsers[idx].courses) allUsers[idx].courses = [];
+              if (!allUsers[idx].courses.includes(courseId)) {
+                allUsers[idx].courses.push(courseId);
+                localStorage.setItem('electrolab_mock_users_db', JSON.stringify(allUsers));
+              }
+            }
+          }
+        }
+      } catch (e) {}
 
       // Registro en Google Sheets mediante GET para máxima compatibilidad con Apps Script
       const registroUrl = `${SCRIPT_URL}?email=${encodeURIComponent('Operación MP #' + paymentId)}&curso=${encodeURIComponent(info.nombre)}&monto=75000`;

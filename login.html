@@ -191,11 +191,13 @@
         }
 
         showAlert(`¡Bienvenido, ${res.user.name}! Redirigiendo...`, false);
+        const redirectParam = urlParams.get('redirect');
+        const targetUrl = (redirectParam && redirectParam.startsWith('/')) ? redirectParam : './aula.html';
         setTimeout(() => {
           if (res.user.role === 'admin') {
             window.location.href = './admin.html';
           } else {
-            window.location.href = './aula.html';
+            window.location.href = targetUrl;
           }
         }, 800);
       } catch (err) {
@@ -224,8 +226,10 @@
         }
 
         showAlert('¡Cuenta creada con éxito! Redirigiendo a tu aula...', false);
+        const redirectParam = urlParams.get('redirect');
+        const targetUrl = (redirectParam && redirectParam.startsWith('/')) ? redirectParam : './aula.html';
         setTimeout(() => {
-          window.location.href = './aula.html';
+          window.location.href = targetUrl;
         }, 800);
       } catch (err) {
         showAlert(err.message || 'Error al registrar cuenta', true);

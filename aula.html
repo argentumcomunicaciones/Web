@@ -281,6 +281,15 @@
       <!-- Video Player & Lesson Details (8 Cols) -->
       <div class="lg:col-span-8 space-y-6">
         
+        <!-- Banner de Recomendación Metodológica -->
+        <div class="bg-gradient-to-r from-amber-500/10 via-slate-900/90 to-cyan-500/10 border border-amber-500/30 rounded-2xl p-4 sm:p-5 text-slate-200 text-xs sm:text-sm leading-relaxed flex items-start gap-3.5 shadow-lg shadow-amber-500/5">
+          <span class="text-xl shrink-0 select-none">💡</span>
+          <div>
+            <strong class="text-amber-300 font-semibold block mb-0.5">Recomendación pedagógica:</strong>
+            <span class="text-slate-300">Para aprovechar al máximo tu formación, te recomendamos ver atentamente la clase en video, realizar la práctica / tarea asignada y enviar tu entrega para revisión y corrección docente antes de avanzar a la siguiente lección.</span>
+          </div>
+        </div>
+
         <!-- Video Player Frame -->
         <div class="relative aspect-video rounded-3xl overflow-hidden bg-black border border-slate-800 shadow-2xl">
           <iframe id="classroom-iframe" class="w-full h-full" src="" title="Video de la Lección" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -337,29 +346,10 @@
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
               </a>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-              <a id="link-drive-ltspice" href="#" target="_blank" rel="noopener noreferrer" class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 flex items-center gap-2 text-slate-300 hover:text-white transition-all">
-                <svg class="w-4 h-4 text-cyan-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                <div class="truncate">
-                  <div class="font-bold text-[11px]">Simulación LTspice</div>
-                  <div class="text-[9px] text-cyan-400 font-mono">Abrir en Drive (.asc)</div>
-                </div>
-              </a>
-
-              <a id="link-drive-arduino" href="#" target="_blank" rel="noopener noreferrer" class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 flex items-center gap-2 text-slate-300 hover:text-white transition-all">
-                <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                <div class="truncate">
-                  <div class="font-bold text-[11px]">Código Arduino</div>
-                  <div class="text-[9px] text-emerald-400 font-mono">Abrir en Drive (.ino)</div>
-                </div>
-              </a>
-
-              <a id="link-drive-schematics" href="#" target="_blank" rel="noopener noreferrer" class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 flex items-center gap-2 text-slate-300 hover:text-white transition-all">
-                <svg class="w-4 h-4 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                <div class="truncate">
-                  <div class="font-bold text-[11px]">Esquemático PDF</div>
-                  <div class="text-[9px] text-red-400 font-mono">Abrir en Drive (PDF)</div>
-                </div>
+            <div>
+              <a id="btn-recurso-pdf" href="#" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-heading font-extrabold text-xs sm:text-sm shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all cursor-pointer">
+                <span>📄 Acceso a recursos en PDF</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
               </a>
             </div>
           </div>
@@ -675,11 +665,62 @@
     let currentLesson = null;
     let user = null;
 
+    // Diccionarios de Recursos PDF directos por curso y lección
+    const recursosC1 = {
+      1: "https://drive.google.com/file/d/1FXffV56ePayEhwUnnm-MS8deaHYN98b8/view?usp=drive_link",
+      2: "https://drive.google.com/file/d/19wCbgfY2IyyI4UzQs29KqjvAAaHZuJuY/view?usp=drive_link",
+      3: "https://drive.google.com/file/d/1wC5cmoAIIN2Tm75nI8XDMF4RWICNez5k/view?usp=drive_link",
+      4: "https://drive.google.com/file/d/1o9Ei14FcqyUMVyMuYVc9COHmsq_8HJ4t/view?usp=drive_link",
+      5: "https://drive.google.com/file/d/1TIgy_OyGAIC0bPtbaWte_u3ql8CcRHyz/view?usp=drive_link",
+      6: "https://drive.google.com/file/d/16kX11cob_xXkb4Y5qspjOgJhDuMwEU1p/view?usp=drive_link",
+      7: "https://drive.google.com/file/d/1dML-JWJQNetZxRvQX0qBwPvmrGSf3nzt/view?usp=drive_link",
+      8: "https://drive.google.com/file/d/1fv6NnHYcSv8CA8XGxAoXYMeNaOjecYVG/view?usp=drive_link",
+      9: "https://drive.google.com/file/d/1ZlySBLeeYsBXTE1GL8NHMZRo8lnXctN7/view?usp=drive_link",
+      10: "https://drive.google.com/file/d/1GmjZfrh59m7MT0WfCt_nmrIv_tSwBel2/view?usp=drive_link",
+      11: "https://drive.google.com/file/d/1ABwfDqvXGHKlOPdvcDiEW8yRlGVGoElb/view?usp=drive_link"
+    };
+
+    const recursosC2 = {
+      1: "https://drive.google.com/file/d/1VMYmebRXWogcTW3_-4hhiJNTOT6vN4pC/view?usp=drive_link",
+      2: "https://drive.google.com/file/d/1qN8sg1S3gJhmOJFvw9ieOzoYtFlznGqA/view?usp=drive_link",
+      3: "https://drive.google.com/file/d/1lpp4FcA070oI1UKyb2UjEMOxrvkOPnHk/view?usp=drive_link",
+      4: "https://drive.google.com/file/d/1FyTOC3I7ALBncBFATjAlciXiSN7jlMdt/view?usp=drive_link",
+      5: "https://drive.google.com/file/d/1QIVcjJcS_2VpnPOJzsX2TivtLngtAZ6s/view?usp=drive_link",
+      6: "https://drive.google.com/file/d/1VENrb7fcwpjr9nkO6LCKvRrNvxkR_gFx/view?usp=drive_link",
+      7: "https://drive.google.com/file/d/1_JeOVbeXjeoUICSkplowbLmEq_mFLUAW/view?usp=drive_link",
+      8: "https://drive.google.com/file/d/1BIEVagDo1Uw9odyPb7fZwLnzKOdNxULA/view?usp=drive_link",
+      9: "https://drive.google.com/file/d/1sI_UnXE8CfFNCZOrlT_Oi4Nbf5OfTPzb/view?usp=drive_link",
+      10: "https://drive.google.com/file/d/1ttCdyDpF-RUlPr5TeWKuNg_yya2JlwMr/view?usp=drive_link"
+    };
+
+    function getLessonPdfUrl(courseId, lesson) {
+      if (!lesson) return null;
+      let num = null;
+      if (lesson.lessonNumber) {
+        num = parseInt(lesson.lessonNumber, 10);
+      } else if (lesson.id) {
+        const m = lesson.id.match(/^c\d+_l(\d+)$/);
+        if (m) num = parseInt(m[1], 10);
+      }
+      if (!num && lesson.title) {
+        const m = lesson.title.match(/(?:Lecci[oó]n|Gu[ií]a|Clase)\s*(\d+)/i);
+        if (m) num = parseInt(m[1], 10);
+      }
+
+      if (courseId === 'curso-1' || courseId === 'c1') {
+        return recursosC1[num] || null;
+      }
+      if (courseId === 'curso-2' || courseId === 'c2') {
+        return recursosC2[num] || null;
+      }
+      return null;
+    }
+
     // Check Authentication on load
     document.addEventListener('DOMContentLoaded', () => {
       user = window.ElectroLabAuth.getCurrentUser();
       if (!user) {
-        window.location.href = './login.html';
+        window.location.href = './login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
         return;
       }
 
@@ -700,11 +741,34 @@
 
       // Comprobar parámetros de la URL para acceso directo a cursos/lecciones
       const urlParams = new URLSearchParams(window.location.search);
-      const reqCourseId = urlParams.get('course');
-      const reqLessonId = urlParams.get('lesson');
+      let reqCourseId = urlParams.get('curso') || urlParams.get('course');
+      let reqLessonParam = urlParams.get('leccion') || urlParams.get('lesson');
+
+      if (reqCourseId === 'c1' || reqCourseId === '1') reqCourseId = 'curso-1';
+      else if (reqCourseId === 'c2' || reqCourseId === '2') reqCourseId = 'curso-2';
+      else if (reqCourseId === 'c3' || reqCourseId === '3') reqCourseId = 'curso-3';
+      else if (reqCourseId === 'c4' || reqCourseId === '4') reqCourseId = 'curso-4';
+      else if (reqCourseId === 'c5' || reqCourseId === '5') reqCourseId = 'curso-5';
+
+      let targetLessonId = null;
+      if (reqCourseId) {
+        if (!reqLessonParam) {
+          reqLessonParam = '1';
+        }
+        if (/^\d+$/.test(reqLessonParam)) {
+          if (reqCourseId === 'curso-1') targetLessonId = `c1_l${reqLessonParam}`;
+          else if (reqCourseId === 'curso-2') targetLessonId = `c2_l${reqLessonParam}`;
+          else if (reqCourseId === 'curso-3') targetLessonId = `c3_l${reqLessonParam}`;
+          else if (reqCourseId === 'curso-4') targetLessonId = `c4_l${reqLessonParam}`;
+          else if (reqCourseId === 'curso-5') targetLessonId = `c5_l${reqLessonParam}`;
+          else targetLessonId = reqLessonParam;
+        } else {
+          targetLessonId = reqLessonParam;
+        }
+      }
 
       if (reqCourseId && COURSES_DATA.some(c => c.id === reqCourseId)) {
-        enterClassroom(reqCourseId, reqLessonId);
+        enterClassroom(reqCourseId, targetLessonId);
       } else {
         renderDashboard();
       }
@@ -1363,7 +1427,8 @@
       updateLessonCompleteButton();
       const courseDriveUrl = (currentCourse && (currentCourse.driveFolder || currentCourse.recursosUrl || currentCourse.materialDescargable)) || '#';
       const lessonDriveUrl = lesson.driveFolder || lesson.driveUrl || lesson.recursosUrl || lesson.materialDescargable || courseDriveUrl;
-      setDriveLinksState(true, lessonDriveUrl);
+      const lessonPdfUrl = getLessonPdfUrl(currentCourse.id, lesson) || lessonDriveUrl;
+      setDriveLinksState(true, courseDriveUrl, lessonPdfUrl);
       renderClassroomSyllabus(true);
 
       // Actualizar campos de consulta técnica al docente
@@ -1386,19 +1451,32 @@
       setupTareaLessonListener(currentCourse.id, lesson.id);
     }
 
-    function setDriveLinksState(isEnabled, driveUrl) {
+    function setDriveLinksState(isEnabled, driveUrl, pdfUrl) {
       const btnMain = document.getElementById('btn-drive-folder-main');
+      const btnPdf = document.getElementById('btn-recurso-pdf');
       const linkLt = document.getElementById('link-drive-ltspice');
       const linkArd = document.getElementById('link-drive-arduino');
       const linkSch = document.getElementById('link-drive-schematics');
 
+      const activePdf = pdfUrl || driveUrl;
+
       if (isEnabled && driveUrl && driveUrl !== '#') {
         if (btnMain) { btnMain.href = driveUrl; btnMain.classList.remove('opacity-40', 'pointer-events-none'); }
+        if (btnPdf) {
+          if (activePdf && activePdf !== '#') {
+            btnPdf.href = activePdf;
+            btnPdf.classList.remove('opacity-40', 'pointer-events-none');
+          } else {
+            btnPdf.href = '#';
+            btnPdf.classList.add('opacity-40', 'pointer-events-none');
+          }
+        }
         if (linkLt) { linkLt.href = driveUrl; linkLt.classList.remove('opacity-40', 'pointer-events-none'); }
         if (linkArd) { linkArd.href = driveUrl; linkArd.classList.remove('opacity-40', 'pointer-events-none'); }
         if (linkSch) { linkSch.href = driveUrl; linkSch.classList.remove('opacity-40', 'pointer-events-none'); }
       } else {
         if (btnMain) { btnMain.href = '#'; btnMain.classList.add('opacity-40', 'pointer-events-none'); }
+        if (btnPdf) { btnPdf.href = '#'; btnPdf.classList.add('opacity-40', 'pointer-events-none'); }
         if (linkLt) { linkLt.href = '#'; linkLt.classList.add('opacity-40', 'pointer-events-none'); }
         if (linkArd) { linkArd.href = '#'; linkArd.classList.add('opacity-40', 'pointer-events-none'); }
         if (linkSch) { linkSch.href = '#'; linkSch.classList.add('opacity-40', 'pointer-events-none'); }
