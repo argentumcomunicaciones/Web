@@ -40,9 +40,16 @@
         url: 'https://mpago.la/2kmrdT1',
         label: 'Pagar con Mercado Pago ($75.000 ARS)'
       },
+      gumroad: {
+        curso1: 'https://electrolabeducativa.gumroad.com/l/hkrqipz',
+        curso2: 'https://electrolabeducativa.gumroad.com/l/ewrowc',
+        asesoria: 'https://electrolabeducativa.gumroad.com/l/soknil',
+        label: 'Pagar en Gumroad — Tarjeta / PayPal (US$ 50)'
+      },
       paypal: {
-        url: 'https://paypal.me/electronicadbarrio/50USD',
-        label: 'Pagar con PayPal (US$ 50)'
+        curso1: 'https://electrolabeducativa.gumroad.com/l/hkrqipz',
+        curso2: 'https://electrolabeducativa.gumroad.com/l/ewrowc',
+        label: 'Pagar en Gumroad — Tarjeta / PayPal (US$ 50)'
       }
     }
   };
@@ -212,6 +219,7 @@
       origARS: 100000,
       priceUSD: 50,
       origUSD: 70,
+      linkUSD: 'https://electrolabeducativa.gumroad.com/l/hkrqipz',
       driveFolder: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
       recursosUrl: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
       materialDescargable: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
@@ -348,6 +356,7 @@
       origARS: 100000,
       priceUSD: 50,
       origUSD: 70,
+      linkUSD: 'https://electrolabeducativa.gumroad.com/l/ewrowc',
       driveFolder: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=sharing',
       recursosUrl: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=sharing',
       materialDescargable: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=sharing',
@@ -753,7 +762,11 @@
   // Asesoría Técnica 1 a 1 / Clases Particulares
   const CALENDLY_ASESORIA_URL = "https://calendly.com/dbarrio1970/30min";
   const MP_ASESORIA_URL = "https://mpago.la/1RfpyP1";
-  const GUMROAD_ASESORIA_URL = "https://electrolabeducativa.gumroad.com/";
+  const GUMROAD_ASESORIA_URL = "https://electrolabeducativa.gumroad.com/l/soknil";
+
+  // Cursos Oficiales en Gumroad (Checkout Internacional USD)
+  const GUMROAD_CURSO_1_URL = "https://electrolabeducativa.gumroad.com/l/hkrqipz";
+  const GUMROAD_CURSO_2_URL = "https://electrolabeducativa.gumroad.com/l/ewrowc";
 
   // Estado global de la aplicación
   let state = {
@@ -1256,15 +1269,15 @@
         noteEl.textContent = "Al acreditarse tu pago, serás redirigido automáticamente al calendario para elegir día y horario de tu sesión.";
       }
     } else {
-      priceEl.textContent = "US$ 20 / session";
+      priceEl.textContent = "US$ 20 / sesión de 1 hora por Google Meet";
       actionsEl.innerHTML = `
         <a href="${GUMROAD_ASESORIA_URL}" target="_blank" rel="noopener noreferrer" class="btn-primary-consulting w-full sm:w-auto font-bold py-3.5 px-8 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer">
           <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-          <span>Book Session with Gumroad (US$ 20)</span>
+          <span>Reservar en Gumroad (US$ 20)</span>
         </a>
       `;
       if (noteEl) {
-        noteEl.textContent = "Instant booking via Google Meet. Pick your preferred date and time zone.";
+        noteEl.textContent = "Sesión individual de 60 minutos en vivo vía Google Meet. Al completar tu pago en Gumroad podrás elegir día y horario en Calendly.";
       }
     }
   }
@@ -1430,14 +1443,46 @@
         </button>
       `;
     } else {
-      const usdFormatted = `US$ ${currentTotals.total.toLocaleString('en-US')}`;
-      checkoutActionsEl.innerHTML = `
-        <a id="btn-cart-checkout" href="https://paypal.me/electronicadbarrio/50USD" target="_blank" rel="noopener noreferrer" class="btn-checkout-paypal w-full bg-[#0070ba] hover:bg-[#005ea6] text-white font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-blue-600/30 hover:shadow-[0_0_20px_rgba(0,112,186,0.5)] flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer select-none">
-          <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.774.774 0 0 1 .763-.646h7.008c3.15 0 5.467 1.054 5.922 3.864.218 1.344-.067 2.766-.826 3.743-.728.937-1.854 1.488-3.23 1.584l-.19.008h-2.92a.774.774 0 0 0-.764.646l-.999 6.337a.641.641 0 0 1-.632.535z"/></svg>
-          <span id="btn-cart-checkout-text">Pagar con PayPal (${usdFormatted})</span>
-          <svg class="w-3.5 h-3.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-        </a>
-      `;
+      const hasC1 = state.cart.includes('curso-1');
+      const hasC2 = state.cart.includes('curso-2');
+
+      if (hasC1 && hasC2) {
+        checkoutActionsEl.innerHTML = `
+          <div class="space-y-2.5 w-full">
+            <div class="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-left">
+              <p class="text-[11px] text-amber-200 leading-snug">
+                💡 <strong>Acceso Individual en USD:</strong> Cada curso cuenta con su aula virtual independiente. Completa el pago de cada uno para recibir de inmediato sus credenciales oficiales:
+              </p>
+            </div>
+            <a id="btn-cart-checkout-c1" href="${GUMROAD_CURSO_1_URL}" target="_blank" rel="noopener noreferrer" class="btn-gumroad w-full font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer select-none">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+              <span>1️⃣ Pagar Curso 1 en Gumroad — Tarjeta / PayPal (US$ 50)</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+            <a id="btn-cart-checkout-c2" href="${GUMROAD_CURSO_2_URL}" target="_blank" rel="noopener noreferrer" class="btn-gumroad w-full font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer select-none">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+              <span>2️⃣ Pagar Curso 2 en Gumroad — Tarjeta / PayPal (US$ 50)</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+          </div>
+        `;
+      } else if (hasC2) {
+        checkoutActionsEl.innerHTML = `
+          <a id="btn-cart-checkout" href="${GUMROAD_CURSO_2_URL}" target="_blank" rel="noopener noreferrer" class="btn-gumroad w-full font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer select-none">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            <span id="btn-cart-checkout-text">Pagar en Gumroad — Tarjeta / PayPal (US$ 50)</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          </a>
+        `;
+      } else {
+        checkoutActionsEl.innerHTML = `
+          <a id="btn-cart-checkout" href="${GUMROAD_CURSO_1_URL}" target="_blank" rel="noopener noreferrer" class="btn-gumroad w-full font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer select-none">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            <span id="btn-cart-checkout-text">Pagar en Gumroad — Tarjeta / PayPal (US$ 50)</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          </a>
+        `;
+      }
     }
   }
 
@@ -1840,7 +1885,15 @@
   }
 
   function checkoutPayPal() {
-    window.open('https://paypal.me/electronicadbarrio/50USD', '_blank');
+    const hasC1 = state.cart.includes('curso-1');
+    const hasC2 = state.cart.includes('curso-2');
+    if (hasC1 && hasC2) {
+      openCartDrawer();
+    } else if (hasC2) {
+      window.open(GUMROAD_CURSO_2_URL, '_blank');
+    } else {
+      window.open(GUMROAD_CURSO_1_URL, '_blank');
+    }
   }
 
   // Copiado rápido al portapapeles con feedback interactivo
@@ -1890,7 +1943,7 @@
     const container = document.getElementById('payment-modal-body');
     if (!modal || !container) return;
 
-    if (method === 'paypal') {
+    if (method === 'paypal' || method === 'gumroad') {
       state.currency = 'USD';
       updateCurrencyButtons();
       renderCourses();
@@ -1938,32 +1991,73 @@
         </div>
       `;
     } else {
-      title = totals.count > 1 ? `Pagar con PayPal (${formatMoney(totals.total, 'USD')})` : 'Pagar con PayPal (US$ 50)';
+      const hasC1 = state.cart.includes('curso-1');
+      const hasC2 = state.cart.includes('curso-2');
+
+      title = (hasC1 && hasC2)
+        ? 'Pagar en Gumroad — Tarjeta / PayPal (2 Cursos)'
+        : 'Pagar en Gumroad — Tarjeta / PayPal (US$ 50)';
+
+      let buttonsHtml = '';
+      if (hasC1 && hasC2) {
+        buttonsHtml = `
+          <div class="space-y-2.5">
+            <div class="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-left">
+              <p class="text-[11px] text-amber-200 leading-snug">
+                💡 <strong>Acceso Individual en USD:</strong> Para habilitar de inmediato tu acceso exclusivo a cada aula virtual, abona cada curso con su enlace oficial en Gumroad:
+              </p>
+            </div>
+            <a href="${GUMROAD_CURSO_1_URL}" target="_blank" rel="noopener noreferrer" class="btn-gumroad w-full font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs sm:text-sm text-center select-none cursor-pointer">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+              <span>1️⃣ Pagar Curso 1 en Gumroad — Tarjeta / PayPal (US$ 50)</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+            <a href="${GUMROAD_CURSO_2_URL}" target="_blank" rel="noopener noreferrer" class="btn-gumroad w-full font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs sm:text-sm text-center select-none cursor-pointer">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+              <span>2️⃣ Pagar Curso 2 en Gumroad — Tarjeta / PayPal (US$ 50)</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+          </div>
+        `;
+      } else if (hasC2) {
+        buttonsHtml = `
+          <a href="${GUMROAD_CURSO_2_URL}" target="_blank" rel="noopener noreferrer" class="btn-gumroad w-full font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs sm:text-sm text-center select-none cursor-pointer">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            <span>Pagar en Gumroad — Tarjeta / PayPal (US$ 50)</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          </a>
+        `;
+      } else {
+        buttonsHtml = `
+          <a href="${GUMROAD_CURSO_1_URL}" target="_blank" rel="noopener noreferrer" class="btn-gumroad w-full font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs sm:text-sm text-center select-none cursor-pointer">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            <span>Pagar en Gumroad — Tarjeta / PayPal (US$ 50)</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          </a>
+        `;
+      }
+
       detailsHtml = `
         <div class="space-y-4 text-sm text-slate-300">
-          <div class="bg-gradient-to-br from-amber-950/60 to-slate-900 border border-amber-500/30 p-4 sm:p-5 rounded-2xl space-y-3">
-            <div class="flex items-center justify-between pb-2 border-b border-amber-500/20">
+          <div class="bg-gradient-to-br from-pink-950/40 via-slate-900 to-slate-900 border border-pink-500/30 p-4 sm:p-5 rounded-2xl space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-pink-500/20">
               <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-                <span class="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider">PayPal Internacional Oficial</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-pink-400 animate-pulse"></span>
+                <span class="text-xs font-mono font-bold text-pink-400 uppercase tracking-wider">Gumroad Checkout Oficial</span>
               </div>
-              <span class="text-[10px] bg-amber-500/20 text-amber-300 font-bold px-2 py-0.5 rounded-full">Exterior (USD)</span>
+              <span class="text-[10px] bg-pink-500/20 text-pink-300 font-bold px-2 py-0.5 rounded-full">Exterior (USD)</span>
             </div>
 
             <!-- Total a abonar con desglose -->
             <div class="bg-black/60 border border-slate-800 p-3.5 rounded-xl space-y-2">
               <div class="flex items-center justify-between pt-1.5">
                 <span class="text-xs text-slate-200 font-sans font-bold">Total a abonar en USD:</span>
-                <span class="text-xl sm:text-2xl font-bold font-mono text-amber-400">${formatMoney(totals.total, 'USD')}</span>
+                <span class="text-xl sm:text-2xl font-bold font-mono text-pink-400">${formatMoney(totals.total, 'USD')}</span>
               </div>
             </div>
 
-            <!-- Botón Oficial de Pago PayPal -->
-            <a href="https://paypal.me/electronicadbarrio/50USD" target="_blank" rel="noopener noreferrer" class="btn-checkout-paypal w-full bg-[#0070ba] hover:bg-[#005ea6] text-white font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-blue-600/30 hover:shadow-[0_0_20px_rgba(0,112,186,0.5)] flex items-center justify-center gap-2 text-xs sm:text-sm text-center border border-blue-400/30 select-none cursor-pointer">
-              <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.774.774 0 0 1 .763-.646h7.008c3.15 0 5.467 1.054 5.922 3.864.218 1.344-.067 2.766-.826 3.743-.728.937-1.854 1.488-3.23 1.584l-.19.008h-2.92a.774.774 0 0 0-.764.646l-.999 6.337a.641.641 0 0 1-.632.535z"/></svg>
-              <span>Pagar con PayPal (${formatMoney(totals.total, 'USD')})</span>
-              <svg class="w-3.5 h-3.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-            </a>
+            <!-- Botones Oficiales de Pago Gumroad -->
+            ${buttonsHtml}
           </div>
         </div>
       `;
@@ -2318,6 +2412,8 @@
     CALENDLY_ASESORIA_URL,
     MP_ASESORIA_URL,
     GUMROAD_ASESORIA_URL,
+    GUMROAD_CURSO_1_URL,
+    GUMROAD_CURSO_2_URL,
     setCurrency,
     updateCatalogBanner,
     toggleCart,
@@ -2340,6 +2436,7 @@
     checkoutMercadoPago,
     checkoutTransferencia,
     checkoutPayPal,
+    checkoutGumroad: checkoutPayPal,
     openPaymentModal,
     closePaymentModal,
     calculateCartTotals,
