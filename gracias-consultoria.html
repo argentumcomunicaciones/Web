@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agendar Consultoría 1 a 1 | ElectroLab Educativa</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0b1120;
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    .success-card {
+      max-width: 640px;
+      width: 100%;
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.75));
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 20px;
+      padding: 40px 32px;
+      box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.7), 0 0 25px rgba(56, 189, 248, 0.1);
+      backdrop-filter: blur(12px);
+      text-align: center;
+    }
+    .icon-success {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 16px auto;
+      border: 1px solid rgba(74, 222, 128, 0.4);
+    }
+    .icon-error {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 16px auto;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+    .badge-status {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: #ffffff;
+    }
+    .subtitle {
+      color: #94a3b8;
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .service-badge {
+      background: rgba(0, 158, 227, 0.15);
+      border: 1px solid rgba(0, 158, 227, 0.4);
+      color: #38bdf8;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin-bottom: 24px;
+      display: inline-block;
+    }
+    .btn-access-main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #009ee3;
+      color: #ffffff !important;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.05rem;
+      padding: 16px 28px;
+      border-radius: 12px;
+      box-shadow: 0 4px 18px rgba(0, 158, 227, 0.4);
+      transition: all 0.25s ease;
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+    }
+    .btn-access-main:hover {
+      background: #0087c2;
+      transform: translateY(-2px);
+    }
+    .support-note {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .btn-return {
+      display: inline-block;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+    }
+    .btn-return:hover {
+      color: #94a3b8;
+    }
+    .notice {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.82rem;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <div class="success-card">
+    <div id="status-icon" class="icon-success">✓</div>
+    <div><span id="status-badge" class="badge-status">PAGO CONFIRMADO</span></div>
+    <h1 id="main-title">¡Consultoría Habilitada!</h1>
+    <p class="subtitle" id="main-subtitle">
+      Tu pago se acreditó exitosamente. El siguiente paso es reservar el día y horario que mejor te quede para nuestra videollamada por Google Meet.
+    </p>
+
+    <div id="service-identificador" class="service-badge">
+      Asesoría Técnica 1 a 1 | ElectroLab (30 min)
+    </div>
+
+    <a id="btn-calendly" href="https://calendly.com/dbarrio1970/30min" target="_blank" rel="noopener noreferrer" class="btn-access-main">
+      📅 Elegir Día y Horario en Calendly
+    </a>
+
+    <div class="support-note" id="support-box">
+      💡 <strong>Tip:</strong> Al completar la reserva en Calendly recibirás al instante el enlace de Google Meet en tu correo. Si necesitas reprogramar o enviar planos/esquemas previos, escribe a <strong>dbarrio1970@gmail.com</strong>.
+    </div>
+
+    <div>
+      <a href="/" class="btn-return">← Volver al sitio principal</a>
+    </div>
+
+    <div class="notice">
+      Comprobante oficial emitido por Mercado Pago.
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz84SFzFw5nEieoZ8c2tOrccjdbP4a4nj8uILIAWlRIivBIsRUHRpMVLHIFKvJfCNo/exec";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentId = urlParams.get('payment_id') || urlParams.get('collection_id');
+    const paymentStatus = urlParams.get('status') || urlParams.get('collection_status');
+
+    const esValido = (paymentStatus === 'approved') || (paymentId && paymentId.length > 3);
+
+    if (!esValido) {
+      document.getElementById('status-icon').className = 'icon-error';
+      document.getElementById('status-icon').innerText = '✕';
+      document.getElementById('status-badge').innerText = 'ACCESO NO AUTORIZADO';
+      document.getElementById('status-badge').style.color = '#f87171';
+      document.getElementById('status-badge').style.borderColor = 'rgba(239, 68, 68, 0.4)';
+      document.getElementById('status-badge').style.background = 'rgba(239, 68, 68, 0.12)';
+      document.getElementById('main-title').innerText = 'Pago No Detectado';
+      document.getElementById('main-subtitle').innerText = 'No se encontró una confirmación de pago activa para agendar la consultoría. Serás redirigido al inicio...';
+      document.getElementById('service-identificador').style.display = 'none';
+      document.getElementById('btn-calendly').style.display = 'none';
+      document.getElementById('support-box').style.display = 'none';
+      
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3500);
+    } else {
+      const registroUrl = `${SCRIPT_URL}?email=${encodeURIComponent('Asesoría MP #' + paymentId)}&curso=${encodeURIComponent('Asesoría Técnica 1 a 1 | ElectroLab')}&monto=20000`;
+      fetch(registroUrl, { mode: 'no-cors' }).catch(err => console.error("Error registrando en Sheets:", err));
+    }
+  </script>
+</body>
+</html>
