@@ -9,13 +9,19 @@ export default async function handler(req, res) {
 
   // Enrutamiento post-pago individual
   let successUrl = "https://electrolabeducativa.com.ar";
-  if (redirectType === 'asesoria') {
-    successUrl = "https://calendly.com/dbarrio1970/30min";
+  if (redirectType === 'asesoria' || redirectType === 'consultoria') {
+    successUrl = "https://electrolabeducativa.com.ar/gracias-consultoria.html";
+  } else if (redirectType === 'guias') {
+    successUrl = "https://electrolabeducativa.com.ar/gracias-guias.html";
   } else if (redirectType && redirectType.startsWith('guia-')) {
     const itemKey = redirectType.replace('guia-', '');
     successUrl = `https://electrolabeducativa.com.ar/gracias-guias.html?item=${itemKey}`;
-  } else if (redirectType && redirectType.startsWith('curso')) {
-    if (redirectType.startsWith('curso-')) {
+  } else if (redirectType && (redirectType.startsWith('curso') || redirectType === 'c1' || redirectType === 'c2')) {
+    if (redirectType === 'curso-1' || redirectType === 'curso-c1' || redirectType === 'c1') {
+      successUrl = "https://electrolabeducativa.com.ar/gracias-curso.html?curso=c1";
+    } else if (redirectType === 'curso-2' || redirectType === 'curso-c2' || redirectType === 'c2') {
+      successUrl = "https://electrolabeducativa.com.ar/gracias-curso.html?curso=c2";
+    } else if (redirectType.startsWith('curso-')) {
       const cursoKey = redirectType.replace('curso-', '');
       successUrl = `https://electrolabeducativa.com.ar/gracias-curso.html?curso=${cursoKey}`;
     } else {
