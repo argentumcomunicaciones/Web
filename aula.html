@@ -739,6 +739,32 @@
       // Iniciar listener de tareas aprobadas para desbloqueo dinámico de exámenes
       initStudentApprovedTasksListener();
 
+      // Sincronización en tiempo real del perfil y cursos habilitados desde Firestore
+      try {
+        const firestoreDb = getFirestoreDb();
+        if (firestoreDb && user && user.email) {
+          firestoreDb.collection('usuarios').doc(user.email.toLowerCase().trim()).onSnapshot((docSnap) => {
+            if (docSnap.exists) {
+              const freshData = docSnap.data();
+              user.courses = freshData.courses || [];
+              user.grades = freshData.grades || {};
+              user.name = freshData.name || user.name;
+              localStorage.setItem('electrolab_user', JSON.stringify(user));
+              renderCourseList();
+              if (currentCourse && currentLesson) {
+                const nowHasAccess = window.ElectroLabAuth && window.ElectroLabAuth.hasCourseAccess(currentCourse.id);
+                if (nowHasAccess) {
+                  const lockedOverlay = document.getElementById('classroom-locked-overlay');
+                  if (lockedOverlay && !lockedOverlay.classList.contains('hidden')) {
+                    selectLesson(currentLesson);
+                  }
+                }
+              }
+            }
+          }, (err) => console.warn('Listener Firestore usuario aula:', err));
+        }
+      } catch (err) {}
+
       // Comprobar parámetros de la URL para acceso directo a cursos/lecciones
       const urlParams = new URLSearchParams(window.location.search);
       let reqCourseId = urlParams.get('curso') || urlParams.get('course');

@@ -438,9 +438,49 @@
       document.getElementById('admin-user-email').textContent = user.email;
 
       await loadUsers();
+      initAdminUsersListener();
       setupSearch();
       initAdminTareasListener();
     });
+
+    function initAdminUsersListener() {
+      const db = window.db || (window.ElectroLab && window.ElectroLab.getDb && window.ElectroLab.getDb()) || (typeof firebase !== 'undefined' && firebase.apps.length && firebase.firestore());
+      if (db) {
+        db.collection('usuarios').onSnapshot((querySnap) => {
+          allUsers = [];
+          querySnap.forEach(docSnap => {
+            const data = docSnap.data();
+            allUsers.push({
+              id: docSnap.id,
+              name: data.name || docSnap.id.split('@')[0],
+              email: data.email || docSnap.id,
+              role: data.role || 'student',
+              courses: data.courses || [],
+              grades: data.grades || {},
+              createdAt: data.createdAt || ''
+            });
+          });
+
+          // Garantizar que la cuenta de admin esté presente en la vista
+          if (!allUsers.some(u => u.role === 'admin' || u.email === 'admin@electrolab.com')) {
+            allUsers.unshift({
+              id: 'admin@electrolab.com',
+              name: 'Admin ElectroLab',
+              email: 'admin@electrolab.com',
+              role: 'admin',
+              courses: ['curso-1', 'curso-2', 'curso-3', 'curso-4', 'curso-5'],
+              grades: {}
+            });
+          }
+
+          renderUsers(allUsers);
+          updateKPIs(allUsers);
+        }, (err) => {
+          console.warn("Listener de usuarios Firestore:", err);
+          loadUsers();
+        });
+      }
+    }
 
     async function loadUsers() {
       try {

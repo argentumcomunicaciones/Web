@@ -29,6 +29,21 @@ export default async function handler(req, res) {
     }
   }
 
+  // Detección de cursos para metadata y provisión de accesos automáticos
+  let courses = [];
+  if (Array.isArray(body.courses) && body.courses.length > 0) {
+    courses = body.courses;
+  } else if (redirectType === 'curso-1' || redirectType === 'curso-c1' || redirectType === 'c1') {
+    courses = ['curso-1'];
+  } else if (redirectType === 'curso-2' || redirectType === 'curso-c2' || redirectType === 'c2') {
+    courses = ['curso-2'];
+  } else if (redirectType && redirectType.startsWith('curso')) {
+    const t = (title || '').toLowerCase();
+    if (t.includes('curso 1') || t.includes('introducción')) courses.push('curso-1');
+    if (t.includes('curso 2') || t.includes('diodos')) courses.push('curso-2');
+    if (courses.length === 0) courses = ['curso-1'];
+  }
+
   const preferenceData = {
     items: [
       {
@@ -43,7 +58,18 @@ export default async function handler(req, res) {
       pending: "https://electrolabeducativa.com.ar",
       failure: "https://electrolabeducativa.com.ar"
     },
-    auto_return: "approved"
+    auto_return: "approved",
+    notification_url: "https://electrolabeducativa.com.ar/api/webhook-mp",
+    metadata: {
+      courses: courses,
+      redirect_type: redirectType || '',
+      item_title: title || ''
+    },
+    external_reference: JSON.stringify({
+      courses: courses,
+      redirectType: redirectType || '',
+      title: title || ''
+    })
   };
 
   try {

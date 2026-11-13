@@ -1826,7 +1826,7 @@
   // Pasarelas de Pago Oficiales
 
   // Integración Oficial Mercado Pago Checkout Pro (Serverless Function en Vercel)
-  async function pagarConMercadoPago(title, price, redirectType, event) {
+  async function pagarConMercadoPago(title, price, redirectType, event, courses = null) {
     const btn = (event && event.currentTarget) || (typeof window !== 'undefined' && window.event ? window.event.currentTarget : null);
     const originalText = btn ? btn.innerText : '';
     try {
@@ -1838,7 +1838,7 @@
       const res = await fetch('/api/create-preference', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, price, redirectType })
+        body: JSON.stringify({ title, price, redirectType, courses: courses || (state && state.cart ? state.cart : []) })
       });
       const data = await res.json();
       if (data && data.init_point) {
@@ -1873,7 +1873,7 @@
       if (state.cart[0] === 'curso-1') redirectType = 'curso-c1';
       else if (state.cart[0] === 'curso-2') redirectType = 'curso-c2';
     }
-    pagarConMercadoPago(title, price, redirectType, event);
+    pagarConMercadoPago(title, price, redirectType, event, state.cart);
   }
 
   function checkoutTransferencia() {
