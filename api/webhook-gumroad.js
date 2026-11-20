@@ -39,7 +39,7 @@ export default async function handler(req, res) {
     const fullName = data.full_name || data.name || (email ? email.split('@')[0] : 'Alumno Internacional');
 
     // Monto formateado
-    let priceFormatted = (permalink.includes('soknil') || productName.toLowerCase().includes('asesor')) ? 'US$ 20' : 'US$ 50';
+    let priceFormatted = (permalink.includes('soknil') || productName.toLowerCase().includes('asesor')) ? 'US$ 20' : 'US$ 30';
     if (data.price) {
       const num = Number(data.price);
       if (!isNaN(num)) {

@@ -38,18 +38,18 @@
     payment: {
       mercadopago: {
         url: 'https://mpago.la/2kmrdT1',
-        label: 'Pagar con Mercado Pago ($75.000 ARS)'
+        label: 'Pagar con Mercado Pago ($45.000 ARS)'
       },
       gumroad: {
-        curso1: 'https://electrolabeducativa.gumroad.com/l/hkrqipz',
-        curso2: 'https://electrolabeducativa.gumroad.com/l/ewrowc',
+        curso1: 'https://electrolabeducativa.gumroad.com/l/hkrqipz/LANZAMIENTO40',
+        curso2: 'https://electrolabeducativa.gumroad.com/l/ewrowc/LANZAMIENTO40',
         asesoria: 'https://electrolabeducativa.gumroad.com/l/soknil',
-        label: 'Pagar en Gumroad — Tarjeta / PayPal (US$ 50)'
+        label: 'Pagar en Gumroad — Tarjeta / PayPal (US$ 30)'
       },
       paypal: {
-        curso1: 'https://electrolabeducativa.gumroad.com/l/hkrqipz',
-        curso2: 'https://electrolabeducativa.gumroad.com/l/ewrowc',
-        label: 'Pagar en Gumroad — Tarjeta / PayPal (US$ 50)'
+        curso1: 'https://electrolabeducativa.gumroad.com/l/hkrqipz/LANZAMIENTO40',
+        curso2: 'https://electrolabeducativa.gumroad.com/l/ewrowc/LANZAMIENTO40',
+        label: 'Pagar en Gumroad — Tarjeta / PayPal (US$ 30)'
       }
     }
   };
@@ -215,11 +215,11 @@
       projectsCount: '11 Clases Prácticas',
       image: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'blue',
-      priceARS: 75000,
-      origARS: 100000,
-      priceUSD: 50,
-      origUSD: 70,
-      linkUSD: 'https://electrolabeducativa.gumroad.com/l/hkrqipz',
+      priceARS: 45000,
+      origARS: 75000,
+      priceUSD: 30,
+      origUSD: 50,
+      linkUSD: 'https://electrolabeducativa.gumroad.com/l/hkrqipz/LANZAMIENTO40',
       driveFolder: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
       recursosUrl: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
       materialDescargable: 'https://drive.google.com/drive/folders/1rXuc5CcPYwX8eChWINgNXDo7Sl7a0It8?usp=drive_link',
@@ -352,11 +352,11 @@
       projectsCount: '10 Clases Prácticas',
       image: 'https://images.unsplash.com/photo-1583199873815-b58ce30591ea?auto=format&fit=crop&w=800&q=80',
       badgeColor: 'blue',
-      priceARS: 75000,
-      origARS: 100000,
-      priceUSD: 50,
-      origUSD: 70,
-      linkUSD: 'https://electrolabeducativa.gumroad.com/l/ewrowc',
+      priceARS: 45000,
+      origARS: 75000,
+      priceUSD: 30,
+      origUSD: 50,
+      linkUSD: 'https://electrolabeducativa.gumroad.com/l/ewrowc/LANZAMIENTO40',
       driveFolder: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=sharing',
       recursosUrl: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=sharing',
       materialDescargable: 'https://drive.google.com/drive/folders/1g0FJAD-2iifE4DgZ789MvjOsHHfYQMVa?usp=sharing',
@@ -764,9 +764,9 @@
   const MP_ASESORIA_URL = "https://mpago.la/1RfpyP1";
   const GUMROAD_ASESORIA_URL = "https://electrolabeducativa.gumroad.com/l/soknil";
 
-  // Cursos Oficiales en Gumroad (Checkout Internacional USD)
-  const GUMROAD_CURSO_1_URL = "https://electrolabeducativa.gumroad.com/l/hkrqipz";
-  const GUMROAD_CURSO_2_URL = "https://electrolabeducativa.gumroad.com/l/ewrowc";
+  // Cursos Oficiales en Gumroad (Checkout Internacional USD con 40% OFF Lanzamiento)
+  const GUMROAD_CURSO_1_URL = "https://electrolabeducativa.gumroad.com/l/hkrqipz/LANZAMIENTO40";
+  const GUMROAD_CURSO_2_URL = "https://electrolabeducativa.gumroad.com/l/ewrowc/LANZAMIENTO40";
 
   // Estado global de la aplicación
   let state = {
@@ -799,9 +799,7 @@
     return currency === 'ARS' ? course.origARS : course.origUSD;
   }
 
-  // Descuentos automáticos por volumen desactivados (cálculo lineal unitario: $75.000 ARS / 50 USD)
-
-  // Cálculo en tiempo real de subtotales y total a transferir
+  // Cálculo en tiempo real de subtotales y total (con oferta de apertura 40% OFF en Cursos 1 y 2)
   function calculateCartTotals(currency = state.currency) {
     const cartCourses = [...new Set(state.cart)].map(id => COURSES.find(c => c.id === id)).filter(Boolean);
     const count = cartCourses.length;
@@ -819,17 +817,18 @@
       };
     }
 
-    // Cálculo puramente lineal sin descuentos
-    const unitPrice = currency === 'ARS' ? 75000 : 50;
-    const subtotal = count * unitPrice;
+    // Cálculo unitario dinámico basado en cada curso del catálogo
+    const subtotal = cartCourses.reduce((sum, c) => sum + getCoursePrice(c, currency), 0);
+    const origSubtotal = cartCourses.reduce((sum, c) => sum + getCourseOrigPrice(c, currency), 0);
+    const saving = Math.max(0, origSubtotal - subtotal);
 
     return {
       count,
       subtotal,
-      volumeDiscount: 0,
-      discountPct: 0,
-      badge: '',
-      saving: 0,
+      volumeDiscount: saving,
+      discountPct: 40,
+      badge: '40% OFF APERTURA',
+      saving,
       total: subtotal,
       currency
     };
@@ -921,12 +920,17 @@
 
     // 3. Texto descriptivo asegurado
     if (descEl) {
-      descEl.innerHTML = `Inversión única de acceso de por vida: <strong class="text-emerald-400 font-mono text-sm">$75.000 ARS / 50 USD</strong> por curso. Incluye acceso completo al aula virtual, clases en video HD, esquemas y recursos en Google Drive.`;
+      descEl.innerHTML = `Inversión de apertura (40% OFF primeros 10 cupos): <span class="text-slate-500 line-through mr-1.5 font-mono">$75.000 ARS / 50 USD</span> <strong class="text-emerald-400 font-mono text-sm sm:text-base">$45.000 ARS / 30 USD</strong> por curso. Incluye acceso completo al aula virtual, clases en video HD, esquemas y recursos en Google Drive.`;
     }
 
     const priceArsEl = document.getElementById('catalog-banner-price-ars');
     if (priceArsEl) {
-      priceArsEl.textContent = '$ 75.000 ARS';
+      priceArsEl.innerHTML = `<span class="text-xs text-slate-500 line-through block font-normal">$ 75.000</span>$ 45.000 ARS`;
+    }
+
+    const priceUsdEl = document.getElementById('catalog-banner-price-usd');
+    if (priceUsdEl) {
+      priceUsdEl.innerHTML = `<span class="text-[10px] text-slate-500 line-through mr-1 font-normal">50 USD</span>30 USD`;
     }
   }
 
@@ -1456,12 +1460,12 @@
             </div>
             <a id="btn-cart-checkout-c1" href="${GUMROAD_CURSO_1_URL}" target="_blank" rel="noopener noreferrer" class="btn-gumroad w-full font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer select-none">
               <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-              <span>1️⃣ Pagar Curso 1 en Gumroad — Tarjeta / PayPal (US$ 50)</span>
+              <span>1️⃣ Pagar Curso 1 en Gumroad — Tarjeta / PayPal (US$ 30)</span>
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
             </a>
             <a id="btn-cart-checkout-c2" href="${GUMROAD_CURSO_2_URL}" target="_blank" rel="noopener noreferrer" class="btn-gumroad w-full font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer select-none">
               <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-              <span>2️⃣ Pagar Curso 2 en Gumroad — Tarjeta / PayPal (US$ 50)</span>
+              <span>2️⃣ Pagar Curso 2 en Gumroad — Tarjeta / PayPal (US$ 30)</span>
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
             </a>
           </div>
@@ -1470,7 +1474,7 @@
         checkoutActionsEl.innerHTML = `
           <a id="btn-cart-checkout" href="${GUMROAD_CURSO_2_URL}" target="_blank" rel="noopener noreferrer" class="btn-gumroad w-full font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer select-none">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-            <span id="btn-cart-checkout-text">Pagar en Gumroad — Tarjeta / PayPal (US$ 50)</span>
+            <span id="btn-cart-checkout-text">Pagar en Gumroad — Tarjeta / PayPal (US$ 30)</span>
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
           </a>
         `;
@@ -1478,7 +1482,7 @@
         checkoutActionsEl.innerHTML = `
           <a id="btn-cart-checkout" href="${GUMROAD_CURSO_1_URL}" target="_blank" rel="noopener noreferrer" class="btn-gumroad w-full font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs sm:text-sm text-center cursor-pointer select-none">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-            <span id="btn-cart-checkout-text">Pagar en Gumroad — Tarjeta / PayPal (US$ 50)</span>
+            <span id="btn-cart-checkout-text">Pagar en Gumroad — Tarjeta / PayPal (US$ 30)</span>
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
           </a>
         `;
@@ -1867,7 +1871,7 @@
       return c ? c.title : id;
     }).join(' + ');
     const title = cartCourseNames ? `Inscripción: ${cartCourseNames}` : 'Curso Oficial ElectroLab';
-    const price = totals.total || 75000;
+    const price = totals.total || 45000;
     let redirectType = 'curso';
     if (state.cart.length === 1) {
       if (state.cart[0] === 'curso-1') redirectType = 'curso-c1';
@@ -1962,7 +1966,7 @@
     let detailsHtml = '';
 
     if (curr === 'ARS') {
-      title = totals.count > 1 ? `Pagar con Mercado Pago (${formatMoney(totals.total, 'ARS').replace('$ ', '$')})` : 'Pagar con Mercado Pago ($75.000 ARS)';
+      title = `Pagar con Mercado Pago (${formatMoney(totals.total, 'ARS').replace('$ ', '$')})`;
       detailsHtml = `
         <div class="space-y-4 text-sm text-slate-300">
           <div class="bg-gradient-to-br from-sky-950/60 to-slate-900 border border-sky-500/30 p-4 sm:p-5 rounded-2xl space-y-3">
@@ -1996,7 +2000,7 @@
 
       title = (hasC1 && hasC2)
         ? 'Pagar en Gumroad — Tarjeta / PayPal (2 Cursos)'
-        : 'Pagar en Gumroad — Tarjeta / PayPal (US$ 50)';
+        : `Pagar en Gumroad — Tarjeta / PayPal (${formatMoney(totals.total, 'USD')})`;
 
       let buttonsHtml = '';
       if (hasC1 && hasC2) {
@@ -2009,12 +2013,12 @@
             </div>
             <a href="${GUMROAD_CURSO_1_URL}" target="_blank" rel="noopener noreferrer" class="btn-gumroad w-full font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs sm:text-sm text-center select-none cursor-pointer">
               <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-              <span>1️⃣ Pagar Curso 1 en Gumroad — Tarjeta / PayPal (US$ 50)</span>
+              <span>1️⃣ Pagar Curso 1 en Gumroad — Tarjeta / PayPal (US$ 30)</span>
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
             </a>
             <a href="${GUMROAD_CURSO_2_URL}" target="_blank" rel="noopener noreferrer" class="btn-gumroad w-full font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs sm:text-sm text-center select-none cursor-pointer">
               <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-              <span>2️⃣ Pagar Curso 2 en Gumroad — Tarjeta / PayPal (US$ 50)</span>
+              <span>2️⃣ Pagar Curso 2 en Gumroad — Tarjeta / PayPal (US$ 30)</span>
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
             </a>
           </div>
@@ -2023,7 +2027,7 @@
         buttonsHtml = `
           <a href="${GUMROAD_CURSO_2_URL}" target="_blank" rel="noopener noreferrer" class="btn-gumroad w-full font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs sm:text-sm text-center select-none cursor-pointer">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-            <span>Pagar en Gumroad — Tarjeta / PayPal (US$ 50)</span>
+            <span>Pagar en Gumroad — Tarjeta / PayPal (US$ 30)</span>
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
           </a>
         `;
@@ -2031,7 +2035,7 @@
         buttonsHtml = `
           <a href="${GUMROAD_CURSO_1_URL}" target="_blank" rel="noopener noreferrer" class="btn-gumroad w-full font-heading font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs sm:text-sm text-center select-none cursor-pointer">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-            <span>Pagar en Gumroad — Tarjeta / PayPal (US$ 50)</span>
+            <span>Pagar en Gumroad — Tarjeta / PayPal (US$ 30)</span>
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
           </a>
         `;
@@ -2070,6 +2074,12 @@
         </button>
         <h3 class="text-lg font-heading font-bold text-white mb-4 pr-8">${title}</h3>
         ${detailsHtml}
+        <div class="mt-4 pt-3.5 border-t border-slate-800 text-center">
+          <a href="https://wa.me/5491123065347?text=Hola%20Daniel%2C%20vengo%20de%20la%20web%20de%20ElectroLab%20y%20tengo%20una%20consulta%20sobre..." target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 text-xs text-emerald-400 hover:text-emerald-300 font-semibold transition-colors py-1">
+            <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+            <span>¿Dudas con tu pago o la cursada? Escríbeme por WhatsApp</span>
+          </a>
+        </div>
       </div>
     `;
 

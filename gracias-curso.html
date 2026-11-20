@@ -240,7 +240,7 @@
       } catch (e) {}
 
       // Registro en Google Sheets mediante GET para máxima compatibilidad con Apps Script
-      const registroUrl = `${SCRIPT_URL}?email=${encodeURIComponent('Operación MP #' + paymentId)}&curso=${encodeURIComponent(info.nombre)}&monto=75000`;
+      const registroUrl = `${SCRIPT_URL}?email=${encodeURIComponent('Operación MP #' + paymentId)}&curso=${encodeURIComponent(info.nombre)}&monto=45000`;
       fetch(registroUrl, { mode: 'no-cors' }).catch(err => console.error("Error registrando en Sheets:", err));
     }
   </script>

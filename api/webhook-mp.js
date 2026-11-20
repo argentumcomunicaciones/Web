@@ -75,7 +75,7 @@ export default async function handler(req, res) {
     const payerFirstName = payment.payer?.first_name || payment.additional_info?.payer?.first_name || '';
     const payerLastName = payment.payer?.last_name || payment.additional_info?.payer?.last_name || '';
     const payerName = `${payerFirstName} ${payerLastName}`.trim() || 'Alumno ElectroLab';
-    const amount = payment.transaction_amount || payment.total_paid_amount || 75000;
+    const amount = payment.transaction_amount || payment.total_paid_amount || 45000;
 
     // Identificar los cursos adquiridos
     let courses = [];
