@@ -1078,6 +1078,16 @@
                 </button>
               `}
             </div>
+
+            ${course.id === 'curso-1' ? `
+              <div class="mt-2.5">
+                <a href="./aula.html?curso=curso-1&leccion=1&demo=1" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-cyan-950/80 via-slate-900 to-cyan-950/80 hover:from-cyan-900/90 hover:to-slate-900 border border-cyan-500/50 hover:border-cyan-400 text-cyan-300 hover:text-white font-heading font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-sm group/demo">
+                  <span class="text-sm">🎬</span>
+                  <span>Ver Clase 1 Gratis (Sin registro)</span>
+                  <span class="group-hover/demo:translate-x-0.5 transition-transform text-cyan-400 font-bold">→</span>
+                </a>
+              </div>
+            ` : ''}
           </div>
         </article>
       `;
