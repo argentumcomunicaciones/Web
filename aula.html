@@ -123,9 +123,9 @@
       <div class="absolute -right-12 -top-12 w-48 h-48 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
 
       <div class="max-w-2xl space-y-2">
-        <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full text-[11px] font-bold text-emerald-300">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>ESTUDIANTE REGISTRADO</span>
+        <div id="welcome-student-badge" class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full text-[11px] font-bold text-emerald-300">
+          <span id="welcome-student-badge-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="welcome-student-badge-text">ESTUDIANTE REGISTRADO</span>
         </div>
         <h1 class="text-2xl sm:text-4xl font-heading font-extrabold text-white">
           Hola, <span id="welcome-student-name" class="text-cyan-400">Estudiante</span> 👋
@@ -738,7 +738,6 @@
   </div>
 
   <script src="./auth.js"></script>
-  <script src="./app.js"></script>
   <script>
     // State of classroom
     let currentCourse = null;
@@ -796,133 +795,7 @@
       return null;
     }
 
-    // Check Authentication on load
-    document.addEventListener('DOMContentLoaded', () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const isExplicitDemo = urlParams.get('demo') === '1';
 
-      user = window.ElectroLabAuth.getCurrentUser();
-      let isGuest = false;
-
-      // Si el usuario no ha iniciado sesión, o solicita demo=1 sin tener el curso 1 comprado
-      if (!user) {
-        isGuest = true;
-        user = {
-          id: 'guest',
-          name: 'Visitante (Demo)',
-          email: '',
-          role: 'guest',
-          courses: []
-        };
-      } else if (isExplicitDemo && !(window.ElectroLabAuth && window.ElectroLabAuth.hasCourseAccess('curso-1'))) {
-        isGuest = true;
-        user = {
-          ...user,
-          role: 'guest'
-        };
-      }
-
-      // Populate user info in header
-      if (isGuest) {
-        document.getElementById('user-name').textContent = 'Visitante (Demo)';
-        document.getElementById('user-email').textContent = 'Clase Muestra Gratuita';
-        document.getElementById('welcome-student-name').textContent = 'Visitante';
-        document.getElementById('user-avatar').textContent = '🎬';
-
-        const demoBanner = document.getElementById('demo-mode-banner');
-        if (demoBanner) demoBanner.classList.remove('hidden');
-
-        const guestLogin = document.getElementById('guest-header-login');
-        if (guestLogin) guestLogin.classList.remove('hidden');
-
-        const userLogoutBtn = document.getElementById('user-logout-btn');
-        if (userLogoutBtn) {
-          userLogoutBtn.title = 'Iniciar sesión con cuenta de alumno';
-          userLogoutBtn.onclick = () => {
-            window.location.href = './login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
-          };
-        }
-      } else {
-        document.getElementById('user-name').textContent = user.name;
-        document.getElementById('user-email').textContent = user.email;
-        document.getElementById('welcome-student-name').textContent = user.name.split(' ')[0];
-        
-        const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-        document.getElementById('user-avatar').textContent = initials;
-
-        if (user.role === 'admin') {
-          document.getElementById('admin-shortcut').classList.remove('hidden');
-        }
-
-        // Iniciar listener de tareas aprobadas para desbloqueo dinámico de exámenes
-        initStudentApprovedTasksListener();
-
-        // Sincronización en tiempo real del perfil y cursos habilitados desde Firestore
-        try {
-          const firestoreDb = getFirestoreDb();
-          if (firestoreDb && user && user.email) {
-            firestoreDb.collection('usuarios').doc(user.email.toLowerCase().trim()).onSnapshot((docSnap) => {
-              if (docSnap.exists) {
-                const freshData = docSnap.data();
-                user.courses = freshData.courses || [];
-                user.grades = freshData.grades || {};
-                user.name = freshData.name || user.name;
-                localStorage.setItem('electrolab_user', JSON.stringify(user));
-                renderCourseList();
-                if (currentCourse && currentLesson) {
-                  const nowHasAccess = window.ElectroLabAuth && window.ElectroLabAuth.hasCourseAccess(currentCourse.id);
-                  if (nowHasAccess) {
-                    const lockedOverlay = document.getElementById('classroom-locked-overlay');
-                    if (lockedOverlay && !lockedOverlay.classList.contains('hidden')) {
-                      selectLesson(currentLesson);
-                    }
-                  }
-                }
-              }
-            }, (err) => console.warn('Listener Firestore usuario aula:', err));
-          }
-        } catch (err) {}
-      }
-
-      // Comprobar parámetros de la URL para acceso directo a cursos/lecciones
-      let reqCourseId = urlParams.get('curso') || urlParams.get('course');
-      let reqLessonParam = urlParams.get('leccion') || urlParams.get('lesson');
-
-      if (reqCourseId === 'c1' || reqCourseId === '1') reqCourseId = 'curso-1';
-      else if (reqCourseId === 'c2' || reqCourseId === '2') reqCourseId = 'curso-2';
-      else if (reqCourseId === 'c3' || reqCourseId === '3') reqCourseId = 'curso-3';
-      else if (reqCourseId === 'c4' || reqCourseId === '4') reqCourseId = 'curso-4';
-      else if (reqCourseId === 'c5' || reqCourseId === '5') reqCourseId = 'curso-5';
-
-      let targetLessonId = null;
-      if (reqCourseId) {
-        if (!reqLessonParam) {
-          reqLessonParam = '1';
-        }
-        if (/^\d+$/.test(reqLessonParam)) {
-          if (reqCourseId === 'curso-1') targetLessonId = `c1_l${reqLessonParam}`;
-          else if (reqCourseId === 'curso-2') targetLessonId = `c2_l${reqLessonParam}`;
-          else if (reqCourseId === 'curso-3') targetLessonId = `c3_l${reqLessonParam}`;
-          else if (reqCourseId === 'curso-4') targetLessonId = `c4_l${reqLessonParam}`;
-          else if (reqCourseId === 'curso-5') targetLessonId = `c5_l${reqLessonParam}`;
-          else targetLessonId = reqLessonParam;
-        } else {
-          targetLessonId = reqLessonParam;
-        }
-      }
-
-      // En Modo Invitado / Demo: si no se especificó curso o se abrió aula.html directamente, ir a Curso 1 Lección 1
-      if (isGuest && !reqCourseId) {
-        reqCourseId = 'curso-1';
-        targetLessonId = 'c1_l1';
-      }
-
-      if (reqCourseId && COURSES_DATA.some(c => c.id === reqCourseId)) {
-        enterClassroom(reqCourseId, targetLessonId);
-      } else {
-        renderDashboard();
-      }
-    });
 
     // Base de datos de los 5 Cursos Oficiales en el Aula Virtual
     const COURSES_DATA = [
@@ -1238,6 +1111,168 @@
         ]
       }
     ];
+
+    // ==========================================
+    // INICIALIZACIÓN CON PRIORIDAD ESTRICTA: MODO DEMO / ALUMNO
+    // ==========================================
+    function initClassroomApp() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isExplicitDemo = urlParams.get('demo') === '1';
+
+      // 1. Comprobar PRIMERO si la URL contiene ?demo=1 o si no hay usuario guardado en localStorage
+      let storedUser = null;
+      try {
+        const raw = localStorage.getItem('electrolab_user');
+        if (raw) storedUser = JSON.parse(raw);
+      } catch (e) {
+        storedUser = null;
+      }
+
+      const isDemoMode = isExplicitDemo || !storedUser || !storedUser.email;
+
+      if (isDemoMode) {
+        // ==========================================
+        // MODO DEMO / INVITADO (CLASE MUESTRA GRATIS)
+        // ==========================================
+        user = {
+          id: 'guest',
+          name: 'Modo Invitado (Clase Gratis)',
+          email: 'Acceso Muestra Gratuita',
+          role: 'guest',
+          courses: []
+        };
+
+        // Encabezado superior derecho: Modo Invitado + Botón Iniciar Sesión visible
+        const userNameEl = document.getElementById('user-name');
+        if (userNameEl) userNameEl.textContent = 'Modo Invitado (Clase Gratis)';
+
+        const userEmailEl = document.getElementById('user-email');
+        if (userEmailEl) userEmailEl.textContent = 'Acceso Muestra Gratuita';
+
+        const userAvatarEl = document.getElementById('user-avatar');
+        if (userAvatarEl) userAvatarEl.textContent = '🎬';
+
+        const guestLoginBtn = document.getElementById('guest-header-login');
+        if (guestLoginBtn) {
+          guestLoginBtn.classList.remove('hidden');
+          guestLoginBtn.href = './login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+        }
+
+        const logoutBtn = document.getElementById('user-logout-btn');
+        if (logoutBtn) {
+          logoutBtn.classList.add('hidden');
+        }
+
+        // Banner superior de aviso demo
+        const demoBanner = document.getElementById('demo-mode-banner');
+        if (demoBanner) demoBanner.classList.remove('hidden');
+
+        // Badge en el saludo de bienvenida
+        const welcomeStudentName = document.getElementById('welcome-student-name');
+        if (welcomeStudentName) welcomeStudentName.textContent = 'Visitante';
+
+        const welcomeBadge = document.getElementById('welcome-student-badge');
+        const welcomeBadgeDot = document.getElementById('welcome-student-badge-dot');
+        const welcomeBadgeText = document.getElementById('welcome-student-badge-text');
+        if (welcomeBadge) {
+          welcomeBadge.className = 'inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full text-[11px] font-bold text-amber-300';
+        }
+        if (welcomeBadgeDot) {
+          welcomeBadgeDot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
+        }
+        if (welcomeBadgeText) {
+          welcomeBadgeText.textContent = '🎬 CLASE MUESTRA GRATUITA';
+        }
+
+        // NO ejecutar consulta a Firestore ni esperar carga de perfil.
+        // Inyectar y abrir INMEDIATAMENTE Curso 1, Lección 1 en el visor/reproductor:
+        enterClassroom('curso-1', 'c1_l1');
+
+      } else {
+        // ==========================================
+        // MODO ALUMNO REGISTRADO O ADMINISTRADOR
+        // ==========================================
+        user = (window.ElectroLabAuth && window.ElectroLabAuth.getCurrentUser()) || storedUser;
+
+        const userNameEl = document.getElementById('user-name');
+        if (userNameEl) userNameEl.textContent = user.name || 'Estudiante';
+
+        const userEmailEl = document.getElementById('user-email');
+        if (userEmailEl) userEmailEl.textContent = user.email || '';
+
+        const welcomeStudentName = document.getElementById('welcome-student-name');
+        if (welcomeStudentName) welcomeStudentName.textContent = (user.name || 'Estudiante').split(' ')[0];
+
+        const initials = (user.name || 'AL').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const userAvatarEl = document.getElementById('user-avatar');
+        if (userAvatarEl) userAvatarEl.textContent = initials;
+
+        if (user.role === 'admin') {
+          const adminShortcut = document.getElementById('admin-shortcut');
+          if (adminShortcut) adminShortcut.classList.remove('hidden');
+        }
+
+        // Iniciar listener de tareas aprobadas
+        initStudentApprovedTasksListener();
+
+        // Sincronización en tiempo real del perfil y cursos habilitados desde Firestore
+        try {
+          const firestoreDb = getFirestoreDb();
+          if (firestoreDb && user && user.email) {
+            firestoreDb.collection('usuarios').doc(user.email.toLowerCase().trim()).onSnapshot((docSnap) => {
+              if (docSnap.exists) {
+                const freshData = docSnap.data();
+                user.courses = freshData.courses || [];
+                user.grades = freshData.grades || {};
+                user.name = freshData.name || user.name;
+                localStorage.setItem('electrolab_user', JSON.stringify(user));
+                renderDashboard();
+                if (currentCourse && currentLesson) {
+                  const nowHasAccess = window.ElectroLabAuth && window.ElectroLabAuth.hasCourseAccess(currentCourse.id);
+                  if (nowHasAccess) {
+                    const lockedOverlay = document.getElementById('classroom-locked-overlay');
+                    if (lockedOverlay && !lockedOverlay.classList.contains('hidden')) {
+                      selectLesson('', currentLesson);
+                    }
+                  }
+                }
+              }
+            }, (err) => console.warn('Listener Firestore usuario aula:', err));
+          }
+        } catch (err) {}
+
+        // Parámetros de URL para acceso directo a cursos/lecciones
+        let reqCourseId = urlParams.get('curso') || urlParams.get('course');
+        let reqLessonParam = urlParams.get('leccion') || urlParams.get('lesson');
+
+        if (reqCourseId === 'c1' || reqCourseId === '1') reqCourseId = 'curso-1';
+        else if (reqCourseId === 'c2' || reqCourseId === '2') reqCourseId = 'curso-2';
+        else if (reqCourseId === 'c3' || reqCourseId === '3') reqCourseId = 'curso-3';
+        else if (reqCourseId === 'c4' || reqCourseId === '4') reqCourseId = 'curso-4';
+        else if (reqCourseId === 'c5' || reqCourseId === '5') reqCourseId = 'curso-5';
+
+        let targetLessonId = null;
+        if (reqCourseId) {
+          if (!reqLessonParam) reqLessonParam = '1';
+          if (/^\d+$/.test(reqLessonParam)) {
+            if (reqCourseId === 'curso-1') targetLessonId = `c1_l${reqLessonParam}`;
+            else if (reqCourseId === 'curso-2') targetLessonId = `c2_l${reqLessonParam}`;
+            else if (reqCourseId === 'curso-3') targetLessonId = `c3_l${reqLessonParam}`;
+            else if (reqCourseId === 'curso-4') targetLessonId = `c4_l${reqLessonParam}`;
+            else if (reqCourseId === 'curso-5') targetLessonId = `c5_l${reqLessonParam}`;
+            else targetLessonId = reqLessonParam;
+          } else {
+            targetLessonId = reqLessonParam;
+          }
+        }
+
+        if (reqCourseId && COURSES_DATA.some(c => c.id === reqCourseId)) {
+          enterClassroom(reqCourseId, targetLessonId);
+        } else {
+          renderDashboard();
+        }
+      }
+    }
 
     function renderDashboard() {
       const enrolledContainer = document.getElementById('enrolled-courses-container');
@@ -1627,7 +1662,12 @@
     }
 
     function selectLesson(moduleName, lesson) {
-      if (!currentCourse) return;
+      // Tolerar llamada con un solo argumento: selectLesson(lesson)
+      if (typeof moduleName === 'object' && moduleName !== null && !lesson) {
+        lesson = moduleName;
+        moduleName = '';
+      }
+      if (!currentCourse || !lesson) return;
 
       const isGuest = user && user.role === 'guest';
       const isDemoLesson = isGuest && currentCourse.id === 'curso-1' && (lesson.id === 'c1_l1' || lesson.id === '1');
@@ -1927,61 +1967,7 @@
           </div>
         `;
       }).join('');
-        const hasModuleName = mod.name && mod.name.trim().length > 0;
-        return `
-          <div class="border border-slate-800 rounded-2xl bg-slate-950/60 overflow-hidden">
-            ${hasModuleName ? `
-              <div class="p-3 bg-slate-900/60 border-b border-slate-800/80 font-bold text-xs text-slate-300">
-                ${mod.name}
-              </div>
-            ` : ''}
-            <div class="p-2 space-y-1">
-              ${mod.lessons.map(les => {
-                const isActive = currentLesson && currentLesson.id === les.id;
-                const isCompleted = completedList.includes(les.id);
 
-                if (!hasAccess) {
-                  return `
-                    <div class="w-full text-left p-2.5 rounded-xl text-xs flex items-start justify-between opacity-60 bg-slate-950/40 border border-slate-800/40 cursor-not-allowed">
-                      <span class="flex items-start gap-2 text-left flex-1 min-w-0">
-                        <span class="w-4 h-4 rounded flex items-center justify-center text-[10px] shrink-0 mt-0.5 text-amber-400">
-                          🔒
-                        </span>
-                        <span class="flex-1 min-w-0 pr-1">
-                          <span class="font-bold text-slate-300 block truncate">${les.title}</span>
-                          ${les.desc ? `<span class="text-[10px] text-slate-500 block line-clamp-1">${les.desc}</span>` : ''}
-                        </span>
-                      </span>
-                      <span class="text-[10px] font-mono text-slate-600 shrink-0 ml-2 mt-0.5">${les.duration}</span>
-                    </div>
-                  `;
-                }
-
-                return `
-                  <button type="button" onclick="selectLesson('${mod.name}', ${JSON.stringify(les).replace(/"/g, '&quot;')})" class="w-full text-left p-2.5 rounded-xl text-xs flex items-start justify-between transition-all ${
-                    isActive
-                      ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-                  }">
-                    <span class="flex items-start gap-2 text-left flex-1 min-w-0">
-                      <span class="w-4 h-4 rounded flex items-center justify-center text-[10px] shrink-0 mt-0.5 ${
-                        isCompleted ? 'bg-emerald-500 text-slate-950 font-bold' : 'border border-slate-700 text-slate-500'
-                      }">
-                        ${isCompleted ? '✓' : '•'}
-                      </span>
-                      <span class="flex-1 min-w-0 pr-1">
-                        <span class="font-bold block truncate">${les.title}</span>
-                        ${les.desc ? `<span class="text-[10px] text-slate-400 block line-clamp-1 font-normal">${les.desc}</span>` : ''}
-                      </span>
-                    </span>
-                    <span class="text-[10px] font-mono text-slate-500 shrink-0 ml-2 mt-0.5">${les.duration}</span>
-                  </button>
-                `;
-              }).join('')}
-            </div>
-          </div>
-        `;
-      }).join('');
 
       // Botón destacado de Examen Final al final del temario de lecciones
       if (currentCourse.id === 'curso-1' || currentCourse.id === 'curso-2') {
@@ -2132,18 +2118,21 @@
       return `${safeEmail}___${safeCourse}___${safeLesson}`;
     }
 
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyDXXsdNO_s18-hko4riY6pc7_RJjBDInA0",
+      authDomain: "electrolab-academia.firebaseapp.com",
+      projectId: "electrolab-academia",
+      storageBucket: "electrolab-academia.firebasestorage.app",
+      messagingSenderId: "1013501407471",
+      appId: "1:1013501407471:web:1de69c347f9a3edf046b1a"
+    };
+
     function getFirestoreDb() {
       if (window.db) return window.db;
-      if (window.ElectroLab && window.ElectroLab.getDb) {
-        window.db = window.ElectroLab.getDb();
-        if (window.db) return window.db;
-      }
       if (typeof firebase !== 'undefined') {
         try {
           if (!firebase.apps || !firebase.apps.length) {
-            if (window.ElectroLab && window.ElectroLab.firebaseConfig) {
-              firebase.initializeApp(window.ElectroLab.firebaseConfig);
-            }
+            firebase.initializeApp(FIREBASE_CONFIG);
           }
           window.db = firebase.firestore();
           return window.db;
@@ -3714,6 +3703,22 @@
         `;
       }
     }
+  
+    // Ejecutar inicialización de manera segura
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initClassroomApp);
+    } else {
+      initClassroomApp();
+    }
+
+    // Cerrar modales con Escape
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeLockedDemoModal();
+        if (typeof closeExamModal === 'function') closeExamModal();
+      }
+    });
+
   </script>
   <!-- Vercel Analytics -->
   <script defer src="/_vercel/insights/script.js"></script>
